@@ -11,7 +11,7 @@ public class PlayerMovement : MonoBehaviour
     [Header("Floats")]
     readonly float moveSpeedBase = 5f;
     float moveSpeedCurr;
-    readonly float jumpHeight = 5f;
+    public float jumpHeight = 2f;
     readonly float sprintSpeed = 7.5f;
     public float sensX = 1.25f;
     public float sensY = 1.25f;
@@ -23,7 +23,6 @@ public class PlayerMovement : MonoBehaviour
     [Header("Bools")]
     bool isOnGround;
     public bool crouched;
-    bool aiming;
 
     [Header("GameObjects")]
     GameObject rifle;
@@ -65,7 +64,7 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        aiming = rifle.GetComponent<Rifle>().aiming;
+        isOnGround = GetComponentInChildren<GroundedCheck>().isOnGround;
 
         move.x = Input.GetAxisRaw("Horizontal");
         move.z = Input.GetAxisRaw("Vertical");
@@ -82,12 +81,6 @@ public class PlayerMovement : MonoBehaviour
         cam.transform.rotation = Quaternion.Euler(xRot, yRot, 0f);
         transform.rotation = Quaternion.Euler(0f, yRot, 0f);
 
-        if (Input.GetKey(KeyCode.Space) && isOnGround)
-        {
-            rb.AddForce(Vector3.up * jumpHeight, ForceMode.Impulse);
-            isOnGround = false;
-        }
-
         if (Input.GetKey(KeyCode.LeftShift) && isOnGround)
         {
             moveSpeedCurr = sprintSpeed;
@@ -100,36 +93,16 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.LeftControl))
         {
             transform.localScale = new Vector3(1f, 0.5f, 1f);
-            // rifle.transform.localScale = new Vector3(0.5f, 0.6f, 0.25f);
             transform.position = new Vector3(transform.position.x, transform.position.y - 0.5f, transform.position.z);
-            // if (aiming)
-            // {
-            //     rifle.transform.position = new Vector3(rifle.transform.position.x, rifle.transform.position.y - 0.5f, rifle.transform.position.z);
-            // }
+            
             crouched = true;
         }
         else if (Input.GetKeyUp(KeyCode.LeftControl))
         {
             transform.localScale = new Vector3(1f, 1f, 1f);
-            // rifle.transform.localScale = new Vector3(0.25f, 0.6f, 0.25f);
             transform.position = new Vector3(transform.position.x, transform.position.y + 0.5f, transform.position.z);
-            // if (aiming)
-            // {
-            //     rifle.transform.position = new Vector3(rifle.transform.position.x, rifle.transform.position.y + 0.5f, rifle.transform.position.z);
-            // }
+            
             crouched = false;
-        }
-    }
-
-    #endregion
-
-    #region Methods
-
-    void OnCollisionStay(Collision coll)
-    {
-        if (coll.transform.CompareTag("Obstruction"))
-        {
-            isOnGround = true;
         }
     }
 

@@ -14,14 +14,14 @@ public class PlayerHealth : MonoBehaviour
     #region Variables
 
     [Header("Floats")]
-    [SerializeField] readonly float cooldown = 1f;
+    readonly float cooldown = 1f;
 
     [Header("Ints")]
     readonly int maxHealth = 100;
     public int health;
 
     [Header("Bools")]
-    [SerializeField] bool damageCooldown;
+    bool damageCooldown;
 
     #endregion
 

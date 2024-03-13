@@ -19,7 +19,7 @@ public class EnemyShooting : MonoBehaviour
     float bulletsLeft;
     float reloadTime = 0f;
     readonly float reloadCooldown = 3f;
-    readonly float waitTime = 2f;
+    readonly float waitTime = 1f;
     
     [Header("Bools")]
     bool canShoot;
@@ -30,9 +30,6 @@ public class EnemyShooting : MonoBehaviour
 
     [Header("Lists")]
     private List<AudioSource> audioSourcePool = new();
-
-    [Header("GameObjects")]
-    [SerializeField] GameObject impact;
 
     [Header("Transforms")]
     Transform spawnedPrefabs;
@@ -108,8 +105,6 @@ public class EnemyShooting : MonoBehaviour
 
                 if (reloadTime <= 0)
                 {
-                    reloadTime = 0;
-
                     rState = ReloadState.Reloadfinishing;
                 }
                 break;
@@ -140,9 +135,6 @@ public class EnemyShooting : MonoBehaviour
             {
                 pComp.TakeDamage(damage);
             }
-
-            GameObject impactObj = Instantiate(impact, hit.point, Quaternion.LookRotation(hit.normal), spawnedImpacts);
-            Destroy(impactObj, 2f);
         }
 
         bulletsLeft--;

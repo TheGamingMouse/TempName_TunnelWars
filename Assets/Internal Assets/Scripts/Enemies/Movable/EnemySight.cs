@@ -8,7 +8,7 @@ public class EnemySight : MonoBehaviour
     #region Variables
 
     [Header("Floats")]
-    [SerializeField] readonly float range = 4f;
+    [SerializeField] readonly float range = 25f;
     readonly float fovAngle = 135f;
 
     [Header("Bools")]
@@ -25,6 +25,7 @@ public class EnemySight : MonoBehaviour
 
     [Header("LayerMasks")]
     [SerializeField] LayerMask playerMask;
+    [SerializeField] LayerMask obstructionMask;
 
     #endregion
     
@@ -53,7 +54,7 @@ public class EnemySight : MonoBehaviour
             topAngle = DirFromAngle(fovAngle / 2);
             bottomAngle = DirFromAngle(-fovAngle / 2);
 
-            if (!TargetInRange())
+            if (!TargetInRange() || TargetObstructed())
             {
                 target = null;
             }
@@ -70,7 +71,7 @@ public class EnemySight : MonoBehaviour
     {
         RaycastHit[] hits = Physics.SphereCastAll(transform.position, range, transform.position, playerMask);
         
-        if ((hits.Length > 0) && TargetInRange())
+        if ((hits.Length > 0) && TargetInRange() && !TargetObstructed())
         {
             target = player;
         }
@@ -89,7 +90,7 @@ public class EnemySight : MonoBehaviour
     {
         Collider[] rangeChecks = Physics.OverlapSphere(transform.position, range, playerMask);
 
-        if (rangeChecks.Length > 0 && TargetInRange())
+        if (rangeChecks.Length > 0 && TargetInRange() && !TargetObstructed())
         {
             Vector3 direction = (player.position - transform.position).normalized;
 
@@ -98,6 +99,17 @@ public class EnemySight : MonoBehaviour
                 return true;
             }
             return false;
+        }
+        return false;
+    }
+
+    bool TargetObstructed()
+    {
+        bool hit = Physics.Linecast(transform.position, player.position, obstructionMask);
+
+        if (hit)
+        {
+            return true;
         }
         return false;
     }
@@ -130,8 +142,8 @@ public class EnemySight : MonoBehaviour
         Gizmos.matrix = transform.localToWorldMatrix;
 
         Gizmos.color = Color.red;
-        Gizmos.DrawLine(new Vector3(transform.localPosition.x, 0f, transform.localPosition.z), transform.localPosition + topAngle * range);
-        Gizmos.DrawLine(new Vector3(transform.localPosition.x, 0f, transform.localPosition.z), transform.localPosition + bottomAngle * range);
+        Gizmos.DrawLine(new Vector3(0f, 0f, 0f), transform.localPosition + topAngle * range);
+        Gizmos.DrawLine(new Vector3(0f, 0f, 0f), transform.localPosition + bottomAngle * range);
     }
 
     #endregion
