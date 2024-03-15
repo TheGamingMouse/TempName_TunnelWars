@@ -17,6 +17,8 @@ public class EnemyMovement : MonoBehaviour
     float newDistance;
     readonly float range = 5f;
     readonly float searchTimer = 30f;
+    readonly float combattingTimer = 20f;
+    float sightRange;
 
     [Header("Bools")]
     bool identifyingCover;
@@ -24,6 +26,11 @@ public class EnemyMovement : MonoBehaviour
     bool startPatrol;
     bool startSearch;
     bool startCombat;
+    bool playerNotFound;
+    bool exitCombat;
+    public bool combatting;
+    bool leaveCover;
+    bool soundMade;
 
     [Header("Arrays")]
     Cover[] covers;
@@ -32,7 +39,7 @@ public class EnemyMovement : MonoBehaviour
     [SerializeField] GameObject emptyPoint; // SerializeField is Important!
     
     [Header("Transforms")]
-    [SerializeField] Transform playerTarget;
+    Transform playerTarget;
     Transform enemyObj;
     Transform coverTarget;
     Transform centrePoint;
@@ -62,6 +69,8 @@ public class EnemyMovement : MonoBehaviour
 
         agent.SetDestination(centrePoint.position);
 
+        sightRange = GetComponent<EnemySight>().range;
+
         startPatrol = true;
     }
     
@@ -69,6 +78,7 @@ public class EnemyMovement : MonoBehaviour
     void Update()
     {
         playerTarget = GetComponent<EnemySight>().target;
+        soundMade = Camera.main.transform.GetComponentInChildren<Rifle>().soundMade;
         transform.position = new Vector3(transform.position.x, feet.position.y + 1.5f, transform.position.z);
         
         IdentifyCover();
@@ -87,10 +97,11 @@ public class EnemyMovement : MonoBehaviour
                     startCombat = true;
                     startSearch = false;
                     searching = false;
+                    playerNotFound = false;
                     cState = CombatState.Combat;
                 }
 
-                Destroy(GameObject.Find("EmptyPoint(Clone)"));
+                Destroy(GameObject.Find("SearchPoint(Clone)"));
 
                 if (startPatrol)
                 {
@@ -104,38 +115,89 @@ public class EnemyMovement : MonoBehaviour
                 else
                 {
                     Patrol();
+
+                    if ((Vector3.Distance(player.position, transform.position) <= sightRange / 2) && soundMade)
+                    {
+                        GameObject playerLastPos = Instantiate(emptyPoint, player.position, player.rotation);
+                        searchCentrePoint = playerLastPos.transform;
+
+                        startPatrol = false;
+                        startCombat = false;
+                        startSearch = true;
+                        startPatrol = false;
+                        searching = false;
+                        playerNotFound = false;
+                        cState = CombatState.Searching;
+                    }
                 }
                 break;
             
             case CombatState.Combat:
+                if (!combatting)
+                {
+                    if (startCombat)
+                    {
+                        Destroy(GameObject.Find("SearchPoint(Clone)"));
+                        agent.SetDestination(coverPoint);
+                        startCombat = false;
+                    }
+                    
+                    if (playerTarget)
+                    {
+                        StopCoroutine(nameof(CoverFireTimer));
+                        playerNotFound = false;
+                        exitCombat = true;
+                    }
+                    else
+                    {
+                        if (exitCombat)
+                        {
+                            StartCoroutine(CoverFireTimer());
+                            combatting = true;
+                            exitCombat = false;
+                        }
+                        
+                        if (playerNotFound)
+                        {
+                            startPatrol = false;
+                            startCombat = false;
+                            startSearch = true;
+                            cState = CombatState.Searching;
+                            return;
+                        }
+                    }
+                }
+                else
+                {
+                    if (playerTarget)
+                    {
+                        combatting = true;
+                        leaveCover = true;
+                        StopCoroutine(nameof(CoverFireTimer));
+                        StartCoroutine(CoverFireTimer());
+                        StartCoroutine(FindCover());
+                    }
+                    else
+                    {
+                        if (leaveCover)
+                        {
+                            StartCoroutine(LeaveCover());
+                            leaveCover = false;
+                        }
+                    }
+                }
 
-                // TODO - Add Complexity:
-                //          - Enemy should only leave CombatState.Combat when it has not seen the player in a longer amount of time.
-                //          - Enemy should seek cover that breaks line of sight to player.
-                //          - When player comes too close, enemy should relocate to a different coverPoint, breaking line of sight again.
-                //          - Enemy should periodically leave cover to shoot at player, then re-enter cover.
-
-                GameObject playerLastPos = Instantiate(emptyPoint, player.position, player.rotation);
-                searchCentrePoint = playerLastPos.transform;
-                
-                if (startCombat)
+                if (Vector3.Distance(player.position, enemyObj.position) <= range)
                 {
                     agent.SetDestination(coverPoint);
-                    startCombat = false;
-                    Destroy(GameObject.Find("EmptyPoint(Clone)"));
-                }
-                
-                if (!playerTarget)
-                {
-                    startPatrol = false;
-                    startCombat = false;
-                    startSearch = true;
-                    cState = CombatState.Searching;
-                    return;
                 }
 
-                Destroy(playerLastPos);
-                RotateToPlayer();
+                if (playerTarget)
+                {
+                    Destroy(GameObject.Find("SearchPoint(Clone)"));
+                    StartCoroutine(RememberPlayer());
+                    RotateToPlayer();
+                }
                 break;
             
             case CombatState.Searching:
@@ -145,6 +207,7 @@ public class EnemyMovement : MonoBehaviour
                     startCombat = true;
                     startSearch = false;
                     searching = false;
+                    playerNotFound = false;
                     cState = CombatState.Combat;
                 }
 
@@ -220,8 +283,11 @@ public class EnemyMovement : MonoBehaviour
 
             if (newDistance <= closestDistance || closestDistance == 0)
             {
-                closestDistance = newDistance;
-                coverPoint = new Vector3(coverTarget.position.x, transform.position.y, coverTarget.position.z);
+                if (!c.LOS)
+                {
+                    closestDistance = newDistance;
+                    coverPoint = new Vector3(coverTarget.position.x, transform.position.y, coverTarget.position.z);
+                }
             }
         }
 
@@ -235,12 +301,52 @@ public class EnemyMovement : MonoBehaviour
         closestDistance = 0f;
     }
 
+    IEnumerator RememberPlayer()
+    {
+        GameObject playerLastPos = Instantiate(emptyPoint, player.position, player.rotation);
+        searchCentrePoint = playerLastPos.transform;
+
+        yield return new WaitForNextFrameUnit();
+
+        if (playerTarget)
+        {
+            Destroy(playerLastPos);
+        }
+    }
+
     void RotateToPlayer()
     {
         Vector3 direction = playerTarget.position - transform.position;
         Vector3 newDirection = Vector3.RotateTowards(transform.forward, direction, rotSpeed * Time.deltaTime, 0);
 
         transform.rotation = Quaternion.LookRotation(newDirection);
+    }
+
+    IEnumerator CoverFireTimer()
+    {
+        yield return new WaitForSeconds(combattingTimer);
+
+        playerNotFound = true;
+        combatting = false;
+    }
+
+    IEnumerator LeaveCover()
+    {
+        yield return new WaitForSeconds(2f);
+
+        agent.SetDestination(searchCentrePoint.position);
+        // print("Agent leaving cover");
+    }
+
+    IEnumerator FindCover()
+    {
+        agent.SetDestination(enemyObj.position);
+        // print("Agent standing still");
+        
+        yield return new WaitForSeconds(2f);
+
+        agent.SetDestination(coverPoint);
+        // print("Agent returning to cover");
     }
 
     #endregion
@@ -281,6 +387,22 @@ public class EnemyMovement : MonoBehaviour
         Patroling,
         Combat,
         Searching
+    }
+
+    #endregion
+
+    #region Gizmos
+
+    void OnDrawGizmos()
+    {
+        Gizmos.color = Color.green;
+        Gizmos.DrawCube(coverPoint, Vector3.one * 0.3f);
+
+        Gizmos.color = Color.blue;
+        Gizmos.DrawWireSphere(transform.position, range);
+
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, sightRange / 2);
     }
 
     #endregion

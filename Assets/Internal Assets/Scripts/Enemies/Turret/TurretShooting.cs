@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
 
-public class EnemyShooting : MonoBehaviour
+public class TurretShooting : MonoBehaviour
 {
     #region Variables
 
@@ -14,12 +14,11 @@ public class EnemyShooting : MonoBehaviour
     readonly int damage = 10;
     
     [Header("Floats")]
-    readonly float cooldown = 0.17f;
-    readonly float magSize = 45f;
+    readonly float cooldown = 0.12f;
+    readonly float magSize = 35f;
     float bulletsLeft;
     float reloadTime = 0f;
-    readonly float reloadCooldown = 3f;
-    float waitTime;
+    readonly float reloadCooldown = 1.5f;
     
     [Header("Bools")]
     bool canShoot;
@@ -27,7 +26,7 @@ public class EnemyShooting : MonoBehaviour
     bool inFov;
     bool prepShooting;
     bool shooting;
-    bool combatting;
+    bool bursting;
 
     [Header("Lists")]
     readonly List<AudioSource> audioSourcePool = new();
@@ -35,6 +34,7 @@ public class EnemyShooting : MonoBehaviour
     [Header("Transforms")]
     Transform spawnedPrefabs;
     Transform spawnedImpacts;
+    Transform firePoint;
 
     [Header("AudioClips")]
     AudioClip audioShoot;
@@ -53,10 +53,11 @@ public class EnemyShooting : MonoBehaviour
     {
         spawnedPrefabs = GameObject.FindGameObjectWithTag("Prefabs").transform;
         spawnedImpacts = spawnedPrefabs.Find("SpawnedImpacts").transform;
+        firePoint = transform.Find("TurretBarrel/FirePoint");
         
         muzzleFlash = GetComponentInChildren<ParticleSystem>();
         
-        EnemyShootingAudioStorage audioStorage = GameObject.FindGameObjectWithTag("Storage").transform.Find("AudioStorages/EnemyShooting").GetComponent<EnemyShootingAudioStorage>();
+        TurretShootingAudioStorage audioStorage = GameObject.FindGameObjectWithTag("Storage").transform.Find("AudioStorages/TurretShooting").GetComponent<TurretShootingAudioStorage>();
         audioShoot = audioStorage.audioShoot;
         audioReload = audioStorage.audioReload;
 
@@ -69,32 +70,21 @@ public class EnemyShooting : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        inFov = GetComponent<EnemySight>().inFov;
+        inFov = GetComponent<TurretSight>().inFov;
         if (inFov && !prepShooting)
         {
-            StartCoroutine(Shooting());
+            shooting = true;
 
             prepShooting = true;
         }
 
-        combatting = GetComponent<EnemyMovement>().combatting;
-        if (combatting)
+        if (shooting && canShoot && bulletsLeft > 0 && inFov && !bursting)
         {
-            waitTime = 0f;
-        }
-        else
-        {
-            waitTime = 1f;
-        }
-
-        if (shooting && canShoot && bulletsLeft > 0 && inFov)
-        {
-            Shoot();
+            StartCoroutine(ShootBurst());
+            bursting = true;
         }
         if (!inFov)
         {
-            StopCoroutine(nameof(Shooting));
-            
             shooting = false;
             prepShooting = false;
         }
@@ -141,7 +131,7 @@ public class EnemyShooting : MonoBehaviour
 
         canShoot = false;
 
-        if (Physics.Raycast(transform.position, transform.forward, out RaycastHit hit))
+        if (Physics.Raycast(firePoint.position, firePoint.transform.forward, out RaycastHit hit))
         {
             if (hit.collider.gameObject.TryGetComponent<PlayerHealth>(out PlayerHealth pComp))
             {
@@ -152,6 +142,37 @@ public class EnemyShooting : MonoBehaviour
         bulletsLeft--;
 
         Invoke(nameof(ResetShot), cooldown);
+    }
+
+    void BurstShot()
+    {
+        if (bulletsLeft > 0f)
+        {
+            Shoot();
+        }
+        else
+        {
+            return;
+        }
+    }
+
+    IEnumerator ShootBurst()
+    {
+        WaitForSeconds wait = new(cooldown * 0.75f);
+
+        BurstShot();
+
+        yield return wait;
+
+        BurstShot();
+
+        yield return wait;
+
+        BurstShot();
+
+        yield return new WaitForSeconds(cooldown * 1.5f);
+
+        bursting = false;
     }
 
     void ResetShot()
@@ -165,14 +186,6 @@ public class EnemyShooting : MonoBehaviour
         canShoot = true;
 
         bulletsLeft = magSize;
-    }
-
-    IEnumerator Shooting()
-    {
-        yield return new WaitForSeconds(waitTime);
-
-        shooting = true;
-        // print("Shooting");
     }
 
     #endregion

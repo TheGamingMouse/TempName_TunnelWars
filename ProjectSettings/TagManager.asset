@@ -13,6 +13,7 @@ TagManager:
   - Enemy
   - Cover
   - CenterPoint
+  - Turret
   layers:
   - Default
   - TransparentFX

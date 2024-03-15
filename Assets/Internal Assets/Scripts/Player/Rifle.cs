@@ -34,6 +34,7 @@ public class Rifle : MonoBehaviour
     bool burstMode;
     bool bursting;
     bool actionBool;
+    public bool soundMade;
 
     [Header("Lists")]
     readonly List<AudioSource> audioSourcePool = new();
@@ -90,6 +91,7 @@ public class Rifle : MonoBehaviour
 
         canShoot = true;
         actionBool = true;
+        soundMade = false;
 
         bulletsLeft = magSize;
         reloadTime = reloadCooldown;
@@ -220,6 +222,12 @@ public class Rifle : MonoBehaviour
                 eComp.TakeDamage(damage);
             }
 
+            //Turret TakeDamage()
+            if (hit.collider.gameObject.TryGetComponent<TurretHealth>(out TurretHealth tComp))
+            {
+                tComp.TakeDamage(damage);
+            }
+
             GameObject impactObj = Instantiate(impact, hit.point, Quaternion.LookRotation(hit.normal), spawnedImpacts);
             Destroy(impactObj, 2f);
         }
@@ -324,6 +332,17 @@ public class Rifle : MonoBehaviour
         AudioSource source = GetAvailablePoolSource();
         source.clip = clip;
         source.Play();
+        StopCoroutine(nameof(SoundMade));
+        StartCoroutine(SoundMade());
+    }
+
+    IEnumerator SoundMade()
+    {
+        soundMade = true;
+
+        yield return new WaitForSeconds(0.01f);
+
+        soundMade = false;
     }
 
     #endregion

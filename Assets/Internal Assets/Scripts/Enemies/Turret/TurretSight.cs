@@ -1,9 +1,8 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemySight : MonoBehaviour
+public class TurretSight : MonoBehaviour
 {
     #region Variables
 
@@ -28,13 +27,13 @@ public class EnemySight : MonoBehaviour
     [SerializeField] LayerMask obstructionMask; // SerializeField is Important!
 
     #endregion
-    
-    #region StartUpdate
 
+    #region StartUpdate
+    
     // Start is called before the first frame update
     void Start()
     {
-        player = GameObject.FindGameObjectWithTag("Player").transform;
+        player = Camera.main.transform;
     }
 
     // Update is called once per frame
