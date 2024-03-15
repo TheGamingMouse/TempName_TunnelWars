@@ -22,6 +22,7 @@ public class UIManagers : MonoBehaviour
     [Header("GameObjects")]
     GameObject camObj;
     GameObject playerObj;
+    GameObject gameOverObj;
     
     [Header("Transforms")]
     Transform canvas;
@@ -34,6 +35,19 @@ public class UIManagers : MonoBehaviour
     [Header("Images")]
     Image healthImg;
 
+    #endregion
+
+    #region Subscriptions
+
+    void OnEnable()
+    {
+        PlayerHealth.OnPlayerDeath += HandlePlayerDeath;
+    }
+
+    void OnDisable()
+    {
+        PlayerHealth.OnPlayerDeath -= HandlePlayerDeath;
+    }
 
     #endregion
 
@@ -45,11 +59,14 @@ public class UIManagers : MonoBehaviour
         canvas = GameObject.FindGameObjectWithTag("UI").transform;
         camObj = Camera.main.gameObject;
         playerObj = GameObject.FindGameObjectWithTag("Player");
+        gameOverObj = canvas.Find("DeathScreenPanel").gameObject;
 
         ammoText = canvas.Find("AmmoText (TMP)").GetComponent<TMP_Text>();
         fireModeText = canvas.Find("FireModeText (TMP)").GetComponent<TMP_Text>();
         healthImg = canvas.Find("Health/Health").GetComponent<Image>();
         healthText = canvas.Find("Health/HealthText (TMP)").GetComponent<TMP_Text>();
+
+        DisableElements();
     }
 
     // Update is called once per frame
@@ -82,6 +99,15 @@ public class UIManagers : MonoBehaviour
 
     #endregion
 
+    #region GeneralMethods
+
+    void DisableElements()
+    {
+        gameOverObj.SetActive(false);
+    }
+
+    #endregion
+    
     #region UpdateMethods
 
     void UpdateAmmoText()
@@ -102,6 +128,16 @@ public class UIManagers : MonoBehaviour
 
     #endregion
 
+    #region SubscriptionHandlers
+
+    void HandlePlayerDeath()
+    {
+        gameOverObj.SetActive(true);
+        Time.timeScale = 0f;
+    }
+
+    #endregion
+    
     #region Enums
 
     enum FireModeState

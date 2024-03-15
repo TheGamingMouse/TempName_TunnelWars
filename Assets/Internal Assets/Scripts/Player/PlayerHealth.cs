@@ -7,7 +7,7 @@ public class PlayerHealth : MonoBehaviour
 {
     #region Events
 
-    static event Action OnPlayerDeath;
+    public static event Action OnPlayerDeath;
 
     #endregion
     
@@ -22,6 +22,7 @@ public class PlayerHealth : MonoBehaviour
 
     [Header("Bools")]
     bool damageCooldown;
+    [SerializeField] bool godMode; // SerializeField is Important!
 
     #endregion
 
@@ -38,11 +39,14 @@ public class PlayerHealth : MonoBehaviour
     void Update()
     {
         health = Mathf.Clamp(health, 0, maxHealth);
-
-        if (health <= 0)
+        
+        if (!godMode)
         {
-            OnPlayerDeath?.Invoke();
-            // print("Player is dead");
+            if (health <= 0)
+            {
+                OnPlayerDeath?.Invoke();
+                // print("Player is dead");
+            }
         }
     }
 

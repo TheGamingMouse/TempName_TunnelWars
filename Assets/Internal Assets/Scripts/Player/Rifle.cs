@@ -5,6 +5,20 @@ using UnityEngine.Audio;
 
 public class Rifle : MonoBehaviour
 {
+    #region Subscriptions
+
+    void OnEnable()
+    {
+        PlayerHealth.OnPlayerDeath += HandlePlayerDeath;
+    }
+
+    void OnDisable()
+    {
+        PlayerHealth.OnPlayerDeath -= HandlePlayerDeath;
+    }
+
+    #endregion
+    
     #region Variables
 
     [Header("Enum States")]
@@ -33,6 +47,7 @@ public class Rifle : MonoBehaviour
     bool reloading;
     bool burstMode;
     bool bursting;
+    [SerializeField] bool actionBool;
 
     [Header("Lists")]
     private List<AudioSource> audioSourcePool = new();
@@ -74,6 +89,7 @@ public class Rifle : MonoBehaviour
         audioReload = audioStorage.audioReload;
 
         canShoot = true;
+        actionBool = true;
 
         bulletsLeft = magSize;
         reloadTime = reloadCooldown;
@@ -95,7 +111,7 @@ public class Rifle : MonoBehaviour
             crouched = false;
         }
 
-        if (Input.GetMouseButton(1))
+        if (Input.GetMouseButton(1) && actionBool)
         {
             transform.localPosition = Vector3.Slerp(transform.localPosition, aPos, aimSpeed * Time.deltaTime);
             cam.fieldOfView -= zoomSpeed * Time.deltaTime;
@@ -110,7 +126,7 @@ public class Rifle : MonoBehaviour
             aiming = false;
         }
 
-        if (Input.GetKeyDown(KeyCode.F))
+        if (Input.GetKeyDown(KeyCode.F) && actionBool)
         {
             switch (fmState)
             {
@@ -133,21 +149,21 @@ public class Rifle : MonoBehaviour
                     break;
             }
         }
-        if (isAutomatic)
+        if (isAutomatic && actionBool)
         {
             shooting = Input.GetMouseButton(0);
         }
-        else
+        else if (!isAutomatic && actionBool)
         {
             shooting = Input.GetMouseButtonDown(0);
         }
 
-        if (canShoot && shooting && !reloading && bulletsLeft > 0 && !burstMode)
+        if (canShoot && shooting && !reloading && bulletsLeft > 0 && !burstMode && actionBool)
         {
             Shoot();
         }
 
-        if (canShoot && shooting && !reloading && bulletsLeft > 0 && burstMode && !bursting)
+        if (canShoot && shooting && !reloading && bulletsLeft > 0 && burstMode && !bursting && actionBool)
         {
             StartCoroutine(ShootBurst());
             bursting = true;
@@ -156,7 +172,7 @@ public class Rifle : MonoBehaviour
         switch (rState)
         {
             case ReloadState.Ready:
-                if (bulletsLeft < magSize && !reloading && (Input.GetKeyDown(KeyCode.R) || bulletsLeft == 0) && totalAmmo > 0)
+                if (bulletsLeft < magSize && !reloading && (Input.GetKeyDown(KeyCode.R) || bulletsLeft == 0) && totalAmmo > 0 && actionBool)
                 {
                     PlayClip(audioReload);
 
@@ -329,4 +345,14 @@ public class Rifle : MonoBehaviour
     }
 
     #endregion
+
+    #region SubscriptionHandlers
+
+    void HandlePlayerDeath()
+    {
+        actionBool = false;
+    }
+
+    #endregion
+
 }
