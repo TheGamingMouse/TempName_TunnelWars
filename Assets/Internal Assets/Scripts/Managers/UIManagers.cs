@@ -15,17 +15,24 @@ public class UIManagers : MonoBehaviour
     float magAmmo;
     float totalAmmo;
     float health;
+    float playerReloadTime;
+    float playerReloadCooldown;
+
+    [Header("Bools")]
+    bool reloading;
 
     [Header("Strings")]
     string fireMode;
 
     [Header("GameObjects")]
     GameObject camObj;
-    GameObject playerObj;
     GameObject gameOverObj;
+    [SerializeField] GameObject damageIndicatorPrefab; // SerializeField is Important!
     
     [Header("Transforms")]
     Transform canvas;
+    Transform player;
+    Transform damageIndicatorPivot;
     
     [Header("TMP_Texts")]
     TMP_Text ammoText;
@@ -34,6 +41,11 @@ public class UIManagers : MonoBehaviour
 
     [Header("Images")]
     Image healthImg;
+    Image reloadImg;
+
+    [Header("Components")]
+    Rifle rifleScript;
+    PlayerHealth  playerHealthScript;
 
     #endregion
 
@@ -42,11 +54,13 @@ public class UIManagers : MonoBehaviour
     void OnEnable()
     {
         PlayerHealth.OnPlayerDeath += HandlePlayerDeath;
+        PlayerHealth.OnPlayerDamage += HandleDamageTaken;
     }
 
     void OnDisable()
     {
         PlayerHealth.OnPlayerDeath -= HandlePlayerDeath;
+        PlayerHealth.OnPlayerDamage -= HandleDamageTaken;
     }
 
     #endregion
@@ -58,13 +72,19 @@ public class UIManagers : MonoBehaviour
     {
         canvas = GameObject.FindGameObjectWithTag("UI").transform;
         camObj = Camera.main.gameObject;
-        playerObj = GameObject.FindGameObjectWithTag("Player");
+        player = GameObject.FindGameObjectWithTag("Player").transform;
+        
         gameOverObj = canvas.Find("DeathScreenPanel").gameObject;
+        damageIndicatorPivot = canvas.Find("DamageIndicatorPivot");
+        
+        playerHealthScript = player.GetComponentInChildren<PlayerHealth>();
+        rifleScript = camObj.GetComponentInChildren<Rifle>();
 
         ammoText = canvas.Find("AmmoText (TMP)").GetComponent<TMP_Text>();
         fireModeText = canvas.Find("FireModeText (TMP)").GetComponent<TMP_Text>();
         healthImg = canvas.Find("Health/Health").GetComponent<Image>();
         healthText = canvas.Find("Health/HealthText (TMP)").GetComponent<TMP_Text>();
+        reloadImg = canvas.Find("Crosshair/Reload").GetComponent<Image>();
 
         DisableElements();
     }
@@ -72,14 +92,21 @@ public class UIManagers : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        magAmmo = camObj.GetComponentInChildren<Rifle>().bulletsLeft;
-        totalAmmo = camObj.GetComponentInChildren<Rifle>().totalAmmo;
-        fmState = (FireModeState)camObj.GetComponentInChildren<Rifle>().fmState;
-        health = playerObj.GetComponentInChildren<PlayerHealth>().health;
+        health = playerHealthScript.health;
+
+        magAmmo = rifleScript.bulletsLeft;
+        totalAmmo = rifleScript.totalAmmo;
+
+        fmState = (FireModeState)rifleScript.fmState;
+        
+        playerReloadTime = rifleScript.reloadTime;
+        playerReloadCooldown = rifleScript.reloadCooldown;
+        reloading = rifleScript.reloading;
         
         UpdateAmmoText();
         UpdateFireModeText();
         UpdateHealthFill();
+        UpdateReload();
 
         switch (fmState)
         {
@@ -126,6 +153,18 @@ public class UIManagers : MonoBehaviour
         healthImg.fillAmount = health / 100;
     }
 
+    void UpdateReload()
+    {
+        if (reloading)
+        {
+            reloadImg.fillAmount = playerReloadTime / playerReloadCooldown;
+        }
+        else
+        {
+            reloadImg.fillAmount = 0f;
+        }
+    }
+
     #endregion
 
     #region SubscriptionHandlers
@@ -134,6 +173,11 @@ public class UIManagers : MonoBehaviour
     {
         gameOverObj.SetActive(true);
         Time.timeScale = 0f;
+    }
+
+    void HandleDamageTaken()
+    {
+        Instantiate(damageIndicatorPrefab, damageIndicatorPivot);
     }
 
     #endregion

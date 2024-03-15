@@ -29,7 +29,7 @@ public class EnemyShooting : MonoBehaviour
     bool shooting;
 
     [Header("Lists")]
-    private List<AudioSource> audioSourcePool = new();
+    readonly List<AudioSource> audioSourcePool = new();
 
     [Header("Transforms")]
     Transform spawnedPrefabs;
@@ -41,7 +41,7 @@ public class EnemyShooting : MonoBehaviour
 
     [Header("Components")]
     ParticleSystem muzzleFlash;
-    [SerializeField] AudioMixer audioMixer;
+    [SerializeField] AudioMixer audioMixer; // SerializeField is Important!
 
     #endregion
 
@@ -133,7 +133,7 @@ public class EnemyShooting : MonoBehaviour
         {
             if (hit.collider.gameObject.TryGetComponent<PlayerHealth>(out PlayerHealth pComp))
             {
-                pComp.TakeDamage(damage);
+                pComp.TakeDamage(damage, transform.position);
             }
         }
 

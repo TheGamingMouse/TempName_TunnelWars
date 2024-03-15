@@ -5,20 +5,6 @@ using UnityEngine.Audio;
 
 public class Rifle : MonoBehaviour
 {
-    #region Subscriptions
-
-    void OnEnable()
-    {
-        PlayerHealth.OnPlayerDeath += HandlePlayerDeath;
-    }
-
-    void OnDisable()
-    {
-        PlayerHealth.OnPlayerDeath -= HandlePlayerDeath;
-    }
-
-    #endregion
-    
     #region Variables
 
     [Header("Enum States")]
@@ -31,8 +17,8 @@ public class Rifle : MonoBehaviour
     readonly float zoom = 40f;
     public readonly float damage = 10f;
     readonly float cooldown = 0.12f;
-    float reloadTime = 0f;
-    readonly float reloadCooldown = 2.5f;
+    public float reloadTime = 0f;
+    public readonly float reloadCooldown = 2.5f;
     public float bulletsLeft;
     readonly float magSize = 30f;
     public float totalAmmo = 120;
@@ -44,16 +30,16 @@ public class Rifle : MonoBehaviour
     bool isAutomatic = true;
     bool shooting;
     bool canShoot;
-    bool reloading;
+    public bool reloading;
     bool burstMode;
     bool bursting;
-    [SerializeField] bool actionBool;
+    bool actionBool;
 
     [Header("Lists")]
-    private List<AudioSource> audioSourcePool = new();
+    readonly List<AudioSource> audioSourcePool = new();
 
     [Header("GameObjects")]
-    [SerializeField] GameObject impact;
+    [SerializeField] GameObject impact; // SerializeField is Important!
 
     [Header("Transforms")]
     Transform spawnedPrefabs;
@@ -69,7 +55,21 @@ public class Rifle : MonoBehaviour
     [Header("Components")]
     Camera cam;
     ParticleSystem muzzleFlash;
-    [SerializeField] AudioMixer audioMixer;
+    [SerializeField] AudioMixer audioMixer; // SerializeField is Important!
+
+    #endregion
+
+    #region Subscriptions
+
+    void OnEnable()
+    {
+        PlayerHealth.OnPlayerDeath += HandlePlayerDeath;
+    }
+
+    void OnDisable()
+    {
+        PlayerHealth.OnPlayerDeath -= HandlePlayerDeath;
+    }
 
     #endregion
 

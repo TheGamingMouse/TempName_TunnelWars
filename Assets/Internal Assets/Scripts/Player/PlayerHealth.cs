@@ -8,13 +8,14 @@ public class PlayerHealth : MonoBehaviour
     #region Events
 
     public static event Action OnPlayerDeath;
+    public static event Action OnPlayerDamage;
 
     #endregion
     
     #region Variables
 
     [Header("Floats")]
-    readonly float cooldown = 1f;
+    readonly float cooldown = 2f;
 
     [Header("Ints")]
     readonly int maxHealth = 100;
@@ -23,6 +24,9 @@ public class PlayerHealth : MonoBehaviour
     [Header("Bools")]
     bool damageCooldown;
     [SerializeField] bool godMode; // SerializeField is Important!
+
+    [Header("Vector3s")]
+    public Vector3 dmgDirection;
 
     #endregion
 
@@ -54,11 +58,14 @@ public class PlayerHealth : MonoBehaviour
 
     #region Methods
 
-    public void TakeDamage(int damage)
+    public void TakeDamage(int damage, Vector3 direction)
     {
         if (!damageCooldown)
         {
             health -= damage;
+            dmgDirection = direction;
+
+            OnPlayerDamage?.Invoke();
         }
         StopCoroutine(nameof(DamageTaken));
         StartCoroutine(DamageTaken());

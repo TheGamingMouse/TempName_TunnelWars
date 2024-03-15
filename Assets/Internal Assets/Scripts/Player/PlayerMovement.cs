@@ -6,20 +6,6 @@ using UnityEngine.EventSystems;
 
 public class PlayerMovement : MonoBehaviour
 {
-    #region Subscriptions
-
-    void OnEnable()
-    {
-        PlayerHealth.OnPlayerDeath += HandlePlayerDeath;
-    }
-
-    void OnDisable()
-    {
-        PlayerHealth.OnPlayerDeath -= HandlePlayerDeath;
-    }
-    
-    #endregion
-    
     #region Variables
 
     [Header("Floats")]
@@ -50,6 +36,20 @@ public class PlayerMovement : MonoBehaviour
     Rigidbody rb;
     Camera cam;
 
+    #endregion
+
+    #region Subscriptions
+
+    void OnEnable()
+    {
+        PlayerHealth.OnPlayerDeath += HandlePlayerDeath;
+    }
+
+    void OnDisable()
+    {
+        PlayerHealth.OnPlayerDeath -= HandlePlayerDeath;
+    }
+    
     #endregion
 
     #region StartUpdate
