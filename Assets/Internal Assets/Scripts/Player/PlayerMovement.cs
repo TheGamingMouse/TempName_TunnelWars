@@ -246,9 +246,7 @@ public class PlayerMovement : MonoBehaviour
                 return source;
             }
         }
- 
-        //No unused sources. Create and fetch a new source
-        return AddNewSourceToPool();
+        return null;
     }
 
     void PlayClip(AudioClip clip)
@@ -261,6 +259,10 @@ public class PlayerMovement : MonoBehaviour
     void StopClip(AudioClip clip)
     {
         AudioSource source = GetUnavailablePoolSource();
+        if (source == null)
+        {
+            return;
+        }
         source.clip = clip;
         source.Stop();
     }
