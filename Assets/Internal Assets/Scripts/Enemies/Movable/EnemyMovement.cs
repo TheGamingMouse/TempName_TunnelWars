@@ -14,8 +14,12 @@ public class EnemyMovement : MonoBehaviour
 
     [Header("Floats")]
     readonly float rotSpeed = 5f;
-    float closestDistance;
-    float newDistance;
+    float closestDistanceCover;
+    float newDistanceCover;
+    float closestDistanceCentrePoints;
+    float newDistanceCentrePoints;
+    float closestDistanceEnemyObjs;
+    float newDistanceEnemyObjs;
     readonly float range = 5f;
     readonly float searchTimer = 30f;
     readonly float combattingTimer = 20f;
@@ -26,9 +30,9 @@ public class EnemyMovement : MonoBehaviour
     bool searching;
     bool startPatrol;
     bool startSearch;
-    [SerializeField] bool startCombat;
+    bool startCombat;
     bool playerNotFound;
-    [SerializeField] bool exitCombat;
+    bool exitCombat;
     public bool combatting;
     bool leaveCover;
     bool soundMade;
@@ -36,6 +40,8 @@ public class EnemyMovement : MonoBehaviour
 
     [Header("Arrays")]
     Cover[] covers;
+    GameObject[] centrePoints;
+    GameObject[] enemyObjs;
 
     [Header("Lists")]
     readonly List<AudioSource> audioSourcePool = new();
@@ -44,13 +50,15 @@ public class EnemyMovement : MonoBehaviour
     [SerializeField] GameObject emptyPoint; // SerializeField is Important!
     
     [Header("Transforms")]
-    [SerializeField] Transform playerTarget;
+    Transform playerTarget;
     Transform enemyObj;
     Transform coverTarget;
-    Transform centrePoint;
+    [SerializeField] Transform centrePoint;
     Transform feet;
     Transform searchCentrePoint;
     Transform player;
+    Transform potCentrePoint;
+    Transform potEnemyObj;
     
     [Header("Vector3s")]
     Vector3 coverPoint;
@@ -72,10 +80,35 @@ public class EnemyMovement : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        enemyObj = GameObject.FindGameObjectWithTag("Enemy").transform;
-        agent = enemyObj.gameObject.GetComponent<NavMeshAgent>();
         covers = FindObjectsByType<Cover>(FindObjectsSortMode.None);
-        centrePoint = GameObject.FindGameObjectWithTag("CenterPoint").transform;
+        centrePoints = GameObject.FindGameObjectsWithTag("CenterPoint");
+        enemyObjs = GameObject.FindGameObjectsWithTag("Enemy");
+        
+        foreach(GameObject g in centrePoints)
+        {
+            potCentrePoint = g.transform;
+            newDistanceCentrePoints = Vector3.Distance(potCentrePoint.position, transform.position);
+
+            if (newDistanceCentrePoints < closestDistanceCentrePoints || closestDistanceCentrePoints == 0)
+            {
+                closestDistanceCentrePoints = newDistanceCentrePoints;
+                centrePoint = potCentrePoint;
+            }
+        }
+
+        foreach(GameObject g in enemyObjs)
+        {
+            potEnemyObj = g.transform;
+            newDistanceEnemyObjs = Vector3.Distance(potEnemyObj.position, transform.position);
+
+            if (newDistanceEnemyObjs < closestDistanceEnemyObjs || closestDistanceEnemyObjs == 0)
+            {
+                closestDistanceEnemyObjs = newDistanceEnemyObjs;
+                enemyObj = potEnemyObj;
+            }
+        }
+        
+        agent = enemyObj.gameObject.GetComponent<NavMeshAgent>();
         feet = enemyObj.Find("Body/Feet");
         player = GameObject.FindWithTag("Player").transform;
         emas = GameObject.FindGameObjectWithTag("Storage").transform.Find("AudioStorages/EnemyMovement").GetComponent<EnemyMovementAudioStorage>();
@@ -315,14 +348,14 @@ public class EnemyMovement : MonoBehaviour
     {
         foreach(Cover c in covers)
         {
-            newDistance = Vector3.Distance(c.transform.position, transform.position);
+            newDistanceCover = Vector3.Distance(c.transform.position, transform.position);
             coverTarget = c.transform;
 
-            if (newDistance <= closestDistance || closestDistance == 0)
+            if (newDistanceCover < closestDistanceCover || closestDistanceCover == 0)
             {
                 if (!c.LOS)
                 {
-                    closestDistance = newDistance;
+                    closestDistanceCover = newDistanceCover;
                     coverPoint = new Vector3(coverTarget.position.x, transform.position.y, coverTarget.position.z);
                 }
             }
@@ -335,7 +368,7 @@ public class EnemyMovement : MonoBehaviour
     {
         yield return new WaitForSeconds(0.5f);
         
-        closestDistance = 0f;
+        closestDistanceCover = 0f;
     }
 
     IEnumerator RememberPlayer()

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -7,6 +8,12 @@ using UnityEngine.EventSystems;
 
 public class PlayerMovement : MonoBehaviour
 {
+    #region Events
+
+    public static event Action OnLevelComplete;
+    
+    #endregion
+
     #region Variables
 
     [Header("Floats")]
@@ -185,6 +192,22 @@ public class PlayerMovement : MonoBehaviour
         yield return new WaitForSeconds(audioRunning.length);
 
         playRunningAudio = false;
+    }
+
+    void OnTriggerEnter(Collider coll)
+    {
+        if (coll.transform.CompareTag("NextLevel"))
+        {
+            OnLevelComplete?.Invoke();
+
+            moveBool = false;
+
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+
+            rb.useGravity = false;
+            rb.velocity = Vector3.zero;
+        }
     }
     
     #endregion

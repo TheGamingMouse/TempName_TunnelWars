@@ -68,11 +68,13 @@ public class Rifle : MonoBehaviour
     void OnEnable()
     {
         PlayerHealth.OnPlayerDeath += HandlePlayerDeath;
+        PlayerMovement.OnLevelComplete += HandleLevelComplete;
     }
 
     void OnDisable()
     {
         PlayerHealth.OnPlayerDeath -= HandlePlayerDeath;
+        PlayerMovement.OnLevelComplete -= HandleLevelComplete;
     }
 
     #endregion
@@ -397,6 +399,11 @@ public class Rifle : MonoBehaviour
     #region SubscriptionHandlers
 
     void HandlePlayerDeath()
+    {
+        actionBool = false;
+    }
+
+    void HandleLevelComplete()
     {
         actionBool = false;
     }

@@ -20,6 +20,7 @@ public class TurretMovement : MonoBehaviour
     [Header("Transforms")]
     Transform playerTarget;
     [SerializeField] Transform lookPoint;
+    Transform self;
     Transform lookPoint1;
     Transform lookPoint2;
 
@@ -30,8 +31,9 @@ public class TurretMovement : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        lookPoint1 = GameObject.FindGameObjectWithTag("Turret").transform.Find("LookPoint1");
-        lookPoint2 = GameObject.FindGameObjectWithTag("Turret").transform.Find("LookPoint2");
+        self = GetComponentInParent<Turret>().transform;
+        lookPoint1 = self.transform.Find("LookPoint1");
+        lookPoint2 = self.Find("LookPoint2");
 
         rotSpeedCurr = rotSpeedSeeking;
 

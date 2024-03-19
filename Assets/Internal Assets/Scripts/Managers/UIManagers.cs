@@ -28,6 +28,7 @@ public class UIManagers : MonoBehaviour
     GameObject camObj;
     GameObject gameOverObj;
     [SerializeField] GameObject damageIndicatorPrefab; // SerializeField is Important!
+    GameObject levelCompleteObj;
     
     [Header("Transforms")]
     Transform canvas;
@@ -55,12 +56,14 @@ public class UIManagers : MonoBehaviour
     {
         PlayerHealth.OnPlayerDeath += HandlePlayerDeath;
         PlayerHealth.OnPlayerDamage += HandleDamageTaken;
+        PlayerMovement.OnLevelComplete += HandleLevelComplete;
     }
 
     void OnDisable()
     {
         PlayerHealth.OnPlayerDeath -= HandlePlayerDeath;
         PlayerHealth.OnPlayerDamage -= HandleDamageTaken;
+        PlayerMovement.OnLevelComplete -= HandleLevelComplete;
     }
 
     #endregion
@@ -75,6 +78,7 @@ public class UIManagers : MonoBehaviour
         player = GameObject.FindGameObjectWithTag("Player").transform;
         
         gameOverObj = canvas.Find("DeathScreenPanel").gameObject;
+        levelCompleteObj = canvas.Find("LevelCompletePanel").gameObject;
         damageIndicatorPivot = canvas.Find("DamageIndicatorPivot");
         
         playerHealthScript = player.GetComponentInChildren<PlayerHealth>();
@@ -131,6 +135,7 @@ public class UIManagers : MonoBehaviour
     void DisableElements()
     {
         gameOverObj.SetActive(false);
+        levelCompleteObj.SetActive(false);
     }
 
     #endregion
@@ -178,6 +183,11 @@ public class UIManagers : MonoBehaviour
     void HandleDamageTaken()
     {
         Instantiate(damageIndicatorPrefab, damageIndicatorPivot);
+    }
+
+    void HandleLevelComplete()
+    {
+        levelCompleteObj.SetActive(true);
     }
 
     #endregion
