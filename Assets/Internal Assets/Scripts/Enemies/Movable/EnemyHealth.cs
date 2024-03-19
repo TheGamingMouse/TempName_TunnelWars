@@ -1,9 +1,16 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemyHealth : MonoBehaviour
 {
+    #region Events
+
+    public static event Action OnDamageTaken;
+
+    #endregion
+    
     #region Variables
 
     [Header("Flaots")]
@@ -27,10 +34,7 @@ public class EnemyHealth : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (health <= 0)
-        {
-            Destroy(enemyObj);
-        }
+        
     }
 
     #endregion
@@ -40,6 +44,12 @@ public class EnemyHealth : MonoBehaviour
     public void TakeDamage(float damage)
     {
         health -= damage;
+        OnDamageTaken?.Invoke();
+
+        if (health <= 0)
+        {
+            Destroy(enemyObj);
+        }
     }
 
     #endregion

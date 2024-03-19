@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: b67253e3a4fbce847bd056bfb7476817
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - audioWalking: {instanceID: 0}
+  - audioRunning: {instanceID: 0}
+  - audioJumpingLow: {instanceID: 0}
+  - audioJumpingHigh: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

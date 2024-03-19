@@ -28,6 +28,20 @@ public class EnemySight : MonoBehaviour
     [SerializeField] LayerMask obstructionMask; // SerializeField is Important!
 
     #endregion
+
+    #region Subscriptions
+
+    void OnEnable()
+    {
+        EnemyHealth.OnDamageTaken += HandleDamageTaken;
+    }
+
+    void OnDisable()
+    {
+        EnemyHealth.OnDamageTaken -= HandleDamageTaken;
+    }
+    
+    #endregion
     
     #region StartUpdate
 
@@ -40,6 +54,9 @@ public class EnemySight : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        topAngle = DirFromAngle(fovAngle / 2);
+        bottomAngle = DirFromAngle(-fovAngle / 2);
+
         if (!target)
         {
             tracking = false;
@@ -50,9 +67,6 @@ public class EnemySight : MonoBehaviour
         if (target)
         {
             tracking = true;
-
-            topAngle = DirFromAngle(fovAngle / 2);
-            bottomAngle = DirFromAngle(-fovAngle / 2);
 
             if (!TargetInRange() || TargetObstructed())
             {
@@ -119,6 +133,15 @@ public class EnemySight : MonoBehaviour
         return new Vector3(Mathf.Sin(angleIndDegrees * Mathf.Deg2Rad), 0f, Mathf.Cos(angleIndDegrees * Mathf.Deg2Rad));
     }
 
+    #endregion
+
+    #region SubscriptionHandlers
+
+    void HandleDamageTaken()
+    {
+        target = player;
+    }
+    
     #endregion
 
     #region Gizmos

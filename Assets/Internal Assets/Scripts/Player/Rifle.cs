@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
+using Cinemachine;
 
 public class Rifle : MonoBehaviour
 {
@@ -13,8 +14,8 @@ public class Rifle : MonoBehaviour
 
     [Header("Floats")]
     readonly float aimSpeed = 20f;
-    readonly float zoomSpeed = 75f;
-    readonly float zoom = 40f;
+    readonly float zoomSpeed = 140f;
+    readonly float zoom = 50f;
     public readonly float damage = 10f;
     readonly float cooldown = 0.12f;
     public float reloadTime = 0f;
@@ -22,6 +23,7 @@ public class Rifle : MonoBehaviour
     public float bulletsLeft;
     readonly float magSize = 30f;
     public float totalAmmo = 120;
+    float recoilTimer;
 
     [Header("Bools")]
     bool crouching;
@@ -55,6 +57,7 @@ public class Rifle : MonoBehaviour
 
     [Header("Components")]
     Camera cam;
+    CinemachineVirtualCamera cVirtCam;
     ParticleSystem muzzleFlash;
     [SerializeField] AudioMixer audioMixer; // SerializeField is Important!
 
@@ -80,6 +83,7 @@ public class Rifle : MonoBehaviour
     void Start()
     {
         cam = Camera.main;
+        cVirtCam = Camera.main.GetComponent<CinemachineVirtualCamera>();
         spawnedPrefabs = GameObject.FindGameObjectWithTag("Prefabs").transform;
         spawnedImpacts = spawnedPrefabs.Find("SpawnedImpacts").transform;
         
@@ -102,6 +106,18 @@ public class Rifle : MonoBehaviour
     {
         crouching = FindObjectOfType<PlayerMovement>().crouched;
 
+        if (recoilTimer > 0)
+        {
+            recoilTimer -= Time.deltaTime;
+
+            if (recoilTimer <= 0f)
+            {
+                CinemachineBasicMultiChannelPerlin cmbmcp = cVirtCam.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+
+                cmbmcp.m_AmplitudeGain = 0f;
+            }
+        }
+
         if (crouching && crouched)
         {
             aPos = new Vector3(aPos.x, aPos.y - 0.5f, aPos.z);
@@ -116,15 +132,17 @@ public class Rifle : MonoBehaviour
         if (Input.GetMouseButton(1) && actionBool)
         {
             transform.localPosition = Vector3.Slerp(transform.localPosition, aPos, aimSpeed * Time.deltaTime);
-            cam.fieldOfView -= zoomSpeed * Time.deltaTime;
-            cam.fieldOfView = Mathf.Clamp(cam.fieldOfView, zoom, 60);
+            cVirtCam.m_Lens.FieldOfView -= zoomSpeed * Time.deltaTime;
+            cVirtCam.m_Lens.FieldOfView = Mathf.Clamp(cVirtCam.m_Lens.FieldOfView, zoom, 90);
+            
             aiming = true;
         }
         else
         {
             transform.localPosition = Vector3.Slerp(transform.localPosition, nPos, aimSpeed * Time.deltaTime);
-            cam.fieldOfView += zoomSpeed * Time.deltaTime;
-            cam.fieldOfView = Mathf.Clamp(cam.fieldOfView, zoom, 60);
+            cVirtCam.m_Lens.FieldOfView += zoomSpeed * Time.deltaTime;
+            cVirtCam.m_Lens.FieldOfView = Mathf.Clamp(cVirtCam.m_Lens.FieldOfView, zoom, 90);
+            
             aiming = false;
         }
 
@@ -151,6 +169,7 @@ public class Rifle : MonoBehaviour
                     break;
             }
         }
+
         if (isAutomatic && actionBool)
         {
             shooting = Input.GetMouseButton(0);
@@ -211,6 +230,8 @@ public class Rifle : MonoBehaviour
     {
         muzzleFlash.Play();
         PlayClip(audioShoot);
+
+        Recoil(2.5f, 0.1f);
 
         canShoot = false;
 
@@ -288,6 +309,14 @@ public class Rifle : MonoBehaviour
             totalAmmo = 0f;
             bulletsLeft = tempTotalAmmo;
         }
+    }
+
+    void Recoil(float magnitude, float duration)
+    {
+        CinemachineBasicMultiChannelPerlin cmbmcp = cVirtCam.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+
+        cmbmcp.m_AmplitudeGain = magnitude;
+        recoilTimer = duration;
     }
 
     #endregion

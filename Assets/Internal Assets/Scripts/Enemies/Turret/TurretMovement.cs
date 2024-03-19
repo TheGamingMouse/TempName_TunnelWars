@@ -4,14 +4,38 @@ using UnityEngine;
 
 public class TurretMovement : MonoBehaviour
 {
-    readonly float rotSpeed = 5f;
+    #region Variables
+
+    [Header("Enum States")]
+    [SerializeField] CombatState cState;
+
+    [Header("Floats")]
+    float rotSpeedCurr;
+    readonly float rotSpeedCombat = 3f;
+    readonly float rotSpeedSeeking = 1f;
+
+    [Header("Bools")]
+    [SerializeField] bool isLookingRight;
+
+    [Header("Transforms")]
     Transform playerTarget;
-    Transform lookPoint;
+    [SerializeField] Transform lookPoint;
+    Transform lookPoint1;
+    Transform lookPoint2;
+
+    #endregion
+
+    #region StartUpdate
 
     // Start is called before the first frame update
     void Start()
     {
-        lookPoint = GameObject.FindGameObjectWithTag("Turret").transform.Find("LookPoint");
+        lookPoint1 = GameObject.FindGameObjectWithTag("Turret").transform.Find("LookPoint1");
+        lookPoint2 = GameObject.FindGameObjectWithTag("Turret").transform.Find("LookPoint2");
+
+        rotSpeedCurr = rotSpeedSeeking;
+
+        isLookingRight = true;
     }
 
     // Update is called once per frame
@@ -19,20 +43,50 @@ public class TurretMovement : MonoBehaviour
     {
         playerTarget = GetComponent<TurretSight>().target;
 
-        if (playerTarget)
+        switch (cState)
         {
-            RotateToPlayer();
-        }
-        else
-        {
-            RotateToDefault();
+            case CombatState.Seeking:
+                rotSpeedCurr = rotSpeedSeeking;
+
+                if (playerTarget)
+                {
+                    cState = CombatState.Combat;
+                    return;
+                }
+
+                if (isLookingRight)
+                {
+                    lookPoint = lookPoint1;
+                }
+                else
+                {
+                    lookPoint = lookPoint2;
+                }
+                RotateToDefault();
+                break;
+            
+            case CombatState.Combat:
+                rotSpeedCurr = rotSpeedCombat;
+
+                if (!playerTarget)
+                {
+                    cState = CombatState.Seeking;
+                    return;
+                }
+
+                RotateToPlayer();
+                break;
         }
     }
+
+    #endregion
+
+    #region Methods
 
     void RotateToPlayer()
     {
         Vector3 direction = playerTarget.position - transform.position;
-        Vector3 newDirection = Vector3.RotateTowards(transform.forward, direction, rotSpeed * Time.deltaTime, 0);
+        Vector3 newDirection = Vector3.RotateTowards(transform.forward, direction, rotSpeedCurr * Time.deltaTime, 0);
 
         transform.rotation = Quaternion.LookRotation(newDirection);
     }
@@ -40,8 +94,32 @@ public class TurretMovement : MonoBehaviour
     void RotateToDefault()
     {
         Vector3 direction = lookPoint.position - transform.position;
-        Vector3 newDirection = Vector3.RotateTowards(transform.forward, direction, rotSpeed * Time.deltaTime, 0);
+        Vector3 newDirection = Vector3.RotateTowards(transform.forward, direction, rotSpeedCurr * Time.deltaTime, 0);
 
         transform.rotation = Quaternion.LookRotation(newDirection);
+
+        if (Quaternion.LookRotation(newDirection).eulerAngles.y >= 225f || Quaternion.LookRotation(newDirection).eulerAngles.y <= 135f)
+        {
+            if (isLookingRight)
+            {
+                isLookingRight = false;
+            }
+            else
+            {
+                isLookingRight = true;
+            }
+        }
     }
+
+    #endregion
+
+    #region Enums
+
+    enum CombatState
+    {
+        Seeking,
+        Combat
+    }
+
+    #endregion
 }

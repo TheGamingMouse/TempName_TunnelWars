@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Audio;
 
 public class EnemyMovement : MonoBehaviour
 {
@@ -25,21 +26,25 @@ public class EnemyMovement : MonoBehaviour
     bool searching;
     bool startPatrol;
     bool startSearch;
-    bool startCombat;
+    [SerializeField] bool startCombat;
     bool playerNotFound;
-    bool exitCombat;
+    [SerializeField] bool exitCombat;
     public bool combatting;
     bool leaveCover;
     bool soundMade;
+    bool playWalkingAudio;
 
     [Header("Arrays")]
     Cover[] covers;
+
+    [Header("Lists")]
+    readonly List<AudioSource> audioSourcePool = new();
 
     [Header("GameObjects")]
     [SerializeField] GameObject emptyPoint; // SerializeField is Important!
     
     [Header("Transforms")]
-    Transform playerTarget;
+    [SerializeField] Transform playerTarget;
     Transform enemyObj;
     Transform coverTarget;
     Transform centrePoint;
@@ -52,6 +57,13 @@ public class EnemyMovement : MonoBehaviour
 
     [Header("Navmeshes")]
     NavMeshAgent agent;
+
+    [Header("AudioClips")]
+    AudioClip audioWalking;
+
+    [Header("Components")]
+    [SerializeField] AudioMixer audioMixer; // SerializeField is Important!
+    EnemyMovementAudioStorage emas;
 
     #endregion
 
@@ -66,12 +78,15 @@ public class EnemyMovement : MonoBehaviour
         centrePoint = GameObject.FindGameObjectWithTag("CenterPoint").transform;
         feet = enemyObj.Find("Body/Feet");
         player = GameObject.FindWithTag("Player").transform;
+        emas = GameObject.FindGameObjectWithTag("Storage").transform.Find("AudioStorages/EnemyMovement").GetComponent<EnemyMovementAudioStorage>();
 
         agent.SetDestination(centrePoint.position);
 
         sightRange = GetComponent<EnemySight>().range;
+        audioWalking = emas.audioWalking;
 
         startPatrol = true;
+        exitCombat = true;
     }
     
     // Update is called once per frame
@@ -86,6 +101,12 @@ public class EnemyMovement : MonoBehaviour
         {
             StartCoroutine(RefreshCover());
             identifyingCover = true;
+        }
+
+        if (agent.speed != 0 && !playWalkingAudio)
+        {
+            StartCoroutine(WalkingAudio());
+            playWalkingAudio = true;
         }
 
         switch (cState)
@@ -138,6 +159,8 @@ public class EnemyMovement : MonoBehaviour
                     if (startCombat)
                     {
                         Destroy(GameObject.Find("SearchPoint(Clone)"));
+                        GameObject playerLastPos = Instantiate(emptyPoint, player.position, player.rotation);
+                        searchCentrePoint = playerLastPos.transform;
                         agent.SetDestination(coverPoint);
                         startCombat = false;
                     }
@@ -250,6 +273,15 @@ public class EnemyMovement : MonoBehaviour
         result = Vector3.zero;
         // print("RandomPoint = false");
         return false;
+    }
+
+    IEnumerator WalkingAudio()
+    {
+        PlayClip(audioWalking);
+        
+        yield return new WaitForSeconds(audioWalking.length);
+
+        playWalkingAudio = false;
     }
 
     #endregion
@@ -391,6 +423,50 @@ public class EnemyMovement : MonoBehaviour
 
     #endregion
 
+    #region AudioMethods
+
+    AudioSource AddNewSourceToPool()
+    {
+        audioMixer.GetFloat("sfxVolume", out float dBSFX);
+        float SFXVolume = Mathf.Pow(10.0f, dBSFX / 20.0f);
+
+        audioMixer.GetFloat("masterVolume", out float dBMaster);
+        float masterVolume = Mathf.Pow(10.0f, dBMaster / 20.0f);
+        
+        float realVolume = (SFXVolume + masterVolume) / 2 * 0.05f;
+        
+        AudioSource newSource = gameObject.AddComponent<AudioSource>();
+        newSource.playOnAwake = false;
+        newSource.volume = realVolume;
+        newSource.spatialBlend = 1f;
+        audioSourcePool.Add(newSource);
+        return newSource;
+    }
+
+    AudioSource GetAvailablePoolSource()
+    {
+        //Fetch the first source in the pool that is not currently playing anything
+        foreach (var source in audioSourcePool)
+        {
+            if (!source.isPlaying)
+            {
+                return source;
+            }
+        }
+ 
+        //No unused sources. Create and fetch a new source
+        return AddNewSourceToPool();
+    }
+
+    void PlayClip(AudioClip clip)
+    {
+        AudioSource source = GetAvailablePoolSource();
+        source.clip = clip;
+        source.Play();
+    }
+
+    #endregion
+    
     #region Gizmos
 
     void OnDrawGizmos()

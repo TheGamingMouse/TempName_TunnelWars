@@ -14,6 +14,7 @@ public class TurretShooting : MonoBehaviour
     readonly int damage = 10;
     
     [Header("Floats")]
+    readonly float waitTime = 0.5f;
     readonly float cooldown = 0.12f;
     readonly float magSize = 35f;
     float bulletsLeft;
@@ -73,7 +74,7 @@ public class TurretShooting : MonoBehaviour
         inFov = GetComponent<TurretSight>().inFov;
         if (inFov && !prepShooting)
         {
-            shooting = true;
+            StartCoroutine(Shooting());
 
             prepShooting = true;
         }
@@ -230,6 +231,14 @@ public class TurretShooting : MonoBehaviour
         AudioSource source = GetAvailablePoolSource();
         source.clip = clip;
         source.Play();
+    }
+
+    IEnumerator Shooting()
+    {
+        yield return new WaitForSeconds(waitTime);
+
+        shooting = true;
+        // print("Shooting");
     }
 
     #endregion
