@@ -121,7 +121,7 @@ public class PlayerMovement : MonoBehaviour
             StartCoroutine(RunningAudio());
             playRunningAudio = true;
         }
-        else if ((move.x == 0 && move.z == 0) || Input.GetKeyDown(KeyCode.LeftShift))
+        else if (((move.x == 0 && move.z == 0) || Input.GetKeyDown(KeyCode.LeftShift)) && (playWalkingAudio || playRunningAudio))
         {
             StopCoroutine(nameof(WalkingAudio));
             StopCoroutine(nameof(RunningAudio));

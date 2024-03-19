@@ -108,6 +108,11 @@ public class EnemyMovement : MonoBehaviour
             StartCoroutine(WalkingAudio());
             playWalkingAudio = true;
         }
+        if (agent.speed == 0 && playWalkingAudio)
+        {
+            StopCoroutine(nameof(WalkingAudio));
+            StopClip(audioWalking);
+        }
 
         switch (cState)
         {
@@ -458,11 +463,35 @@ public class EnemyMovement : MonoBehaviour
         return AddNewSourceToPool();
     }
 
+    AudioSource GetUnavailablePoolSource()
+    {
+        //Fetch the first source in the pool that is not currently playing anything
+        foreach (var source in audioSourcePool)
+        {
+            if (source.isPlaying)
+            {
+                return source;
+            }
+        }
+        return null;
+    }
+
     void PlayClip(AudioClip clip)
     {
         AudioSource source = GetAvailablePoolSource();
         source.clip = clip;
         source.Play();
+    }
+
+    void StopClip(AudioClip clip)
+    {
+        AudioSource source = GetUnavailablePoolSource();
+        if (source == null)
+        {
+            return;
+        }
+        source.clip = clip;
+        source.Stop();
     }
 
     #endregion
