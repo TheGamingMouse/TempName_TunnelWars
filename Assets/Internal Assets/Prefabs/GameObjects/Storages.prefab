@@ -114,6 +114,7 @@ Transform:
   - {fileID: 3299100574107105843}
   - {fileID: 4854808547489283710}
   - {fileID: 253671202625234503}
+  - {fileID: 7187850011458972100}
   m_Father: {fileID: 3159410075069719307}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5275881901833766588
@@ -299,3 +300,49 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioWalking: {fileID: 8300000, guid: 35e806fa0fdf77e47a3235020be266a0, type: 3}
+--- !u!1 &8628361432657504602
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7187850011458972100}
+  - component: {fileID: 2359255318910623362}
+  m_Layer: 0
+  m_Name: TurretSight
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7187850011458972100
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8628361432657504602}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5245301895572502049}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2359255318910623362
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8628361432657504602}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1215eaea3e23044382e788fade1eda8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioTargetFound: {fileID: 8300000, guid: 6acc2f88512a67f4ca62ab242abc9de6, type: 3}
+  audioTargetLost: {fileID: 8300000, guid: 82549b9f9c7267f49bf4328e6c0d4160, type: 3}

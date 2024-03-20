@@ -42,8 +42,10 @@ public class TurretShooting : MonoBehaviour
     AudioClip audioReload;
 
     [Header("Components")]
+    TurretShootingAudioStorage tsas;
     ParticleSystem muzzleFlash;
     [SerializeField] AudioMixer audioMixer; // SerializeField is Important!
+    [SerializeField] AudioMixerGroup sfxVolume; // SerializeField is Important!
 
     #endregion
 
@@ -58,9 +60,9 @@ public class TurretShooting : MonoBehaviour
         
         muzzleFlash = GetComponentInChildren<ParticleSystem>();
         
-        TurretShootingAudioStorage audioStorage = GameObject.FindGameObjectWithTag("Storage").transform.Find("AudioStorages/TurretShooting").GetComponent<TurretShootingAudioStorage>();
-        audioShoot = audioStorage.audioShoot;
-        audioReload = audioStorage.audioReload;
+        tsas = GameObject.FindGameObjectWithTag("Storage").transform.Find("AudioStorages/TurretShooting").GetComponent<TurretShootingAudioStorage>();
+        audioShoot = tsas.audioShoot;
+        audioReload = tsas.audioReload;
 
         canShoot = true;
 
@@ -189,6 +191,14 @@ public class TurretShooting : MonoBehaviour
         bulletsLeft = magSize;
     }
 
+    IEnumerator Shooting()
+    {
+        yield return new WaitForSeconds(waitTime);
+
+        shooting = true;
+        // print("Shooting");
+    }
+
     #endregion
 
     #region AudioMethods
@@ -207,6 +217,7 @@ public class TurretShooting : MonoBehaviour
         newSource.playOnAwake = false;
         newSource.volume = realVolume;
         newSource.spatialBlend = 1f;
+        newSource.outputAudioMixerGroup = sfxVolume;
         audioSourcePool.Add(newSource);
         return newSource;
     }
@@ -231,14 +242,6 @@ public class TurretShooting : MonoBehaviour
         AudioSource source = GetAvailablePoolSource();
         source.clip = clip;
         source.Play();
-    }
-
-    IEnumerator Shooting()
-    {
-        yield return new WaitForSeconds(waitTime);
-
-        shooting = true;
-        // print("Shooting");
     }
 
     #endregion

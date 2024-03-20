@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 
 public class TurretSight : MonoBehaviour
 {
@@ -13,6 +14,9 @@ public class TurretSight : MonoBehaviour
     [Header("Bools")]
     public bool tracking;
     public bool inFov;
+
+    [Header("Lists")]
+    readonly List<AudioSource> audioSourcePool = new();
     
     [Header("Transforms")]
     public Transform target;
@@ -26,6 +30,15 @@ public class TurretSight : MonoBehaviour
     [SerializeField] LayerMask playerMask; // SerializeField is Important!
     [SerializeField] LayerMask obstructionMask; // SerializeField is Important!
 
+    [Header("AudioClips")]
+    AudioClip audioTargetFound;
+    AudioClip audioTargetLost;
+
+    [Header("Components")]
+    TurretSightAudioStorage tsas;
+    [SerializeField] AudioMixer audioMixer; // SerializeField is Important!
+    [SerializeField] AudioMixerGroup sfxVolume; // SerializeField is Important!
+
     #endregion
 
     #region StartUpdate
@@ -34,6 +47,10 @@ public class TurretSight : MonoBehaviour
     void Start()
     {
         player = Camera.main.transform;
+        tsas = GameObject.FindGameObjectWithTag("Storage").transform.Find("AudioStorages/TurretSight").GetComponent<TurretSightAudioStorage>();
+
+        audioTargetFound = tsas.audioTargetFound;
+        audioTargetLost = tsas.audioTargetLost;
     }
 
     // Update is called once per frame
@@ -56,6 +73,8 @@ public class TurretSight : MonoBehaviour
             if (!TargetInRange() || TargetObstructed())
             {
                 target = null;
+                StopClip(audioTargetFound);
+                PlayClip(audioTargetLost);
             }
         }
 
@@ -73,6 +92,8 @@ public class TurretSight : MonoBehaviour
         if ((hits.Length > 0) && TargetInRange() && !TargetObstructed())
         {
             target = player;
+            StopClip(audioTargetLost);
+            PlayClip(audioTargetFound);
         }
     }
 
@@ -116,6 +137,75 @@ public class TurretSight : MonoBehaviour
     Vector3 DirFromAngle(float angleIndDegrees)
     {
         return new Vector3(Mathf.Sin(angleIndDegrees * Mathf.Deg2Rad), 0f, Mathf.Cos(angleIndDegrees * Mathf.Deg2Rad));
+    }
+
+    #endregion
+
+    #region AudioMethods
+
+    AudioSource AddNewSourceToPool()
+    {
+        audioMixer.GetFloat("sfxVolume", out float dBSFX);
+        float SFXVolume = Mathf.Pow(10.0f, dBSFX / 20.0f);
+
+        audioMixer.GetFloat("masterVolume", out float dBMaster);
+        float masterVolume = Mathf.Pow(10.0f, dBMaster / 20.0f);
+        
+        float realVolume = (SFXVolume + masterVolume) / 2 * 0.5f;
+        
+        AudioSource newSource = gameObject.AddComponent<AudioSource>();
+        newSource.playOnAwake = false;
+        newSource.volume = realVolume;
+        newSource.spatialBlend = 1f;
+        newSource.outputAudioMixerGroup = sfxVolume;
+        audioSourcePool.Add(newSource);
+        return newSource;
+    }
+
+    AudioSource GetAvailablePoolSource()
+    {
+        //Fetch the first source in the pool that is not currently playing anything
+        foreach (var source in audioSourcePool)
+        {
+            if (!source.isPlaying)
+            {
+                return source;
+            }
+        }
+ 
+        //No unused sources. Create and fetch a new source
+        return AddNewSourceToPool();
+    }
+
+    AudioSource GetUnavailablePoolSource()
+    {
+        //Fetch the first source in the pool that is not currently playing anything
+        foreach (var source in audioSourcePool)
+        {
+            if (source.isPlaying)
+            {
+                return source;
+            }
+        }
+        return null;
+    }
+
+    void PlayClip(AudioClip clip)
+    {
+        AudioSource source = GetAvailablePoolSource();
+        source.clip = clip;
+        source.Play();
+    }
+
+    void StopClip(AudioClip clip)
+    {
+        AudioSource source = GetUnavailablePoolSource();
+        if (source == null)
+        {
+            return;
+        }
+        source.clip = clip;
+        source.Stop();
     }
 
     #endregion

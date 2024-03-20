@@ -5711,6 +5711,7 @@ MonoBehaviour:
   nPos: {x: 0.75, y: -0.7, z: 0.9}
   aPos: {x: 0, y: -0.5, z: 0.9}
   audioMixer: {fileID: 24100000, guid: 6d0b19c81c5866d45a9217b1eed60eb3, type: 2}
+  sfxVolume: {fileID: 2801275425284752312, guid: 6d0b19c81c5866d45a9217b1eed60eb3, type: 2}
 --- !u!1 &1398254246345631113
 GameObject:
   m_ObjectHideFlags: 0
@@ -5870,6 +5871,7 @@ MonoBehaviour:
   playWalkingAudio: 0
   playRunningAudio: 0
   audioMixer: {fileID: 24100000, guid: 6d0b19c81c5866d45a9217b1eed60eb3, type: 2}
+  sfxVolume: {fileID: 2801275425284752312, guid: 6d0b19c81c5866d45a9217b1eed60eb3, type: 2}
 --- !u!114 &5167720022126640038
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6785,6 +6787,7 @@ MonoBehaviour:
   isOnGround: 0
   soundMade: 0
   audioMixer: {fileID: 24100000, guid: 6d0b19c81c5866d45a9217b1eed60eb3, type: 2}
+  sfxVolume: {fileID: 2801275425284752312, guid: 6d0b19c81c5866d45a9217b1eed60eb3, type: 2}
 --- !u!1 &6026703708471441768
 GameObject:
   m_ObjectHideFlags: 0

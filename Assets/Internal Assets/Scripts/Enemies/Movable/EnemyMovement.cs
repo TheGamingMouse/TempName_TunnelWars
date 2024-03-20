@@ -72,6 +72,7 @@ public class EnemyMovement : MonoBehaviour
     [Header("Components")]
     [SerializeField] AudioMixer audioMixer; // SerializeField is Important!
     EnemyMovementAudioStorage emas;
+    [SerializeField] AudioMixerGroup sfxVolume; // SerializeField is Important!
 
     #endregion
 
@@ -477,6 +478,7 @@ public class EnemyMovement : MonoBehaviour
         newSource.playOnAwake = false;
         newSource.volume = realVolume;
         newSource.spatialBlend = 1f;
+        newSource.outputAudioMixerGroup = sfxVolume;
         audioSourcePool.Add(newSource);
         return newSource;
     }

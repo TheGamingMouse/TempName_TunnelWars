@@ -43,6 +43,7 @@ public class EnemyShooting : MonoBehaviour
     [Header("Components")]
     ParticleSystem muzzleFlash;
     [SerializeField] AudioMixer audioMixer; // SerializeField is Important!
+    [SerializeField] AudioMixerGroup sfxVolume; // SerializeField is Important!
 
     #endregion
 
@@ -193,6 +194,7 @@ public class EnemyShooting : MonoBehaviour
         newSource.playOnAwake = false;
         newSource.volume = realVolume;
         newSource.spatialBlend = 1f;
+        newSource.outputAudioMixerGroup = sfxVolume;
         audioSourcePool.Add(newSource);
         return newSource;
     }

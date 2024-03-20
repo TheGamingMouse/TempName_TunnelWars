@@ -27,6 +27,7 @@ public class GroundedCheck : MonoBehaviour
     Rigidbody rb;
     [SerializeField] AudioMixer audioMixer; // SerializeField is Important!
     PlayerMovementAudioStorage pmas;
+    [SerializeField] AudioMixerGroup sfxVolume; // SerializeField is Important!
 
     #endregion
 
@@ -109,6 +110,7 @@ public class GroundedCheck : MonoBehaviour
         newSource.playOnAwake = false;
         newSource.volume = realVolume;
         newSource.spatialBlend = 0.5f;
+        newSource.outputAudioMixerGroup = sfxVolume;
         audioSourcePool.Add(newSource);
         return newSource;
     }

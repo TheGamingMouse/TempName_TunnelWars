@@ -5450,12 +5450,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cState: 0
-  startCombat: 0
-  exitCombat: 0
   combatting: 0
   emptyPoint: {fileID: 7004533130307380207, guid: 31a312a35415523408a92be9e6e94c3d, type: 3}
-  playerTarget: {fileID: 0}
+  centrePoint: {fileID: 0}
   audioMixer: {fileID: 24100000, guid: 6d0b19c81c5866d45a9217b1eed60eb3, type: 2}
+  sfxVolume: {fileID: 2801275425284752312, guid: 6d0b19c81c5866d45a9217b1eed60eb3, type: 2}
 --- !u!114 &4415443265374177167
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5469,3 +5468,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioMixer: {fileID: 24100000, guid: 6d0b19c81c5866d45a9217b1eed60eb3, type: 2}
+  sfxVolume: {fileID: 2801275425284752312, guid: 6d0b19c81c5866d45a9217b1eed60eb3, type: 2}

@@ -60,6 +60,7 @@ public class Rifle : MonoBehaviour
     CinemachineVirtualCamera cVirtCam;
     ParticleSystem muzzleFlash;
     [SerializeField] AudioMixer audioMixer; // SerializeField is Important!
+    [SerializeField] AudioMixerGroup sfxVolume; // SerializeField is Important!
 
     #endregion
 
@@ -339,6 +340,7 @@ public class Rifle : MonoBehaviour
         newSource.playOnAwake = false;
         newSource.volume = realVolume;
         newSource.spatialBlend = 0.5f;
+        newSource.outputAudioMixerGroup = sfxVolume;
         audioSourcePool.Add(newSource);
         return newSource;
     }

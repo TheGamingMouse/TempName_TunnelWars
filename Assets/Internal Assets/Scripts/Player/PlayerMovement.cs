@@ -55,6 +55,7 @@ public class PlayerMovement : MonoBehaviour
     Camera cam;
     PlayerMovementAudioStorage pmas;
     [SerializeField] AudioMixer audioMixer; // SerializeField is Important!
+    [SerializeField] AudioMixerGroup sfxVolume; // SerializeField is Important!
 
     #endregion
 
@@ -240,6 +241,7 @@ public class PlayerMovement : MonoBehaviour
         newSource.playOnAwake = false;
         newSource.volume = realVolume;
         newSource.spatialBlend = 0.5f;
+        newSource.outputAudioMixerGroup = sfxVolume;
         audioSourcePool.Add(newSource);
         return newSource;
     }
