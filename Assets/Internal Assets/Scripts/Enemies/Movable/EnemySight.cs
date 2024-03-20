@@ -2,9 +2,16 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 
 public class EnemySight : MonoBehaviour
 {
+    #region Events
+
+    public static event Action OnTargetFound;
+
+    #endregion
+    
     #region Variables
 
     [Header("Floats")]
@@ -14,6 +21,9 @@ public class EnemySight : MonoBehaviour
     [Header("Bools")]
     public bool tracking;
     public bool inFov;
+
+    [Header("Lists")]
+    readonly List<AudioSource> audioSourcePool = new();
     
     [Header("Transforms")]
     public Transform target;
@@ -27,6 +37,14 @@ public class EnemySight : MonoBehaviour
     [SerializeField] LayerMask playerMask; // SerializeField is Important!
     [SerializeField] LayerMask obstructionMask; // SerializeField is Important!
 
+    [Header("AudioClips")]
+    AudioClip audioTargetFound;
+
+    [Header("Components")]
+    EnemySightAudioStorage esas;
+    [SerializeField] AudioMixer audioMixer; // SerializeField is Important!
+    [SerializeField] AudioMixerGroup sfxVolume; // SerializeField is Important!
+
     #endregion
 
     #region Subscriptions
@@ -34,11 +52,13 @@ public class EnemySight : MonoBehaviour
     void OnEnable()
     {
         EnemyHealth.OnDamageTaken += HandleDamageTaken;
+        EnemySight.OnTargetFound += HandlTargetFound;
     }
 
     void OnDisable()
     {
         EnemyHealth.OnDamageTaken -= HandleDamageTaken;
+        EnemySight.OnTargetFound += HandlTargetFound;
     }
     
     #endregion
@@ -49,6 +69,9 @@ public class EnemySight : MonoBehaviour
     void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player").transform;
+        esas = GameObject.FindGameObjectWithTag("Storage").transform.Find("AudioStorages/EnemySight").GetComponent<EnemySightAudioStorage>();
+
+        audioTargetFound = esas.audioTargetFound;
     }
 
     // Update is called once per frame
@@ -87,7 +110,7 @@ public class EnemySight : MonoBehaviour
         
         if ((hits.Length > 0) && TargetInRange() && !TargetObstructed())
         {
-            target = player;
+            OnTargetFound?.Invoke();
         }
     }
 
@@ -139,9 +162,100 @@ public class EnemySight : MonoBehaviour
 
     void HandleDamageTaken()
     {
-        target = player;
+        if (!target)
+        {
+            target = player;
+            StartCoroutine(PlayAudioTargetFound());
+        }
+    }
+
+    void HandlTargetFound()
+    {
+        if (!target)
+        {
+            target = player;
+            StartCoroutine(PlayAudioTargetFound());
+        }
     }
     
+    #endregion
+
+    #region AudioMethods
+
+    AudioSource AddNewSourceToPool()
+    {
+        audioMixer.GetFloat("sfxVolume", out float dBSFX);
+        float SFXVolume = Mathf.Pow(10.0f, dBSFX / 20.0f);
+
+        audioMixer.GetFloat("masterVolume", out float dBMaster);
+        float masterVolume = Mathf.Pow(10.0f, dBMaster / 20.0f);
+        
+        float realVolume = (SFXVolume + masterVolume) / 2 * 0.05f;
+        
+        AudioSource newSource = gameObject.AddComponent<AudioSource>();
+        newSource.playOnAwake = false;
+        newSource.volume = realVolume;
+        newSource.spatialBlend = 1f;
+        newSource.outputAudioMixerGroup = sfxVolume;
+        audioSourcePool.Add(newSource);
+        return newSource;
+    }
+
+    AudioSource GetAvailablePoolSource()
+    {
+        //Fetch the first source in the pool that is not currently playing anything
+        foreach (var source in audioSourcePool)
+        {
+            if (!source.isPlaying)
+            {
+                return source;
+            }
+        }
+ 
+        //No unused sources. Create and fetch a new source
+        return AddNewSourceToPool();
+    }
+
+    AudioSource GetUnavailablePoolSource()
+    {
+        //Fetch the first source in the pool that is not currently playing anything
+        foreach (var source in audioSourcePool)
+        {
+            if (source.isPlaying)
+            {
+                return source;
+            }
+        }
+        return null;
+    }
+
+    void PlayClip(AudioClip clip)
+    {
+        AudioSource source = GetAvailablePoolSource();
+        source.clip = clip;
+        source.Play();
+    }
+
+    void StopClip(AudioClip clip)
+    {
+        AudioSource source = GetUnavailablePoolSource();
+        if (source == null)
+        {
+            return;
+        }
+        source.clip = clip;
+        source.Stop();
+    }
+
+    IEnumerator PlayAudioTargetFound()
+    {
+        PlayClip(audioTargetFound);
+
+        yield return new WaitForSeconds(2f);
+
+        StopClip(audioTargetFound);
+    }
+
     #endregion
 
     #region Gizmos

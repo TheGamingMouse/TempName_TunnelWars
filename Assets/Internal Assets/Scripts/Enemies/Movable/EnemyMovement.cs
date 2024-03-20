@@ -53,9 +53,9 @@ public class EnemyMovement : MonoBehaviour
     Transform playerTarget;
     Transform enemyObj;
     Transform coverTarget;
-    [SerializeField] Transform centrePoint;
+    Transform centrePoint;
     Transform feet;
-    Transform searchCentrePoint;
+    [SerializeField] Transform searchCentrePoint;
     Transform player;
     Transform potCentrePoint;
     Transform potEnemyObj;
@@ -153,15 +153,13 @@ public class EnemyMovement : MonoBehaviour
             case CombatState.Patroling:
                 if (playerTarget)
                 {
-                    startPatrol = false;
+                    startPatrol = true;
                     startCombat = true;
-                    startSearch = false;
+                    startSearch = true;
                     searching = false;
                     playerNotFound = false;
                     cState = CombatState.Combat;
                 }
-
-                Destroy(GameObject.Find("SearchPoint(Clone)"));
 
                 if (startPatrol)
                 {
@@ -178,13 +176,13 @@ public class EnemyMovement : MonoBehaviour
 
                     if ((Vector3.Distance(player.position, transform.position) <= sightRange / 2) && soundMade)
                     {
+                        DestroySearchPoint();
                         GameObject playerLastPos = Instantiate(emptyPoint, player.position, player.rotation);
                         searchCentrePoint = playerLastPos.transform;
 
-                        startPatrol = false;
-                        startCombat = false;
+                        startPatrol = true;
+                        startCombat = true;
                         startSearch = true;
-                        startPatrol = false;
                         searching = false;
                         playerNotFound = false;
                         cState = CombatState.Searching;
@@ -197,7 +195,7 @@ public class EnemyMovement : MonoBehaviour
                 {
                     if (startCombat)
                     {
-                        Destroy(GameObject.Find("SearchPoint(Clone)"));
+                        DestroySearchPoint();
                         GameObject playerLastPos = Instantiate(emptyPoint, player.position, player.rotation);
                         searchCentrePoint = playerLastPos.transform;
                         agent.SetDestination(coverPoint);
@@ -221,8 +219,8 @@ public class EnemyMovement : MonoBehaviour
                         
                         if (playerNotFound)
                         {
-                            startPatrol = false;
-                            startCombat = false;
+                            startPatrol = true;
+                            startCombat = true;
                             startSearch = true;
                             cState = CombatState.Searching;
                             return;
@@ -256,7 +254,7 @@ public class EnemyMovement : MonoBehaviour
 
                 if (playerTarget)
                 {
-                    Destroy(GameObject.Find("SearchPoint(Clone)"));
+                    DestroySearchPoint();
                     StartCoroutine(RememberPlayer());
                     RotateToPlayer();
                 }
@@ -265,9 +263,9 @@ public class EnemyMovement : MonoBehaviour
             case CombatState.Searching:
                 if (playerTarget)
                 {
-                    startPatrol = false;
+                    startPatrol = true;
                     startCombat = true;
-                    startSearch = false;
+                    startSearch = true;
                     searching = false;
                     playerNotFound = false;
                     cState = CombatState.Combat;
@@ -321,6 +319,16 @@ public class EnemyMovement : MonoBehaviour
         yield return new WaitForSeconds(audioWalking.length);
 
         playWalkingAudio = false;
+    }
+
+    void DestroySearchPoint()
+    {
+        GameObject[] destroyPoints = GameObject.FindGameObjectsWithTag("SearchPoint");
+
+        foreach (GameObject g in destroyPoints)
+        {
+            Destroy(g.gameObject);
+        }
     }
 
     #endregion
