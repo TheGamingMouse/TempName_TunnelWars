@@ -44,6 +44,8 @@ public class StartCamMovement : MonoBehaviour
         lookAtEndPos = new Vector3(-3.5f, -4f, -12f);
         transformEndPos = new Vector3(3f, 9f, 15f);
 
+        Invoke(nameof(StartMove), 2f);
+
         moveToSecondPos = false;
         startMovement = false;
     }
@@ -64,16 +66,18 @@ public class StartCamMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.P) && !moveToSecondPos)
-        {
-            StartMovementRoutine();
-            moveToSecondPos = true;
-        }
+        
     }
 
     #endregion
 
     #region Methods
+
+    void StartMove()
+    {
+        StartMovementRoutine();
+        moveToSecondPos = true;
+    }
 
     void StartMovementRoutine()
     {

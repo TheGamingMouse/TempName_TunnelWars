@@ -25,6 +25,7 @@ public class PlayerHealth : MonoBehaviour
     [Header("Bools")]
     bool damageCooldown;
     [SerializeField] bool godMode; // SerializeField is Important!
+    [SerializeField] bool mainMenu = false; // SerializeField is Important!
 
     [Header("Lists")]
     readonly List<AudioSource> audioSourcePool = new();
@@ -47,8 +48,12 @@ public class PlayerHealth : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        phas = GameObject.FindGameObjectWithTag("Storage").transform.Find("AudioStorages/PlayerHealth").GetComponent<PlayerHealthAudioStorage>();
-        audioTakeDamage = phas.audioTakeDamage;
+        if (!mainMenu)
+        {
+            phas = GameObject.FindGameObjectWithTag("Storage").transform.Find("AudioStorages/PlayerHealth").GetComponent<PlayerHealthAudioStorage>();
+
+            audioTakeDamage = phas.audioTakeDamage;
+        }
 
         health = maxHealth;
         damageCooldown = false;

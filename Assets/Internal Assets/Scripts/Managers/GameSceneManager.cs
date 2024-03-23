@@ -4,9 +4,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class GameSceneManager : MonoBehaviour
+public class GameSceneManager : MonoBehaviour, IDataPersistence
 {
     #region Variables
+
+    [Header("Ints")]
+    int levelCount;
 
     [Header("Bools")]
     bool goingToNextLevel;
@@ -33,6 +36,7 @@ public class GameSceneManager : MonoBehaviour
     void Start()
     {
         Time.timeScale = 1f;
+        levelCount = SceneManager.GetActiveScene().buildIndex;
 
         goingToNextLevel = false;
     }
@@ -62,6 +66,16 @@ public class GameSceneManager : MonoBehaviour
     {
         yield return new WaitForSeconds(3f);
         NextLevel();
+    }
+
+    public void LoadData(GameData data)
+    {
+        
+    }
+
+    public void SaveData(ref GameData data)
+    {
+        data.levelCount = levelCount;
     }
 
     public void QuitGame()

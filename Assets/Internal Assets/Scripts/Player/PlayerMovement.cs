@@ -37,6 +37,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] bool playWalkingAudio;
     [SerializeField] bool playRunningAudio;
     bool scriptFound;
+    [SerializeField] bool mainMenu = false; // SerializeField is Important!
 
     [Header("Lists")]
     readonly List<AudioSource> audioSourcePool = new();
@@ -90,15 +91,19 @@ public class PlayerMovement : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         orientation = transform.Find("Orientation");
         cam = Camera.main;
-        pmas = GameObject.FindGameObjectWithTag("Storage").transform.Find("AudioStorages/PlayerMovement").GetComponent<PlayerMovementAudioStorage>();
+        
+        if (!mainMenu)
+        {
+            pmas = GameObject.FindGameObjectWithTag("Storage").transform.Find("AudioStorages/PlayerMovement").GetComponent<PlayerMovementAudioStorage>();
 
-        audioWalking = pmas.audioWalking;
-        audioRunning = pmas.audioRunning;
+            audioWalking = pmas.audioWalking;
+            audioRunning = pmas.audioRunning;
+
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
 
         moveSpeedCurr = moveSpeedBase;
-
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
 
         moveBool = false;
     }
