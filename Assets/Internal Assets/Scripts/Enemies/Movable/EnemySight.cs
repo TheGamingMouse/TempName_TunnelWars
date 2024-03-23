@@ -254,6 +254,8 @@ public class EnemySight : MonoBehaviour
         yield return new WaitForSeconds(2f);
 
         StopClip(audioTargetFound);
+
+        // Walkie-Talkie SoundFX by HolmesAudio -- https://freesound.org/s/318783/ -- License: Attribution 3.0
     }
 
     #endregion

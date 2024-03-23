@@ -48,6 +48,51 @@ MonoBehaviour:
   audioRunning: {fileID: 8300000, guid: e4a4b3127e73a224e8642269968168d6, type: 3}
   audioJumpingLow: {fileID: 8300000, guid: 622f42e8d781b8a44b119174e4ed9708, type: 3}
   audioJumpingHigh: {fileID: 8300000, guid: 18524d7f295d11b40a2b7bd3d9ef3561, type: 3}
+--- !u!1 &1137630897741805205
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9023738297234136623}
+  - component: {fileID: 1643109997156185886}
+  m_Layer: 0
+  m_Name: PlayerHealth
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &9023738297234136623
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1137630897741805205}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5245301895572502049}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1643109997156185886
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1137630897741805205}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d96232da6b58b44ea516f6553bdfe30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioTakeDamage: {fileID: 8300000, guid: 4a83bc868123f1d4395089f58a6f7011, type: 3}
 --- !u!1 &2515529137714350730
 GameObject:
   m_ObjectHideFlags: 0
@@ -110,12 +155,13 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2209479823172072187}
-  - {fileID: 3784544137071793687}
-  - {fileID: 3299100574107105843}
-  - {fileID: 4854808547489283710}
-  - {fileID: 253671202625234503}
-  - {fileID: 7187850011458972100}
   - {fileID: 6369191656057138039}
+  - {fileID: 253671202625234503}
+  - {fileID: 3299100574107105843}
+  - {fileID: 7187850011458972100}
+  - {fileID: 4854808547489283710}
+  - {fileID: 9023738297234136623}
+  - {fileID: 3784544137071793687}
   m_Father: {fileID: 3159410075069719307}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5275881901833766588
@@ -210,6 +256,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   audioShoot: {fileID: 8300000, guid: 2203773368e4340d98c114f55c2dd7fd, type: 3}
   audioReload: {fileID: 8300000, guid: e5198250a6a57408bb36e14bc4a322c4, type: 3}
+  audioHitMarker: {fileID: 8300000, guid: 7014330526b38fa47b256a9bbd08f95d, type: 3}
 --- !u!1 &6580140373757149431
 GameObject:
   m_ObjectHideFlags: 0

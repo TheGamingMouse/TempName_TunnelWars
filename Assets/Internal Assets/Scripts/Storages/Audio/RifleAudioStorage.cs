@@ -9,6 +9,7 @@ public class RifleAudioStorage : MonoBehaviour
     [Header("AudioClips")]
     public AudioClip audioShoot;
     public AudioClip audioReload;
+    public AudioClip audioHitMarker;
 
     #endregion
 }

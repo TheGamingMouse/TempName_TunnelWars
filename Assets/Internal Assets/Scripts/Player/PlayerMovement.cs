@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Cinemachine;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Audio;
@@ -35,6 +36,7 @@ public class PlayerMovement : MonoBehaviour
     bool moveBool;
     [SerializeField] bool playWalkingAudio;
     [SerializeField] bool playRunningAudio;
+    bool scriptFound;
 
     [Header("Lists")]
     readonly List<AudioSource> audioSourcePool = new();
@@ -42,6 +44,10 @@ public class PlayerMovement : MonoBehaviour
     [Header("AudioClips")]
     AudioClip audioWalking;
     AudioClip audioRunning;
+
+    [Header("GameObjects")]
+    [SerializeField] GameObject rifle; // SerializeField is Important!
+    [SerializeField] GameObject dummyRifle; // SerializeField is Important!
 
     [Header("Transforms")]
     Transform orientation;
@@ -56,6 +62,7 @@ public class PlayerMovement : MonoBehaviour
     PlayerMovementAudioStorage pmas;
     [SerializeField] AudioMixer audioMixer; // SerializeField is Important!
     [SerializeField] AudioMixerGroup sfxVolume; // SerializeField is Important!
+    GroundedCheck groundCheck;
 
     #endregion
 
@@ -64,11 +71,13 @@ public class PlayerMovement : MonoBehaviour
     void OnEnable()
     {
         PlayerHealth.OnPlayerDeath += HandlePlayerDeath;
+        StartCamMovement.OnGameStart += HandleGameStart;
     }
 
     void OnDisable()
     {
         PlayerHealth.OnPlayerDeath -= HandlePlayerDeath;
+        StartCamMovement.OnGameStart -= HandleGameStart;
     }
     
     #endregion
@@ -91,7 +100,7 @@ public class PlayerMovement : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
-        moveBool = true;
+        moveBool = false;
     }
 
     void FixedUpdate()
@@ -105,7 +114,18 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        isOnGround = GetComponentInChildren<GroundedCheck>().isOnGround;
+        if (!scriptFound)
+        {
+            groundCheck = GetComponentInChildren<GroundedCheck>();
+            if (groundCheck != null)
+            {
+                scriptFound = true;
+            }
+        }
+        if (groundCheck != null)
+        {
+            isOnGround = GetComponentInChildren<GroundedCheck>().isOnGround;
+        }
 
         move.x = Input.GetAxisRaw("Horizontal");
         move.z = Input.GetAxisRaw("Vertical");
@@ -210,6 +230,15 @@ public class PlayerMovement : MonoBehaviour
             rb.velocity = Vector3.zero;
         }
     }
+
+    IEnumerator EnableRifle()
+    {
+        yield return new WaitForSeconds(2f);
+
+        dummyRifle.SetActive(false);
+        rifle.SetActive(true);
+        moveBool = true;
+    }
     
     #endregion
 
@@ -221,6 +250,11 @@ public class PlayerMovement : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
+    }
+
+    void HandleGameStart()
+    {
+        StartCoroutine(EnableRifle());
     }
     
     #endregion

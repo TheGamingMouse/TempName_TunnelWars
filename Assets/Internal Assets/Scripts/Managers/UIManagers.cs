@@ -20,6 +20,8 @@ public class UIManagers : MonoBehaviour
 
     [Header("Bools")]
     bool reloading;
+    bool gameStarted;
+    bool scriptFound;
 
     [Header("Strings")]
     string fireMode;
@@ -57,6 +59,7 @@ public class UIManagers : MonoBehaviour
         PlayerHealth.OnPlayerDeath += HandlePlayerDeath;
         PlayerHealth.OnPlayerDamage += HandleDamageTaken;
         PlayerMovement.OnLevelComplete += HandleLevelComplete;
+        StartCamMovement.OnGameStart += HandleGameStart;
     }
 
     void OnDisable()
@@ -64,6 +67,7 @@ public class UIManagers : MonoBehaviour
         PlayerHealth.OnPlayerDeath -= HandlePlayerDeath;
         PlayerHealth.OnPlayerDamage -= HandleDamageTaken;
         PlayerMovement.OnLevelComplete -= HandleLevelComplete;
+        StartCamMovement.OnGameStart -= HandleGameStart;
     }
 
     #endregion
@@ -82,7 +86,6 @@ public class UIManagers : MonoBehaviour
         damageIndicatorPivot = canvas.Find("DamageIndicatorPivot");
         
         playerHealthScript = player.GetComponentInChildren<PlayerHealth>();
-        rifleScript = camObj.GetComponentInChildren<Rifle>();
 
         ammoText = canvas.Find("AmmoText (TMP)").GetComponent<TMP_Text>();
         fireModeText = canvas.Find("FireModeText (TMP)").GetComponent<TMP_Text>();
@@ -90,41 +93,58 @@ public class UIManagers : MonoBehaviour
         healthText = canvas.Find("Health/HealthText (TMP)").GetComponent<TMP_Text>();
         reloadImg = canvas.Find("Crosshair/Reload").GetComponent<Image>();
 
+        gameStarted = false;
+
         DisableElements();
     }
 
     // Update is called once per frame
     void Update()
     {
-        health = playerHealthScript.health;
-
-        magAmmo = rifleScript.bulletsLeft;
-        totalAmmo = rifleScript.totalAmmo;
-
-        fmState = (FireModeState)rifleScript.fmState;
-        
-        playerReloadTime = rifleScript.reloadTime;
-        playerReloadCooldown = rifleScript.reloadCooldown;
-        reloading = rifleScript.reloading;
-        
-        UpdateAmmoText();
-        UpdateFireModeText();
-        UpdateHealthFill();
-        UpdateReload();
-
-        switch (fmState)
+        if (gameStarted)
         {
-            case FireModeState.FullAuto:
-                fireMode = "Full-Auto";
-                break;
-            
-            case FireModeState.SemiAuto:
-                fireMode = "Semi-Autio";
-                break;
+            if (!scriptFound)
+            {
+                rifleScript = camObj.GetComponentInChildren<Rifle>();
+                if (rifleScript != null)
+                {
+                    scriptFound = true;
+                }
+            }
 
-            case FireModeState.Burst:
-                fireMode = "Burst Fire";
-                break;
+            health = playerHealthScript.health;
+
+            if (rifleScript != null)
+            {
+                magAmmo = rifleScript.bulletsLeft;
+                totalAmmo = rifleScript.totalAmmo;
+
+                fmState = (FireModeState)rifleScript.fmState;
+                
+                playerReloadTime = rifleScript.reloadTime;
+                playerReloadCooldown = rifleScript.reloadCooldown;
+                reloading = rifleScript.reloading;
+            }
+            
+            UpdateAmmoText();
+            UpdateFireModeText();
+            UpdateHealthFill();
+            UpdateReload();
+
+            switch (fmState)
+            {
+                case FireModeState.FullAuto:
+                    fireMode = "Full-Auto";
+                    break;
+                
+                case FireModeState.SemiAuto:
+                    fireMode = "Semi-Autio";
+                    break;
+
+                case FireModeState.Burst:
+                    fireMode = "Burst Fire";
+                    break;
+            }
         }
     }
 
@@ -136,6 +156,8 @@ public class UIManagers : MonoBehaviour
     {
         gameOverObj.SetActive(false);
         levelCompleteObj.SetActive(false);
+
+        canvas.gameObject.SetActive(false);
     }
 
     #endregion
@@ -188,6 +210,12 @@ public class UIManagers : MonoBehaviour
     void HandleLevelComplete()
     {
         levelCompleteObj.SetActive(true);
+    }
+
+    void HandleGameStart()
+    {
+        canvas.gameObject.SetActive(true);
+        gameStarted = true;
     }
 
     #endregion

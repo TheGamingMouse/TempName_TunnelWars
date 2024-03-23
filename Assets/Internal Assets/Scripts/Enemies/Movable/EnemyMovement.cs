@@ -35,8 +35,9 @@ public class EnemyMovement : MonoBehaviour
     bool exitCombat;
     public bool combatting;
     bool leaveCover;
-    bool soundMade;
+    [SerializeField] bool soundMade;
     bool playWalkingAudio;
+    bool scriptFound;
 
     [Header("Arrays")]
     Cover[] covers;
@@ -73,6 +74,7 @@ public class EnemyMovement : MonoBehaviour
     [SerializeField] AudioMixer audioMixer; // SerializeField is Important!
     EnemyMovementAudioStorage emas;
     [SerializeField] AudioMixerGroup sfxVolume; // SerializeField is Important!
+    Rifle rifleScript;
 
     #endregion
 
@@ -127,7 +129,19 @@ public class EnemyMovement : MonoBehaviour
     void Update()
     {
         playerTarget = GetComponent<EnemySight>().target;
-        soundMade = Camera.main.transform.GetComponentInChildren<Rifle>().soundMade;
+        if (!scriptFound)
+        {
+            rifleScript = Camera.main.gameObject.GetComponentInChildren<Rifle>();
+            if (rifleScript != null)
+            {
+                scriptFound = true;
+            }
+        }
+        if (rifleScript != null)
+        {
+            soundMade = rifleScript.soundMade;
+        }
+
         transform.position = new Vector3(transform.position.x, feet.position.y + 1.5f, transform.position.z);
         
         IdentifyCover();

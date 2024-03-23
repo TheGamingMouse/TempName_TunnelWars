@@ -54,11 +54,13 @@ public class Rifle : MonoBehaviour
     [Header("AudioClips")]
     AudioClip audioShoot;
     AudioClip audioReload;
+    AudioClip audioHitMarker;
 
     [Header("Components")]
     Camera cam;
     CinemachineVirtualCamera cVirtCam;
     ParticleSystem muzzleFlash;
+    RifleAudioStorage ras;
     [SerializeField] AudioMixer audioMixer; // SerializeField is Important!
     [SerializeField] AudioMixerGroup sfxVolume; // SerializeField is Important!
 
@@ -92,9 +94,10 @@ public class Rifle : MonoBehaviour
         
         muzzleFlash = GetComponentInChildren<ParticleSystem>();
 
-        RifleAudioStorage audioStorage = GameObject.FindGameObjectWithTag("Storage").transform.Find("AudioStorages/Rifle").GetComponent<RifleAudioStorage>();
-        audioShoot = audioStorage.audioShoot;
-        audioReload = audioStorage.audioReload;
+        ras = GameObject.FindGameObjectWithTag("Storage").transform.Find("AudioStorages/Rifle").GetComponent<RifleAudioStorage>();
+        audioShoot = ras.audioShoot;
+        audioReload = ras.audioReload;
+        audioHitMarker = ras.audioHitMarker;
 
         canShoot = true;
         actionBool = true;
@@ -244,12 +247,14 @@ public class Rifle : MonoBehaviour
             if (hit.collider.gameObject.TryGetComponent<EnemyHealth>(out EnemyHealth eComp))
             {
                 eComp.TakeDamage(damage);
+                PlayClip(audioHitMarker);
             }
 
             //Turret TakeDamage()
             if (hit.collider.gameObject.TryGetComponent<TurretHealth>(out TurretHealth tComp))
             {
                 tComp.TakeDamage(damage);
+                PlayClip(audioHitMarker);
             }
 
             GameObject impactObj = Instantiate(impact, hit.point, Quaternion.LookRotation(hit.normal), spawnedImpacts);

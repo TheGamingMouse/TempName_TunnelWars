@@ -17,6 +17,7 @@ TagManager:
   - NextLevel
   - Undefined
   - SearchPoint
+  - StartCam
   layers:
   - Default
   - TransparentFX
