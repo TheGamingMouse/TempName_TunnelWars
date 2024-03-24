@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
 
-public class PlayerHealth : MonoBehaviour
+public class PlayerHealth : MonoBehaviour, IDataPersistence
 {
     #region Events
 
@@ -21,6 +21,8 @@ public class PlayerHealth : MonoBehaviour
     [Header("Ints")]
     readonly int maxHealth = 100;
     public int health;
+    [SerializeField] int deathCount;
+    int cIndex;
 
     [Header("Bools")]
     bool damageCooldown;
@@ -29,12 +31,24 @@ public class PlayerHealth : MonoBehaviour
 
     [Header("Lists")]
     readonly List<AudioSource> audioSourcePool = new();
+    List<Color> colors = new();
 
     [Header("Vector3s")]
     public Vector3 dmgDirection;
 
     [Header("AudioClips")]
     AudioClip audioTakeDamage;
+
+    [Header("Colors")]
+    Color c1 = Color.black;
+    Color c2 = Color.blue;
+    Color c3 = Color.cyan;
+    Color c4 = Color.gray;
+    Color c5 = Color.green;
+    Color c6 = Color.magenta;
+    Color c7 = Color.red;
+    Color c8 = Color.white;
+    Color c9 = Color.yellow;
 
     [Header("Components")]
     [SerializeField] AudioMixer audioMixer; // SerializeField is Important!
@@ -56,6 +70,9 @@ public class PlayerHealth : MonoBehaviour
         }
 
         health = maxHealth;
+
+        AddColorsToList();
+
         damageCooldown = false;
     }
 
@@ -63,13 +80,15 @@ public class PlayerHealth : MonoBehaviour
     void Update()
     {
         health = Mathf.Clamp(health, 0, maxHealth);
+
+        UpdatePlayerColor();
         
         if (!godMode)
         {
             if (health <= 0)
             {
                 OnPlayerDeath?.Invoke();
-                // print("Player is dead");
+                deathCount++;
             }
         }
     }
@@ -99,6 +118,35 @@ public class PlayerHealth : MonoBehaviour
         yield return new WaitForSeconds(cooldown);
 
         damageCooldown = false;
+    }
+
+    void AddColorsToList()
+    {
+        colors.Add(c1);
+        colors.Add(c2);
+        colors.Add(c3);
+        colors.Add(c4);
+        colors.Add(c5);
+        colors.Add(c6);
+        colors.Add(c7);
+        colors.Add(c8);
+        colors.Add(c9);
+    }
+
+    void UpdatePlayerColor()
+    {
+        GetComponent<MeshRenderer>().material.color = colors[cIndex];
+    }
+
+    public void LoadData(GameData data)
+    {
+        deathCount = data.deathCount;
+        cIndex = data.playerColor;
+    }
+
+    public void SaveData(ref GameData data)
+    {
+        data.deathCount = deathCount;
     }
 
     #endregion

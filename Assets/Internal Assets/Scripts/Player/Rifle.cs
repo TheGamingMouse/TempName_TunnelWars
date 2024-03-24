@@ -4,13 +4,16 @@ using UnityEngine;
 using UnityEngine.Audio;
 using Cinemachine;
 
-public class Rifle : MonoBehaviour
+public class Rifle : MonoBehaviour, IDataPersistence
 {
     #region Variables
 
     [Header("Enum States")]
     ReloadState rState;
     public FireModeState fmState;
+
+    [Header("Ints")]
+    int cIndex;
 
     [Header("Floats")]
     readonly float aimSpeed = 20f;
@@ -40,6 +43,7 @@ public class Rifle : MonoBehaviour
 
     [Header("Lists")]
     readonly List<AudioSource> audioSourcePool = new();
+    List<Color> colors = new();
 
     [Header("GameObjects")]
     [SerializeField] GameObject impact; // SerializeField is Important!
@@ -55,6 +59,17 @@ public class Rifle : MonoBehaviour
     AudioClip audioShoot;
     AudioClip audioReload;
     AudioClip audioHitMarker;
+
+    [Header("Colors")]
+    Color c1 = Color.black;
+    Color c2 = Color.blue;
+    Color c3 = Color.cyan;
+    Color c4 = Color.gray;
+    Color c5 = Color.green;
+    Color c6 = Color.magenta;
+    Color c7 = Color.red;
+    Color c8 = Color.white;
+    Color c9 = Color.yellow;
 
     [Header("Components")]
     Camera cam;
@@ -99,6 +114,8 @@ public class Rifle : MonoBehaviour
         audioReload = ras.audioReload;
         audioHitMarker = ras.audioHitMarker;
 
+        AddColorsToList();
+
         canShoot = true;
         actionBool = true;
         soundMade = false;
@@ -111,6 +128,8 @@ public class Rifle : MonoBehaviour
     void Update()
     {
         crouching = FindObjectOfType<PlayerMovement>().crouched;
+
+        UpdateRifleColor();
 
         if (recoilTimer > 0)
         {
@@ -325,6 +344,34 @@ public class Rifle : MonoBehaviour
 
         cmbmcp.m_AmplitudeGain = magnitude;
         recoilTimer = duration;
+    }
+
+    void AddColorsToList()
+    {
+        colors.Add(c1);
+        colors.Add(c2);
+        colors.Add(c3);
+        colors.Add(c4);
+        colors.Add(c5);
+        colors.Add(c6);
+        colors.Add(c7);
+        colors.Add(c8);
+        colors.Add(c9);
+    }
+
+    void UpdateRifleColor()
+    {
+        GetComponent<MeshRenderer>().material.color = colors[cIndex];
+    }
+
+    public void LoadData(GameData data)
+    {
+        cIndex = data.rifleColor;
+    }
+
+    public void SaveData(ref GameData data)
+    {
+        
     }
 
     #endregion

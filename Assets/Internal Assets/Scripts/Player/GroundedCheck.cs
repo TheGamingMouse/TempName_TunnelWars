@@ -16,6 +16,7 @@ public class GroundedCheck : MonoBehaviour
     public bool isOnGround;
     public bool soundMade;
     [SerializeField] bool mainMenu = false; // SerializeField is Important!
+    bool moveBool;
 
     [Header("Lists")]
     readonly List<AudioSource> audioSourcePool = new();
@@ -38,13 +39,15 @@ public class GroundedCheck : MonoBehaviour
     {
         rb = GetComponentInParent<Rigidbody>();
         jumpHeight = GetComponentInParent<PlayerMovement>().jumpHeight;
-
+        
         if (!mainMenu)
         {
             pmas = GameObject.FindGameObjectWithTag("Storage").transform.Find("AudioStorages/PlayerMovement").GetComponent<PlayerMovementAudioStorage>();
             
             audioJumpingLow = pmas.audioJumpingLow;
             audioJumpingHigh = pmas.audioJumpingHigh;
+
+            moveBool = GameObject.FindWithTag("Player").GetComponent<PlayerMovement>().moveBool;
         }
 
         soundMade = false;
@@ -52,7 +55,7 @@ public class GroundedCheck : MonoBehaviour
     
     void Update()
     {
-        if (Input.GetKey(KeyCode.Space) && isOnGround)
+        if (Input.GetKey(KeyCode.Space) && isOnGround && moveBool)
         {
             rb.AddForce(Vector3.up * jumpHeight, ForceMode.Impulse);
             isOnGround = false;

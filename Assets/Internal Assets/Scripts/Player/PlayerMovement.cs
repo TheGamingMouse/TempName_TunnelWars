@@ -33,7 +33,7 @@ public class PlayerMovement : MonoBehaviour
     [Header("Bools")]
     bool isOnGround;
     public bool crouched;
-    bool moveBool;
+    public bool moveBool;
     [SerializeField] bool playWalkingAudio;
     [SerializeField] bool playRunningAudio;
     bool scriptFound;
@@ -91,6 +91,11 @@ public class PlayerMovement : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         orientation = transform.Find("Orientation");
         cam = Camera.main;
+
+        if (rifle != null)
+        {
+            rifle.SetActive(false);
+        }
         
         if (!mainMenu)
         {
