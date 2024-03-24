@@ -97,8 +97,8 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 0}
-  m_LightingSettings: {fileID: 0}
+  m_LightingDataAsset: {fileID: 112000004, guid: 978fb25dd331396468a0fc99f0083a6f, type: 2}
+  m_LightingSettings: {fileID: 4890085278179872738, guid: 7f617b00f8cda294f964e19a7bf95ade, type: 2}
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -822,7 +822,6 @@ GameObject:
   - component: {fileID: 133298745}
   - component: {fileID: 133298747}
   - component: {fileID: 133298746}
-  - component: {fileID: 133298748}
   m_Layer: 0
   m_Name: Save1Image
   m_TagString: Untagged
@@ -887,19 +886,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 133298744}
   m_CullTransparentMesh: 1
---- !u!114 &133298748
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 133298744}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 260a264db6737894ca4c54dba678c131, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  SaveButton: {fileID: 1082930966}
 --- !u!1 &146269979
 GameObject:
   m_ObjectHideFlags: 0
@@ -4322,7 +4308,7 @@ Camera:
     height: 1
   near clip plane: 0.1
   far clip plane: 5000
-  field of view: 60.000004
+  field of view: 60
   orthographic: 0
   orthographic size: 10
   m_Depth: -1
@@ -4348,8 +4334,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 770312805}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.15029085, y: 1.0722752, z: -9.768257}
+  m_LocalRotation: {x: 0.25504392, y: -0.2603571, z: 0.071518384, w: 0.9284675}
+  m_LocalPosition: {x: 3, y: 9, z: 89.75}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -6578,7 +6564,6 @@ GameObject:
   - component: {fileID: 1169065288}
   - component: {fileID: 1169065290}
   - component: {fileID: 1169065289}
-  - component: {fileID: 1169065291}
   m_Layer: 0
   m_Name: Save3Image
   m_TagString: Untagged
@@ -6643,19 +6628,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1169065287}
   m_CullTransparentMesh: 1
---- !u!114 &1169065291
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1169065287}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 260a264db6737894ca4c54dba678c131, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  SaveButton: {fileID: 805593128}
 --- !u!1 &1170170485
 GameObject:
   m_ObjectHideFlags: 0
@@ -12778,7 +12750,6 @@ GameObject:
   - component: {fileID: 2119717655}
   - component: {fileID: 2119717657}
   - component: {fileID: 2119717656}
-  - component: {fileID: 2119717658}
   m_Layer: 0
   m_Name: Save2Image
   m_TagString: Untagged
@@ -12843,19 +12814,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2119717654}
   m_CullTransparentMesh: 1
---- !u!114 &2119717658
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2119717654}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 260a264db6737894ca4c54dba678c131, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  SaveButton: {fileID: 146269981}
 --- !u!136 &607134281963420951
 CapsuleCollider:
   m_ObjectHideFlags: 0

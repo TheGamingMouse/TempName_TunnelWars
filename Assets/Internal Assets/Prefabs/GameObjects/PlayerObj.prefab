@@ -5870,6 +5870,7 @@ MonoBehaviour:
   crouched: 0
   playWalkingAudio: 0
   playRunningAudio: 0
+  mainMenu: 0
   rifle: {fileID: 1378297747259781148}
   dummyRifle: {fileID: 7082630453363203222}
   audioMixer: {fileID: 24100000, guid: 6d0b19c81c5866d45a9217b1eed60eb3, type: 2}
@@ -5888,6 +5889,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   health: 0
   godMode: 0
+  mainMenu: 0
   dmgDirection: {x: 0, y: 0, z: 0}
   audioMixer: {fileID: 24100000, guid: 6d0b19c81c5866d45a9217b1eed60eb3, type: 2}
   sfxVolume: {fileID: 2801275425284752312, guid: 6d0b19c81c5866d45a9217b1eed60eb3, type: 2}
@@ -6790,6 +6792,7 @@ MonoBehaviour:
   recAirTime: 0
   isOnGround: 0
   soundMade: 0
+  mainMenu: 0
   audioMixer: {fileID: 24100000, guid: 6d0b19c81c5866d45a9217b1eed60eb3, type: 2}
   sfxVolume: {fileID: 2801275425284752312, guid: 6d0b19c81c5866d45a9217b1eed60eb3, type: 2}
 --- !u!1 &6026703708471441768

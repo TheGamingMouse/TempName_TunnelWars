@@ -97,7 +97,7 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 0}
+  m_LightingDataAsset: {fileID: 112000002, guid: 978fb25dd331396468a0fc99f0083a6f, type: 2}
   m_LightingSettings: {fileID: 0}
 --- !u!196 &4
 NavMeshSettings:
@@ -7567,6 +7567,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 361104872}
     m_Modifications:
+    - target: {fileID: 30157418462543245, guid: 48f51b236dfc7cb4db3056f6764642c1, type: 3}
+      propertyPath: range
+      value: 37.5
+      objectReference: {fileID: 0}
     - target: {fileID: 1711488534100903858, guid: 48f51b236dfc7cb4db3056f6764642c1, type: 3}
       propertyPath: m_Name
       value: TurretEnemyObject (1)
@@ -12949,10 +12953,6 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 386872183}
-    - target: {fileID: 5167720022126640038, guid: a31aed5898f71314dbfdaa90971710c6, type: 3}
-      propertyPath: godMode
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 6026703708471441768, guid: a31aed5898f71314dbfdaa90971710c6, type: 3}
       propertyPath: m_Name
       value: PlayerObj
@@ -13137,6 +13137,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 361104872}
     m_Modifications:
+    - target: {fileID: 30157418462543245, guid: 48f51b236dfc7cb4db3056f6764642c1, type: 3}
+      propertyPath: range
+      value: 32.5
+      objectReference: {fileID: 0}
     - target: {fileID: 1711488534100903858, guid: 48f51b236dfc7cb4db3056f6764642c1, type: 3}
       propertyPath: m_Name
       value: TurretEnemyObject

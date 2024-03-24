@@ -427,7 +427,10 @@ public class EnemyMovement : MonoBehaviour
     {
         yield return new WaitForSeconds(2f);
 
-        agent.SetDestination(searchCentrePoint.position);
+        if (searchCentrePoint != null)
+        {
+            agent.SetDestination(searchCentrePoint.position);
+        }
         // print("Agent leaving cover");
     }
 
