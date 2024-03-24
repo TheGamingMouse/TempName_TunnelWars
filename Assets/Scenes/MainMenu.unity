@@ -822,6 +822,7 @@ GameObject:
   - component: {fileID: 133298745}
   - component: {fileID: 133298747}
   - component: {fileID: 133298746}
+  - component: {fileID: 133298748}
   m_Layer: 0
   m_Name: Save1Image
   m_TagString: Untagged
@@ -886,6 +887,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 133298744}
   m_CullTransparentMesh: 1
+--- !u!114 &133298748
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 133298744}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 260a264db6737894ca4c54dba678c131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SaveButton: {fileID: 1082930966}
 --- !u!1 &146269979
 GameObject:
   m_ObjectHideFlags: 0
@@ -967,7 +981,7 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 146269982}
+  m_TargetGraphic: {fileID: 2119717656}
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
@@ -4533,7 +4547,7 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 805593129}
+  m_TargetGraphic: {fileID: 1169065289}
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
@@ -6206,7 +6220,7 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 1082930967}
+  m_TargetGraphic: {fileID: 133298746}
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
@@ -6564,6 +6578,7 @@ GameObject:
   - component: {fileID: 1169065288}
   - component: {fileID: 1169065290}
   - component: {fileID: 1169065289}
+  - component: {fileID: 1169065291}
   m_Layer: 0
   m_Name: Save3Image
   m_TagString: Untagged
@@ -6628,6 +6643,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1169065287}
   m_CullTransparentMesh: 1
+--- !u!114 &1169065291
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1169065287}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 260a264db6737894ca4c54dba678c131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SaveButton: {fileID: 805593128}
 --- !u!1 &1170170485
 GameObject:
   m_ObjectHideFlags: 0
@@ -12750,6 +12778,7 @@ GameObject:
   - component: {fileID: 2119717655}
   - component: {fileID: 2119717657}
   - component: {fileID: 2119717656}
+  - component: {fileID: 2119717658}
   m_Layer: 0
   m_Name: Save2Image
   m_TagString: Untagged
@@ -12814,6 +12843,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2119717654}
   m_CullTransparentMesh: 1
+--- !u!114 &2119717658
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2119717654}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 260a264db6737894ca4c54dba678c131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SaveButton: {fileID: 146269981}
 --- !u!136 &607134281963420951
 CapsuleCollider:
   m_ObjectHideFlags: 0
