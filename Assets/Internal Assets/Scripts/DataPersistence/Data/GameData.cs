@@ -15,12 +15,15 @@ public class GameData
     {
         levelCount = 0;
         deathCount = 0;
-        playerColor = 7;
-        rifleColor = 7;
     }
 
     public int GetLevelCount()
     {
         return levelCount;
+    }
+
+    public int GetDeathCount()
+    {
+        return deathCount;
     }
 }

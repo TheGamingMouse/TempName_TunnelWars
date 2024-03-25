@@ -10,6 +10,8 @@ public class SaveSlotsMenu : MonoBehaviour
     [SerializeField] bool isLoadingGame = false;
     [SerializeField] int levelCount;
 
+    [SerializeField] GameObject confirmNewGame;
+
     void Awake()
     {
         saveSlots = GetComponentsInChildren<SaveSlot>();
@@ -21,12 +23,23 @@ public class SaveSlotsMenu : MonoBehaviour
 
         if (!isLoadingGame)
         {
-            DataPersistenceManager.Instance.NewGame();
-            SceneManager.LoadSceneAsync("Level1");
+            if (saveSlot.hasData)
+            {
+                confirmNewGame.SetActive(true);
+                return;
+            }
+            OnConfirmNewGame();
             return;
         }
 
+        DataPersistenceManager.Instance.LoadGame();
         SceneManager.LoadSceneAsync(saveSlot.levelCount);
+    }
+
+    public void OnConfirmNewGame()
+    {
+        DataPersistenceManager.Instance.NewGame();
+        SceneManager.LoadSceneAsync("Level1");
     }
 
     public void ActivateMenu(bool isLoadingGame)
@@ -37,8 +50,7 @@ public class SaveSlotsMenu : MonoBehaviour
 
         foreach (SaveSlot saveSlot in saveSlots)
         {
-            GameData profileData = null;
-            profilesGameData.TryGetValue(saveSlot.GetProfileId(), out profileData);
+            profilesGameData.TryGetValue(saveSlot.GetProfileId(), out GameData profileData);
             saveSlot.SetData(profileData);
             if (profileData == null && isLoadingGame)
             {

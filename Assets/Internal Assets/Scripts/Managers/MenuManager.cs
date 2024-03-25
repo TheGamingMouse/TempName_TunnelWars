@@ -13,6 +13,7 @@ public class MenuManager : MonoBehaviour, IDataPersistence
     int cIndex1;
     int cIndex2;
     int levelCount;
+    int deathCount;
 
     [Header("Bools")]
     [SerializeField] bool watchCursor;
@@ -247,11 +248,11 @@ public class MenuManager : MonoBehaviour, IDataPersistence
         saveSlotsMenu.ActivateMenu(false);
     }
     
-    public void NewGame()
-    {
-        DataPersistenceManager.Instance.NewGame();
-        SceneManager.LoadSceneAsync("Level1");
-    }
+    // public void NewGame()
+    // {
+    //     DataPersistenceManager.Instance.NewGame();
+    //     SceneManager.LoadSceneAsync("Level1");
+    // }
 
     public void QuitGame()
     {
@@ -264,6 +265,7 @@ public class MenuManager : MonoBehaviour, IDataPersistence
         cIndex1 = data.playerColor;
         cIndex2 = data.rifleColor;
         levelCount = data.levelCount;
+        deathCount = data.deathCount;
     }
 
     public void SaveData(ref GameData data)

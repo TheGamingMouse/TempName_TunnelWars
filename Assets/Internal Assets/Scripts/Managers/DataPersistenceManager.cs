@@ -59,7 +59,6 @@ public class DataPersistenceManager : MonoBehaviour
     public void ChangeSelectedProfileId(string newProfileId)
     {
         selectedProfileId = newProfileId;
-        LoadGame();
     }
 
     public void NewGame()
@@ -90,14 +89,13 @@ public class DataPersistenceManager : MonoBehaviour
             Debug.LogWarning("Data not found. Start New Game first.");
             return;
         }
-
+        
         foreach (IDataPersistence dataPersistenceObj in dataPersistenceObjects)
         {
             dataPersistenceObj.SaveData(ref gameData);
         }
 
         gameData.lastUpdated = System.DateTime.Now.ToBinary();
-
         dataHandler.Save(gameData, selectedProfileId);
     }
 

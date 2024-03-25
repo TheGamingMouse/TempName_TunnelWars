@@ -28,6 +28,7 @@ public class PlayerHealth : MonoBehaviour, IDataPersistence
     bool damageCooldown;
     [SerializeField] bool godMode; // SerializeField is Important!
     [SerializeField] bool mainMenu = false; // SerializeField is Important!
+    bool dead;
 
     [Header("Lists")]
     readonly List<AudioSource> audioSourcePool = new();
@@ -74,6 +75,7 @@ public class PlayerHealth : MonoBehaviour, IDataPersistence
         AddColorsToList();
 
         damageCooldown = false;
+        dead = false;
     }
 
     // Update is called once per frame
@@ -85,10 +87,12 @@ public class PlayerHealth : MonoBehaviour, IDataPersistence
         
         if (!godMode)
         {
-            if (health <= 0)
+            if (health <= 0 && !dead)
             {
                 OnPlayerDeath?.Invoke();
                 deathCount++;
+                
+                dead = true;
             }
         }
     }
@@ -140,13 +144,19 @@ public class PlayerHealth : MonoBehaviour, IDataPersistence
 
     public void LoadData(GameData data)
     {
-        deathCount = data.deathCount;
+        if (!mainMenu)
+        {
+            deathCount = data.deathCount;
+        }
         cIndex = data.playerColor;
     }
 
     public void SaveData(ref GameData data)
     {
-        data.deathCount = deathCount;
+        if (!mainMenu)
+        {
+            data.deathCount = deathCount;
+        }
     }
 
     #endregion
