@@ -117,7 +117,6 @@ public class Rifle : MonoBehaviour, IDataPersistence
         AddColorsToList();
 
         canShoot = true;
-        actionBool = true;
         soundMade = false;
 
         bulletsLeft = magSize;
@@ -128,6 +127,7 @@ public class Rifle : MonoBehaviour, IDataPersistence
     void Update()
     {
         crouching = FindObjectOfType<PlayerMovement>().crouched;
+        actionBool = FindObjectOfType<PlayerMovement>().moveBool;
 
         UpdateRifleColor();
 

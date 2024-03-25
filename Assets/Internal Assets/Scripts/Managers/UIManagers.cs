@@ -1,11 +1,21 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.UI;
 
-public class UIManagers : MonoBehaviour
+public class UIManagers : MonoBehaviour, IDataPersistence
 {
+    #region Events
+
+    public static event Action OnPause;
+    public static event Action OnUnpause;
+
+    #endregion
+
     #region Variables
 
     [Header("Enum States")]
@@ -17,20 +27,36 @@ public class UIManagers : MonoBehaviour
     float health;
     float playerReloadTime;
     float playerReloadCooldown;
+    float masterVolume;
+    float musicVolume;
+    float sfxVolume;
+    float masterSliderValue;
+    float musicSliderValue;
+    float sfxSliderValue;
+    float toSaveMasterSliderValue;
+    float toSaveMusicSliderValue;
+    float toSaveSFXSliderValue;
 
     [Header("Bools")]
     bool reloading;
     bool gameStarted;
     bool scriptFound;
+    bool paused;
+    bool slidersUpdated;
 
     [Header("Strings")]
     string fireMode;
+
+    [Header("Arrays")]
+    Resolution[] resolutions;
 
     [Header("GameObjects")]
     GameObject camObj;
     GameObject gameOverObj;
     [SerializeField] GameObject damageIndicatorPrefab; // SerializeField is Important!
     GameObject levelCompleteObj;
+    GameObject pauseObj;
+    GameObject optionsMenu;
     
     [Header("Transforms")]
     Transform canvas;
@@ -41,6 +67,17 @@ public class UIManagers : MonoBehaviour
     TMP_Text ammoText;
     TMP_Text fireModeText;
     TMP_Text healthText;
+    TMP_Text masterVolumeText;
+    TMP_Text musicVolumeText;
+    TMP_Text sfxVolumeText;
+
+    [Header("Dropdowns")]
+    TMP_Dropdown resolutionDropdown;
+
+    [Header("Sliders")]
+    Slider masterVolumeSlider;
+    Slider musicVolumeSlider;
+    Slider SFXVolumeSlider;
 
     [Header("Images")]
     Image healthImg;
@@ -49,6 +86,7 @@ public class UIManagers : MonoBehaviour
     [Header("Components")]
     Rifle rifleScript;
     PlayerHealth  playerHealthScript;
+    [SerializeField] AudioMixer audioMixer; // SerializeField is Important!
 
     #endregion
 
@@ -80,15 +118,28 @@ public class UIManagers : MonoBehaviour
         canvas = GameObject.FindGameObjectWithTag("UI").transform;
         camObj = Camera.main.gameObject;
         player = GameObject.FindGameObjectWithTag("Player").transform;
+        optionsMenu = canvas.Find("PauseMenu/OptionsMenu").gameObject;
         
         gameOverObj = canvas.Find("DeathScreenPanel").gameObject;
         levelCompleteObj = canvas.Find("LevelCompletePanel").gameObject;
+        pauseObj = canvas.Find("PauseMenu").gameObject;
         damageIndicatorPivot = canvas.Find("DamageIndicatorPivot");
         
         playerHealthScript = player.GetComponentInChildren<PlayerHealth>();
 
         ammoText = canvas.Find("AmmoText (TMP)").GetComponent<TMP_Text>();
         fireModeText = canvas.Find("FireModeText (TMP)").GetComponent<TMP_Text>();
+        
+        masterVolumeText = optionsMenu.transform.Find("VolumeObject/VolumeText (TMP)/MasterVolumeText (TMP)/MasterVolumeText (TMP)").GetComponent<TMP_Text>();
+        musicVolumeText = optionsMenu.transform.Find("VolumeObject/VolumeText (TMP)/MusicVolumeText (TMP)/MusicVolumeText (TMP)").GetComponent<TMP_Text>();
+        sfxVolumeText = optionsMenu.transform.Find("VolumeObject/VolumeText (TMP)/SFXVolumeText (TMP)/SFXVolumeText (TMP)").GetComponent<TMP_Text>();
+
+        resolutionDropdown = optionsMenu.transform.Find("ResolutionObject/ResolutionDropdown").GetComponent<TMP_Dropdown>();
+
+        masterVolumeSlider = optionsMenu.transform.Find("VolumeObject/VolumeSliders/MasterSlider").GetComponent<Slider>();
+        musicVolumeSlider = optionsMenu.transform.Find("VolumeObject/VolumeSliders/MusicSlider").GetComponent<Slider>();
+        SFXVolumeSlider = optionsMenu.transform.Find("VolumeObject/VolumeSliders/SFXSlider").GetComponent<Slider>();
+
         healthImg = canvas.Find("Health/Health").GetComponent<Image>();
         healthText = canvas.Find("Health/HealthText (TMP)").GetComponent<TMP_Text>();
         reloadImg = canvas.Find("Crosshair/Reload").GetComponent<Image>();
@@ -96,6 +147,33 @@ public class UIManagers : MonoBehaviour
         gameStarted = false;
 
         DisableElements();
+
+        resolutions = Screen.resolutions;
+        resolutionDropdown.ClearOptions();
+
+        List<string> options = new();
+
+        int currentResolution = 0;
+        for (int i = 0; i < resolutions.Length; i++)
+        {
+            string option = resolutions[i].width + " x " + resolutions[i].height;
+            options.Add(option);
+
+            if (resolutions[i].width == Screen.currentResolution.width && resolutions[i].height == Screen.currentResolution.height)
+            {
+                currentResolution = i;
+            }
+        }
+
+        resolutionDropdown.AddOptions(options);
+        resolutionDropdown.value = currentResolution;
+        resolutionDropdown.RefreshShownValue();
+
+        SetMasterVolume(masterVolume);
+        SetMusicVolume(musicVolume);
+        SetSFXVolume(sfxVolume);
+
+        SetResolution(currentResolution);
     }
 
     // Update is called once per frame
@@ -145,6 +223,24 @@ public class UIManagers : MonoBehaviour
                     fireMode = "Burst Fire";
                     break;
             }
+
+            if (Input.GetKeyDown(KeyCode.Escape) && !paused)
+            {
+                Pause();
+            }
+            else if (Input.GetKeyDown(KeyCode.Escape) && paused)
+            {
+                Unpause();
+            }
+
+            if (masterSliderValue > -100 && !slidersUpdated)
+        {
+            UpdateMasterVolumeSlider(masterSliderValue);
+            UpdateMusicVolumeSlider(musicSliderValue);
+            UpdateSFXVolumeSlider(sfxSliderValue);
+
+            slidersUpdated = true;
+        }
         }
     }
 
@@ -156,6 +252,7 @@ public class UIManagers : MonoBehaviour
     {
         gameOverObj.SetActive(false);
         levelCompleteObj.SetActive(false);
+        pauseObj.SetActive(false);
 
         canvas.gameObject.SetActive(false);
     }
@@ -192,6 +289,113 @@ public class UIManagers : MonoBehaviour
         }
     }
 
+    public void Pause()
+    {
+        OnPause?.Invoke();
+        pauseObj.SetActive(true);
+
+        paused = true;
+
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+    }
+
+    public void Unpause()
+    {
+        OnUnpause?.Invoke();
+        pauseObj.SetActive(false);
+
+        paused = false;
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+    }
+
+    public void LoadData(GameData data)
+    {
+        masterVolume = data.masterVolume;
+        musicVolume = data.musicVolume;
+        sfxVolume = data.sfxVolume;
+
+        masterSliderValue = data.masterSliderValue;
+        musicSliderValue = data.musicSliderValue;
+        sfxSliderValue = data.sfxSliderValue;
+    }
+
+    public void SaveData(ref GameData data)
+    {
+        data.masterVolume = masterVolume;
+        data.musicVolume = musicVolume;
+        data.sfxVolume = sfxVolume;
+
+        data.masterSliderValue = toSaveMasterSliderValue;
+        data.musicSliderValue = toSaveMusicSliderValue;
+        data.sfxSliderValue = toSaveSFXSliderValue;
+    }
+
+    #endregion
+
+    #region OptionsMethods
+
+    public void SetMasterVolume(float volume)
+    {
+        audioMixer.SetFloat("masterVolume", volume);
+
+        float volumePercent = (volume + 30) * 2;
+        masterVolumeText.text = $"{volumePercent}%";
+        
+        masterVolume = volume;
+        toSaveMasterSliderValue = masterVolumeSlider.value;
+    }
+
+    public void SetMusicVolume(float volume)
+    {
+        audioMixer.SetFloat("musicVolume", volume);
+
+        float volumePercent = (volume + 30) * 2;
+        musicVolumeText.text = $"{volumePercent}%";
+        
+        musicVolume = volume;
+        toSaveMusicSliderValue = musicVolumeSlider.value;
+    }
+
+    public void SetSFXVolume(float volume)
+    {
+        audioMixer.SetFloat("sfxVolume", volume);
+
+        float volumePercent = (volume + 30) * 2;
+        sfxVolumeText.text = $"{volumePercent}%";
+        
+        sfxVolume = volume;
+        toSaveSFXSliderValue = SFXVolumeSlider.value;
+    }
+
+    public void SetFullscreen(bool isFullscreen)
+    {
+        Screen.fullScreen = isFullscreen;
+    }
+
+    public void SetResolution(int resolutionIndex)
+    {
+        Resolution resolution = resolutions[resolutionIndex];
+        Screen.SetResolution(resolution.width, resolution.height, Screen.fullScreen);
+    }
+
+    void UpdateMasterVolumeSlider(float volume)
+    {
+        masterVolumeSlider.value = volume;
+    }
+
+    void UpdateMusicVolumeSlider(float volume)
+    {
+        musicVolumeSlider.value = volume;
+    }
+
+    void UpdateSFXVolumeSlider(float volume)
+    {
+        SFXVolumeSlider.value = volume;
+    }
+
     #endregion
 
     #region SubscriptionHandlers
@@ -219,7 +423,7 @@ public class UIManagers : MonoBehaviour
     }
 
     #endregion
-    
+
     #region Enums
 
     enum FireModeState

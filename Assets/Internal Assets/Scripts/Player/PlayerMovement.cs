@@ -73,12 +73,16 @@ public class PlayerMovement : MonoBehaviour
     {
         PlayerHealth.OnPlayerDeath += HandlePlayerDeath;
         StartCamMovement.OnGameStart += HandleGameStart;
+        UIManagers.OnPause += HandlePause;
+        UIManagers.OnUnpause += HandleUnpause;
     }
 
     void OnDisable()
     {
         PlayerHealth.OnPlayerDeath -= HandlePlayerDeath;
         StartCamMovement.OnGameStart -= HandleGameStart;
+        UIManagers.OnPause -= HandlePause;
+        UIManagers.OnUnpause -= HandleUnpause;
     }
     
     #endregion
@@ -265,6 +269,16 @@ public class PlayerMovement : MonoBehaviour
     void HandleGameStart()
     {
         StartCoroutine(EnableRifle());
+    }
+
+    void HandlePause()
+    {
+        moveBool = false;
+    }
+
+    void HandleUnpause()
+    {
+        moveBool = true;
     }
     
     #endregion

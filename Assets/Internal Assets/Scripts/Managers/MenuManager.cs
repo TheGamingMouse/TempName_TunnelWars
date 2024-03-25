@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using Cinemachine;
+using TMPro;
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -13,14 +15,28 @@ public class MenuManager : MonoBehaviour, IDataPersistence
     int cIndex1;
     int cIndex2;
     int levelCount;
-    int deathCount;
+
+    [Header("Floats")]
+    float masterVolume;
+    float musicVolume;
+    float sfxVolume;
+    float masterSliderValue;
+    float musicSliderValue;
+    float sfxSliderValue;
+    float toSaveMasterSliderValue;
+    float toSaveMusicSliderValue;
+    float toSaveSFXSliderValue;
 
     [Header("Bools")]
-    [SerializeField] bool watchCursor;
+    bool watchCursor;
+    bool slidersUpdated;
 
     [Header("Lists")]
     List<Color> colors1 = new();
     List<Color> colors2 = new();
+
+    [Header("Arrays")]
+    Resolution[] resolutions;
     
     [Header("GameObjects")]
     [SerializeField] GameObject mainCam; // SerializeField is Important!
@@ -35,8 +51,21 @@ public class MenuManager : MonoBehaviour, IDataPersistence
     GameObject playerObject;
 
     [Header("Buttons")]
-    [SerializeField] Button continueButton;
-    [SerializeField] Button loadButton;
+    [SerializeField] Button continueButton; // SerializeField is Important!
+    [SerializeField] Button loadButton; // SerializeField is Important!
+
+    [Header("Texts")]
+    [SerializeField] TMP_Text masterVolumeText; // SerializeField is Important!
+    [SerializeField] TMP_Text musicVolumeText; // SerializeField is Important!
+    [SerializeField] TMP_Text sfxVolumeText; // SerializeField is Important!
+
+    [Header("Dropdowns")]
+    [SerializeField] TMP_Dropdown resolutionDropdown; // SerializeField is Important!
+
+    [Header("Sliders")]
+    [SerializeField] Slider masterVolumeSlider; // SerializeField is Important!
+    [SerializeField] Slider musicVolumeSlider; // SerializeField is Important!
+    [SerializeField] Slider SFXVolumeSlider; // SerializeField is Important!
 
     [Header("Vector3s")]
     Vector3 mousePos;
@@ -62,7 +91,8 @@ public class MenuManager : MonoBehaviour, IDataPersistence
     Color c9 = Color.yellow;
 
     [Header("Components")]
-    [SerializeField] SaveSlotsMenu saveSlotsMenu;
+    [SerializeField] SaveSlotsMenu saveSlotsMenu; // SerializeField is Important!
+    [SerializeField] AudioMixer audioMixer; // SerializeField is Important!
     
     #endregion
 
@@ -92,7 +122,35 @@ public class MenuManager : MonoBehaviour, IDataPersistence
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
+        resolutions = Screen.resolutions;
+        resolutionDropdown.ClearOptions();
+
+        List<string> options = new();
+
+        int currentResolution = 0;
+        for (int i = 0; i < resolutions.Length; i++)
+        {
+            string option = resolutions[i].width + " x " + resolutions[i].height;
+            options.Add(option);
+
+            if (resolutions[i].width == Screen.currentResolution.width && resolutions[i].height == Screen.currentResolution.height)
+            {
+                currentResolution = i;
+            }
+        }
+
+        resolutionDropdown.AddOptions(options);
+        resolutionDropdown.value = currentResolution;
+        resolutionDropdown.RefreshShownValue();
+
+        SetMasterVolume(masterVolume);
+        SetMusicVolume(musicVolume);
+        SetSFXVolume(sfxVolume);
+
+        SetResolution(currentResolution);
+
         watchCursor = true;
+        slidersUpdated = false;
     }
 
     // Update is called once per frame
@@ -114,6 +172,15 @@ public class MenuManager : MonoBehaviour, IDataPersistence
 
         UpdatePlayerColor();
         UpdateRifleColor();
+
+        if (masterSliderValue > -100 && !slidersUpdated)
+        {
+            UpdateMasterVolumeSlider(masterSliderValue);
+            UpdateMusicVolumeSlider(musicSliderValue);
+            UpdateSFXVolumeSlider(sfxSliderValue);
+
+            slidersUpdated = true;
+        }
     }
     
     #endregion
@@ -233,6 +300,65 @@ public class MenuManager : MonoBehaviour, IDataPersistence
         }
     }
 
+    public void SetMasterVolume(float volume)
+    {
+        audioMixer.SetFloat("masterVolume", volume);
+
+        float volumePercent = (volume + 30) * 2;
+        masterVolumeText.text = $"{volumePercent}%";
+        
+        masterVolume = volume;
+        toSaveMasterSliderValue = masterVolumeSlider.value;
+    }
+
+    public void SetMusicVolume(float volume)
+    {
+        audioMixer.SetFloat("musicVolume", volume);
+
+        float volumePercent = (volume + 30) * 2;
+        musicVolumeText.text = $"{volumePercent}%";
+        
+        musicVolume = volume;
+        toSaveMusicSliderValue = musicVolumeSlider.value;
+    }
+
+    public void SetSFXVolume(float volume)
+    {
+        audioMixer.SetFloat("sfxVolume", volume);
+
+        float volumePercent = (volume + 30) * 2;
+        sfxVolumeText.text = $"{volumePercent}%";
+        
+        sfxVolume = volume;
+        toSaveSFXSliderValue = SFXVolumeSlider.value;
+    }
+
+    public void SetFullscreen(bool isFullscreen)
+    {
+        Screen.fullScreen = isFullscreen;
+    }
+
+    public void SetResolution(int resolutionIndex)
+    {
+        Resolution resolution = resolutions[resolutionIndex];
+        Screen.SetResolution(resolution.width, resolution.height, Screen.fullScreen);
+    }
+
+    void UpdateMasterVolumeSlider(float volume)
+    {
+        masterVolumeSlider.value = volume;
+    }
+
+    void UpdateMusicVolumeSlider(float volume)
+    {
+        musicVolumeSlider.value = volume;
+    }
+
+    void UpdateSFXVolumeSlider(float volume)
+    {
+        SFXVolumeSlider.value = volume;
+    }
+
     public void ContinueGame()
     {
         SceneManager.LoadScene(levelCount);
@@ -247,12 +373,6 @@ public class MenuManager : MonoBehaviour, IDataPersistence
     {
         saveSlotsMenu.ActivateMenu(false);
     }
-    
-    // public void NewGame()
-    // {
-    //     DataPersistenceManager.Instance.NewGame();
-    //     SceneManager.LoadSceneAsync("Level1");
-    // }
 
     public void QuitGame()
     {
@@ -264,14 +384,30 @@ public class MenuManager : MonoBehaviour, IDataPersistence
     {
         cIndex1 = data.playerColor;
         cIndex2 = data.rifleColor;
+
         levelCount = data.levelCount;
-        deathCount = data.deathCount;
+
+        masterVolume = data.masterVolume;
+        musicVolume = data.musicVolume;
+        sfxVolume = data.sfxVolume;
+
+        masterSliderValue = data.masterSliderValue;
+        musicSliderValue = data.musicSliderValue;
+        sfxSliderValue = data.sfxSliderValue;
     }
 
     public void SaveData(ref GameData data)
     {
         data.playerColor = cIndex1;
         data.rifleColor = cIndex2;
+
+        data.masterVolume = masterVolume;
+        data.musicVolume = musicVolume;
+        data.sfxVolume = sfxVolume;
+
+        data.masterSliderValue = toSaveMasterSliderValue;
+        data.musicSliderValue = toSaveMusicSliderValue;
+        data.sfxSliderValue = toSaveSFXSliderValue;
     }
 
     #endregion

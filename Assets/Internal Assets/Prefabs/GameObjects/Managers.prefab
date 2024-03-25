@@ -78,6 +78,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damageIndicatorPrefab: {fileID: 8784631755969782226, guid: 4452de0836bea1f4bb399ed85370431d, type: 3}
+  audioMixer: {fileID: 24100000, guid: 6d0b19c81c5866d45a9217b1eed60eb3, type: 2}
 --- !u!1 &6798920926814659415
 GameObject:
   m_ObjectHideFlags: 0

@@ -10,13 +10,13 @@ public class GroundedCheck : MonoBehaviour
     [Header("Floats")]
     float jumpHeight;
     float airTime;
-    [SerializeField] float recAirTime;
+    float recAirTime;
     
     [Header("Bools")]
     public bool isOnGround;
     public bool soundMade;
     [SerializeField] bool mainMenu = false; // SerializeField is Important!
-    bool moveBool;
+    [SerializeField] bool moveBool;
 
     [Header("Lists")]
     readonly List<AudioSource> audioSourcePool = new();
@@ -46,8 +46,6 @@ public class GroundedCheck : MonoBehaviour
             
             audioJumpingLow = pmas.audioJumpingLow;
             audioJumpingHigh = pmas.audioJumpingHigh;
-
-            moveBool = GameObject.FindWithTag("Player").GetComponent<PlayerMovement>().moveBool;
         }
 
         soundMade = false;
@@ -55,6 +53,11 @@ public class GroundedCheck : MonoBehaviour
     
     void Update()
     {
+        if (!mainMenu)
+        {
+            moveBool = GameObject.FindWithTag("Player").GetComponent<PlayerMovement>().moveBool;
+        }
+        
         if (Input.GetKey(KeyCode.Space) && isOnGround && moveBool)
         {
             rb.AddForce(Vector3.up * jumpHeight, ForceMode.Impulse);

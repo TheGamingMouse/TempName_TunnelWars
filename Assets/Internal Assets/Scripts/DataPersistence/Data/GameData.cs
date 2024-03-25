@@ -6,10 +6,18 @@ using UnityEngine;
 public class GameData
 {
     public long lastUpdated;
+
     public int levelCount;
     public int deathCount;
     public int playerColor;
     public int rifleColor;
+
+    public float masterVolume;
+    public float musicVolume;
+    public float sfxVolume;
+    public float masterSliderValue;
+    public float musicSliderValue;
+    public float sfxSliderValue;
 
     public GameData()
     {
