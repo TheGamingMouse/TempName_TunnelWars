@@ -15,9 +15,13 @@ public class GameData
     public float masterVolume;
     public float musicVolume;
     public float sfxVolume;
+    public float mouseSens;
+    public float uiScale;
     public float masterSliderValue;
     public float musicSliderValue;
     public float sfxSliderValue;
+    public float sensSliderValue;
+    public float uiScaleSliderValue;
 
     public GameData()
     {

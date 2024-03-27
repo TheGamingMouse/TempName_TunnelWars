@@ -10,14 +10,15 @@ public class DamageIndicator : MonoBehaviour
     float fadeStart = 1.5f;
     float fadeTime = 1.5f;
     float fadeMax;
+    float angle;
 
     [Header("Transforms")]
     Transform canvas;
     Transform player;
-    Transform damageIndicatorPivot;
+    [SerializeField] Transform damageIndicatorPivot; //SereializeField is Important!
 
     [Header("Vector3s")]
-    Vector3 damagePos;
+    [SerializeField] Vector3 damagePos;
 
     [Header("Components")]
     CanvasGroup damamgeIndicatorGroup;
@@ -32,17 +33,21 @@ public class DamageIndicator : MonoBehaviour
         canvas = GameObject.FindGameObjectWithTag("UI").transform;
         player = GameObject.FindGameObjectWithTag("Player").transform;
 
-        damageIndicatorPivot = canvas.Find("DamageIndicatorPivot");
         damamgeIndicatorGroup = GetComponent<CanvasGroup>();
 
         fadeMax = fadeTime;
+
+        damagePos = player.GetComponent<PlayerHealth>().dmgDirection;
+
+        damagePos.y = player.position.y;
+        Vector3 direction = (damagePos - player.position).normalized;
+        angle = Vector3.SignedAngle(direction, player.forward, Vector3.up);
+        damageIndicatorPivot.transform.localEulerAngles = new Vector3(0f, 0f, angle);
     }
 
     // Update is called once per frame
     void Update()
     {
-        damagePos = player.GetComponent<PlayerHealth>().dmgDirection;
-
         if (fadeStart > 0)
         {
             fadeStart -= Time.deltaTime;
@@ -59,7 +64,7 @@ public class DamageIndicator : MonoBehaviour
         
         damagePos.y = player.position.y;
         Vector3 direction = (damagePos - player.position).normalized;
-        float angle = Vector3.SignedAngle(direction, player.forward, Vector3.up);
+        angle = Vector3.SignedAngle(direction, player.forward, Vector3.up);
         damageIndicatorPivot.transform.localEulerAngles = new Vector3(0f, 0f, angle);
     }
 

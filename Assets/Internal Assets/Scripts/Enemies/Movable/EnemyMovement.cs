@@ -293,7 +293,15 @@ public class EnemyMovement : MonoBehaviour
 
                 if (startSearch)
                 {
-                    agent.SetDestination(searchCentrePoint.position);
+                    if (searchCentrePoint != null)
+                    {
+                        agent.SetDestination(searchCentrePoint.position);
+                    }
+                    else
+                    {
+                        searchCentrePoint = GameObject.FindWithTag("SearchPoint").transform;
+                        agent.SetDestination(searchCentrePoint.position);
+                    }
                     if (agent.remainingDistance <= agent.stoppingDistance)
                     {
                         startSearch = false;

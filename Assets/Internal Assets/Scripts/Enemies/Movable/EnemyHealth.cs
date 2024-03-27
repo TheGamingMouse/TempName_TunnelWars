@@ -19,6 +19,11 @@ public class EnemyHealth : MonoBehaviour
 
     [Header("GameObjects")]
     GameObject enemyObj;
+    [SerializeField] GameObject ammoDrop; // SerializeField is Important!
+    GameObject spawnedPrefabs;
+
+    [Header("Transforms")]
+    Transform spawnedDrops;
 
     #endregion
 
@@ -29,6 +34,8 @@ public class EnemyHealth : MonoBehaviour
     {
         health = maxHealth;
         enemyObj = GetComponentInParent<enemy>().gameObject;
+        spawnedPrefabs = GameObject.FindGameObjectWithTag("Prefabs");
+        spawnedDrops = spawnedPrefabs.transform.Find("SpawnedDrops");
     }
 
     // Update is called once per frame
@@ -48,6 +55,12 @@ public class EnemyHealth : MonoBehaviour
 
         if (health <= 0)
         {
+            int i = UnityEngine.Random.Range(1, 101);
+            if (i > 20)
+            {
+                print(i);
+                Instantiate(ammoDrop, new Vector3(transform.position.x, 0.4f, transform.position.z), Quaternion.identity, spawnedDrops);
+            } 
             Destroy(enemyObj);
         }
     }

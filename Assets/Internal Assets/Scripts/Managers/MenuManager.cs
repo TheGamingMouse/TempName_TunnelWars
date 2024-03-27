@@ -20,12 +20,18 @@ public class MenuManager : MonoBehaviour, IDataPersistence
     float masterVolume;
     float musicVolume;
     float sfxVolume;
+    float mouseSens;
+    float uiScale = 5f;
     float masterSliderValue;
     float musicSliderValue;
     float sfxSliderValue;
+    float sensSliderValue;
+    float uiScaleSliderValue;
     float toSaveMasterSliderValue;
     float toSaveMusicSliderValue;
     float toSaveSFXSliderValue;
+    float toSaveSensSliderValue;
+    float toSaveUIScaleSliderValue;
 
     [Header("Bools")]
     bool watchCursor;
@@ -34,6 +40,7 @@ public class MenuManager : MonoBehaviour, IDataPersistence
     [Header("Lists")]
     List<Color> colors1 = new();
     List<Color> colors2 = new();
+    readonly List<AudioSource> audioSourcePool = new();
 
     [Header("Arrays")]
     Resolution[] resolutions;
@@ -58,6 +65,8 @@ public class MenuManager : MonoBehaviour, IDataPersistence
     [SerializeField] TMP_Text masterVolumeText; // SerializeField is Important!
     [SerializeField] TMP_Text musicVolumeText; // SerializeField is Important!
     [SerializeField] TMP_Text sfxVolumeText; // SerializeField is Important!
+    [SerializeField] TMP_Text mouseSensText; // SerializeField is Important!
+    [SerializeField] TMP_Text uiScaleText; // SerializeField is Important!
 
     [Header("Dropdowns")]
     [SerializeField] TMP_Dropdown resolutionDropdown; // SerializeField is Important!
@@ -65,7 +74,9 @@ public class MenuManager : MonoBehaviour, IDataPersistence
     [Header("Sliders")]
     [SerializeField] Slider masterVolumeSlider; // SerializeField is Important!
     [SerializeField] Slider musicVolumeSlider; // SerializeField is Important!
-    [SerializeField] Slider SFXVolumeSlider; // SerializeField is Important!
+    [SerializeField] Slider sfxVolumeSlider; // SerializeField is Important!
+    [SerializeField] Slider mouseSensSlider; // SerializeField is Important!
+    [SerializeField] Slider uiScaleSlider;  // SerializeField is Important!
 
     [Header("Vector3s")]
     Vector3 mousePos;
@@ -78,6 +89,13 @@ public class MenuManager : MonoBehaviour, IDataPersistence
     [Header("Images")]
     Image bodyColor;
     Image rifleColor;
+
+    [Header("AudioClips")]
+    AudioClip audioUIClick;
+    AudioClip audioUIHover;
+    AudioClip audioWarning;
+    AudioClip audioSliderChange;
+    AudioClip audioButtonSelect;
 
     [Header("Colors")]
     Color c1 = Color.black;
@@ -93,6 +111,8 @@ public class MenuManager : MonoBehaviour, IDataPersistence
     [Header("Components")]
     [SerializeField] SaveSlotsMenu saveSlotsMenu; // SerializeField is Important!
     [SerializeField] AudioMixer audioMixer; // SerializeField is Important!
+    [SerializeField] AudioMixerGroup sfxVolumeMixer; // SerializeField is Important!
+    MenuManagerAudioStorage phmm;
     
     #endregion
 
@@ -112,6 +132,14 @@ public class MenuManager : MonoBehaviour, IDataPersistence
         initialRotation = playerObject.transform.rotation;
 
         AddColorsToList();
+
+        phmm = GameObject.FindGameObjectWithTag("Storage").transform.Find("AudioStorages/MenuManager").GetComponent<MenuManagerAudioStorage>();
+
+        audioUIClick = phmm.audioUIClick;
+        audioUIHover = phmm.audioUIHover;
+        audioWarning = phmm.audioWarning;
+        audioSliderChange = phmm.audioSliderChange;
+        audioButtonSelect = phmm.audioButtonSelect;
 
         if (!DataPersistenceManager.Instance.HasGameData())
         {
@@ -147,6 +175,9 @@ public class MenuManager : MonoBehaviour, IDataPersistence
         SetMusicVolume(musicVolume);
         SetSFXVolume(sfxVolume);
 
+        SetSens(mouseSens * 20);
+        SetUIScale(uiScale * 5);
+
         SetResolution(currentResolution);
 
         watchCursor = true;
@@ -178,6 +209,9 @@ public class MenuManager : MonoBehaviour, IDataPersistence
             UpdateMasterVolumeSlider(masterSliderValue);
             UpdateMusicVolumeSlider(musicSliderValue);
             UpdateSFXVolumeSlider(sfxSliderValue);
+
+            UpdateSensSlider(sensSliderValue);
+            UpdateUIScaleSlider(uiScaleSliderValue);
 
             slidersUpdated = true;
         }
@@ -330,7 +364,28 @@ public class MenuManager : MonoBehaviour, IDataPersistence
         sfxVolumeText.text = $"{volumePercent}%";
         
         sfxVolume = volume;
-        toSaveSFXSliderValue = SFXVolumeSlider.value;
+        toSaveSFXSliderValue = sfxVolumeSlider.value;
+    }
+
+    public void SetSens(float sens)
+    {
+        mouseSensText.text = $"{sens}%";
+
+        mouseSens = sens / 20;
+        toSaveSensSliderValue = mouseSensSlider.value;
+    }
+
+    public void SetUIScale(float scale)
+    {
+        uiScaleText.text = $"{scale * 10}%";
+
+        uiScale = scale / 5;
+        toSaveUIScaleSliderValue = uiScaleSlider.value;
+    }
+
+    public void ApplyUIScale()
+    {
+        transform.localScale = new Vector3(uiScale, uiScale, uiScale);
     }
 
     public void SetFullscreen(bool isFullscreen)
@@ -356,7 +411,42 @@ public class MenuManager : MonoBehaviour, IDataPersistence
 
     void UpdateSFXVolumeSlider(float volume)
     {
-        SFXVolumeSlider.value = volume;
+        sfxVolumeSlider.value = volume;
+    }
+
+    void UpdateSensSlider(float sens)
+    {
+        mouseSensSlider.value = sens;
+    }
+
+    void UpdateUIScaleSlider(float scale)
+    {
+        uiScaleSlider.value = scale;
+    }
+
+    public void UIClick()
+    {
+        PlayClip(audioUIClick);
+    }
+
+    public void UIClickWarning()
+    {
+        PlayClip(audioWarning);
+    }
+
+    public void UIHover()
+    {
+        PlayClip(audioUIHover);
+    }
+
+    public void UISliderChange()
+    {
+        PlayClip(audioSliderChange);
+    }
+
+    public void UIButtonSelect()
+    {
+        PlayClip(audioButtonSelect);
     }
 
     public void ContinueGame()
@@ -394,6 +484,12 @@ public class MenuManager : MonoBehaviour, IDataPersistence
         masterSliderValue = data.masterSliderValue;
         musicSliderValue = data.musicSliderValue;
         sfxSliderValue = data.sfxSliderValue;
+
+        mouseSens = data.mouseSens;
+        sensSliderValue = data.sensSliderValue;
+
+        uiScale = data.uiScale;
+        uiScaleSliderValue = data.uiScaleSliderValue;
     }
 
     public void SaveData(ref GameData data)
@@ -408,7 +504,64 @@ public class MenuManager : MonoBehaviour, IDataPersistence
         data.masterSliderValue = toSaveMasterSliderValue;
         data.musicSliderValue = toSaveMusicSliderValue;
         data.sfxSliderValue = toSaveSFXSliderValue;
+
+        data.mouseSens = mouseSens;
+        data.sensSliderValue = toSaveSensSliderValue;
+
+        data.uiScale = uiScale;
+        data.uiScaleSliderValue = toSaveUIScaleSliderValue;
     }
 
+    #endregion
+
+    #region AudioMethods
+
+    AudioSource AddNewSourceToPool()
+    {
+        audioMixer.GetFloat("sfxVolume", out float dBSFX);
+        float SFXVolume = Mathf.Pow(10.0f, dBSFX / 20.0f);
+
+        audioMixer.GetFloat("masterVolume", out float dBMaster);
+        float masterVolume = Mathf.Pow(10.0f, dBMaster / 20.0f);
+        
+        float realVolume = (SFXVolume + masterVolume) / 2 * 0.05f;
+        
+        AudioSource newSource = gameObject.AddComponent<AudioSource>();
+        newSource.playOnAwake = false;
+        newSource.volume = realVolume;
+        newSource.spatialBlend = 1f;
+        newSource.outputAudioMixerGroup = sfxVolumeMixer;
+        audioSourcePool.Add(newSource);
+        return newSource;
+    }
+
+    AudioSource GetAvailablePoolSource()
+    {
+        //Fetch the first source in the pool that is not currently playing anything
+        foreach (var source in audioSourcePool)
+        {
+            if (!source.isPlaying)
+            {
+                return source;
+            }
+        }
+ 
+        //No unused sources. Create and fetch a new source
+        return AddNewSourceToPool();
+    }
+
+    void PlayClip(AudioClip clip)
+    {
+        AudioSource source = GetAvailablePoolSource();
+        source.clip = clip;
+        source.Play();
+    }
+
+    #endregion
+
+    #region Credits
+
+    // Main Menu music by Luca Francini
+    
     #endregion
 }

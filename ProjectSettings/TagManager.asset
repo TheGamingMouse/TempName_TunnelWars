@@ -18,6 +18,9 @@ TagManager:
   - Undefined
   - SearchPoint
   - StartCam
+  - MoveCollider
+  - AmmoPickup
+  - Managers
   layers:
   - Default
   - TransparentFX

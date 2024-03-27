@@ -30,18 +30,24 @@ public class UIManagers : MonoBehaviour, IDataPersistence
     float masterVolume;
     float musicVolume;
     float sfxVolume;
+    public float mouseSens;
+    float uiScale;
     float masterSliderValue;
     float musicSliderValue;
     float sfxSliderValue;
+    float sensSliderValue;
+    float uiScaleSliderValue;
     float toSaveMasterSliderValue;
     float toSaveMusicSliderValue;
     float toSaveSFXSliderValue;
+    float toSaveSensSliderValue;
+    float toSaveUIScaleSliderValue;
 
     [Header("Bools")]
     bool reloading;
     bool gameStarted;
     bool scriptFound;
-    bool paused;
+    public bool paused;
     bool slidersUpdated;
 
     [Header("Strings")]
@@ -61,7 +67,7 @@ public class UIManagers : MonoBehaviour, IDataPersistence
     [Header("Transforms")]
     Transform canvas;
     Transform player;
-    Transform damageIndicatorPivot;
+    Transform spawnedDamageIndicators;
     
     [Header("TMP_Texts")]
     TMP_Text ammoText;
@@ -70,6 +76,8 @@ public class UIManagers : MonoBehaviour, IDataPersistence
     TMP_Text masterVolumeText;
     TMP_Text musicVolumeText;
     TMP_Text sfxVolumeText;
+    TMP_Text mouseSensText;
+    TMP_Text uiScaleText;
 
     [Header("Dropdowns")]
     TMP_Dropdown resolutionDropdown;
@@ -78,6 +86,8 @@ public class UIManagers : MonoBehaviour, IDataPersistence
     Slider masterVolumeSlider;
     Slider musicVolumeSlider;
     Slider SFXVolumeSlider;
+    Slider mouseSensSlider;
+    Slider uiScaleSlider;
 
     [Header("Images")]
     Image healthImg;
@@ -115,7 +125,7 @@ public class UIManagers : MonoBehaviour, IDataPersistence
     // Start is called before the first frame update
     void Start()
     {
-        canvas = GameObject.FindGameObjectWithTag("UI").transform;
+        canvas = GameObject.FindGameObjectWithTag("UI").transform.Find("CanvasScale");
         camObj = Camera.main.gameObject;
         player = GameObject.FindGameObjectWithTag("Player").transform;
         optionsMenu = canvas.Find("PauseMenu/OptionsMenu").gameObject;
@@ -123,7 +133,7 @@ public class UIManagers : MonoBehaviour, IDataPersistence
         gameOverObj = canvas.Find("DeathScreenPanel").gameObject;
         levelCompleteObj = canvas.Find("LevelCompletePanel").gameObject;
         pauseObj = canvas.Find("PauseMenu").gameObject;
-        damageIndicatorPivot = canvas.Find("DamageIndicatorPivot");
+        spawnedDamageIndicators = canvas.Find("SpawnedDamageIndicators");
         
         playerHealthScript = player.GetComponentInChildren<PlayerHealth>();
 
@@ -133,12 +143,16 @@ public class UIManagers : MonoBehaviour, IDataPersistence
         masterVolumeText = optionsMenu.transform.Find("VolumeObject/VolumeText (TMP)/MasterVolumeText (TMP)/MasterVolumeText (TMP)").GetComponent<TMP_Text>();
         musicVolumeText = optionsMenu.transform.Find("VolumeObject/VolumeText (TMP)/MusicVolumeText (TMP)/MusicVolumeText (TMP)").GetComponent<TMP_Text>();
         sfxVolumeText = optionsMenu.transform.Find("VolumeObject/VolumeText (TMP)/SFXVolumeText (TMP)/SFXVolumeText (TMP)").GetComponent<TMP_Text>();
+        mouseSensText = optionsMenu.transform.Find("MouseSensObject/SensText (TMP)/SensText (TMP)").GetComponent<TMP_Text>();
+        uiScaleText = optionsMenu.transform.Find("UISclaeObject/UIText (TMP)/UIText (TMP)").GetComponent<TMP_Text>();
 
         resolutionDropdown = optionsMenu.transform.Find("ResolutionObject/ResolutionDropdown").GetComponent<TMP_Dropdown>();
 
         masterVolumeSlider = optionsMenu.transform.Find("VolumeObject/VolumeSliders/MasterSlider").GetComponent<Slider>();
         musicVolumeSlider = optionsMenu.transform.Find("VolumeObject/VolumeSliders/MusicSlider").GetComponent<Slider>();
         SFXVolumeSlider = optionsMenu.transform.Find("VolumeObject/VolumeSliders/SFXSlider").GetComponent<Slider>();
+        mouseSensSlider = optionsMenu.transform.Find("MouseSensObject/SensSlider").GetComponent<Slider>();
+        uiScaleSlider = optionsMenu.transform.Find("UISclaeObject/UISlider").GetComponent<Slider>();
 
         healthImg = canvas.Find("Health/Health").GetComponent<Image>();
         healthText = canvas.Find("Health/HealthText (TMP)").GetComponent<TMP_Text>();
@@ -172,6 +186,9 @@ public class UIManagers : MonoBehaviour, IDataPersistence
         SetMasterVolume(masterVolume);
         SetMusicVolume(musicVolume);
         SetSFXVolume(sfxVolume);
+
+        SetSens(mouseSens * 20);
+        SetUIScale(uiScale * 5);
 
         SetResolution(currentResolution);
     }
@@ -227,20 +244,25 @@ public class UIManagers : MonoBehaviour, IDataPersistence
             if (Input.GetKeyDown(KeyCode.Escape) && !paused)
             {
                 Pause();
+                Time.timeScale = 0f;
             }
             else if (Input.GetKeyDown(KeyCode.Escape) && paused)
             {
                 Unpause();
+                Time.timeScale = 1f;
             }
 
             if (masterSliderValue > -100 && !slidersUpdated)
-        {
-            UpdateMasterVolumeSlider(masterSliderValue);
-            UpdateMusicVolumeSlider(musicSliderValue);
-            UpdateSFXVolumeSlider(sfxSliderValue);
+            {
+                UpdateMasterVolumeSlider(masterSliderValue);
+                UpdateMusicVolumeSlider(musicSliderValue);
+                UpdateSFXVolumeSlider(sfxSliderValue);
 
-            slidersUpdated = true;
-        }
+                UpdateSensSlider(sensSliderValue);
+                UpdateUIScaleSlider(uiScaleSliderValue);
+
+                slidersUpdated = true;
+            }
         }
     }
 
@@ -320,6 +342,12 @@ public class UIManagers : MonoBehaviour, IDataPersistence
         masterSliderValue = data.masterSliderValue;
         musicSliderValue = data.musicSliderValue;
         sfxSliderValue = data.sfxSliderValue;
+
+        mouseSens = data.mouseSens;
+        sensSliderValue = data.sensSliderValue;
+
+        uiScale = data.uiScale;
+        uiScaleSliderValue = data.uiScaleSliderValue;
     }
 
     public void SaveData(ref GameData data)
@@ -331,6 +359,12 @@ public class UIManagers : MonoBehaviour, IDataPersistence
         data.masterSliderValue = toSaveMasterSliderValue;
         data.musicSliderValue = toSaveMusicSliderValue;
         data.sfxSliderValue = toSaveSFXSliderValue;
+
+        data.mouseSens = mouseSens;
+        data.sensSliderValue = toSaveSensSliderValue;
+
+        data.uiScale = uiScale;
+        data.uiScaleSliderValue = toSaveUIScaleSliderValue;
     }
 
     #endregion
@@ -370,6 +404,27 @@ public class UIManagers : MonoBehaviour, IDataPersistence
         toSaveSFXSliderValue = SFXVolumeSlider.value;
     }
 
+    public void SetSens(float sens)
+    {
+        mouseSensText.text = $"{sens}%";
+
+        mouseSens = sens / 20;
+        toSaveSensSliderValue = mouseSensSlider.value;
+    }
+
+    public void SetUIScale(float scale)
+    {
+        uiScaleText.text = $"{scale * 10}%";
+
+        uiScale = scale / 5;
+        toSaveUIScaleSliderValue = uiScaleSlider.value;
+    }
+
+    public void ApplyUIScale()
+    {
+        canvas.localScale = new Vector3(uiScale, uiScale, uiScale);
+    }
+
     public void SetFullscreen(bool isFullscreen)
     {
         Screen.fullScreen = isFullscreen;
@@ -396,6 +451,16 @@ public class UIManagers : MonoBehaviour, IDataPersistence
         SFXVolumeSlider.value = volume;
     }
 
+    void UpdateSensSlider(float sens)
+    {
+        mouseSensSlider.value = sens;
+    }
+
+    void UpdateUIScaleSlider(float scale)
+    {
+        uiScaleSlider.value = scale;
+    }
+
     #endregion
 
     #region SubscriptionHandlers
@@ -408,7 +473,7 @@ public class UIManagers : MonoBehaviour, IDataPersistence
 
     void HandleDamageTaken()
     {
-        Instantiate(damageIndicatorPrefab, damageIndicatorPivot);
+        Instantiate(damageIndicatorPrefab, spawnedDamageIndicators);
     }
 
     void HandleLevelComplete()

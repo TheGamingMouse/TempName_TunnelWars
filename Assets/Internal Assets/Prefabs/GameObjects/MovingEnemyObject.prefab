@@ -257,6 +257,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: beb6b77c4d00ad045b03773b8ded813a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ammoDrop: {fileID: 7330818751500835467, guid: 3f8816bf4f9b7a340aa2ccbdafbf5b79, type: 3}
 --- !u!114 &5878140565965143692
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5453,8 +5454,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cState: 0
   combatting: 0
+  soundMade: 0
   emptyPoint: {fileID: 7004533130307380207, guid: 31a312a35415523408a92be9e6e94c3d, type: 3}
-  centrePoint: {fileID: 0}
+  searchCentrePoint: {fileID: 0}
   audioMixer: {fileID: 24100000, guid: 6d0b19c81c5866d45a9217b1eed60eb3, type: 2}
   sfxVolume: {fileID: 2801275425284752312, guid: 6d0b19c81c5866d45a9217b1eed60eb3, type: 2}
 --- !u!114 &4415443265374177167

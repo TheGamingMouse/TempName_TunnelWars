@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5633981717178212239}
   m_Layer: 0
   m_Name: Managers
-  m_TagString: Untagged
+  m_TagString: Managers
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -77,6 +77,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ed785eb63bb11e4cbf8323a34fb959e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  paused: 0
   damageIndicatorPrefab: {fileID: 8784631755969782226, guid: 4452de0836bea1f4bb399ed85370431d, type: 3}
   audioMixer: {fileID: 24100000, guid: 6d0b19c81c5866d45a9217b1eed60eb3, type: 2}
 --- !u!1 &6798920926814659415

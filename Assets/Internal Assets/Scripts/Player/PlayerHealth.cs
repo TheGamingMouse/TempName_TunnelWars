@@ -21,7 +21,7 @@ public class PlayerHealth : MonoBehaviour, IDataPersistence
     [Header("Ints")]
     readonly int maxHealth = 100;
     public int health;
-    [SerializeField] int deathCount;
+    int deathCount;
     int cIndex;
 
     [Header("Bools")]

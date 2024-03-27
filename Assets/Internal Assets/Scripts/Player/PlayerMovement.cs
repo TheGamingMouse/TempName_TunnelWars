@@ -23,8 +23,8 @@ public class PlayerMovement : MonoBehaviour
     readonly float crouchSpeed = 2.5f; 
     public float jumpHeight = 2f;
     readonly float sprintSpeed = 7.5f;
-    public float sensX = 1.25f;
-    public float sensY = 1.25f;
+    public float sensX;
+    public float sensY;
     float mouseX;
     float mouseY;
     float xRot;
@@ -128,6 +128,31 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!mainMenu)
+        {
+            sensX = GameObject.FindWithTag("Managers").transform.Find("UIManager").GetComponent<UIManagers>().mouseSens;
+            sensY = GameObject.FindWithTag("Managers").transform.Find("UIManager").GetComponent<UIManagers>().mouseSens;
+
+            if ((move.x != 0 || move.z != 0) && moveSpeedCurr != sprintSpeed && !playWalkingAudio && !playRunningAudio)
+            {
+                StartCoroutine(WalkingAudio());
+                playWalkingAudio = true;
+            }
+            else if ((move.x != 0 || move.z != 0) && moveSpeedCurr == sprintSpeed && !playRunningAudio && !playWalkingAudio)
+            {
+                StartCoroutine(RunningAudio());
+                playRunningAudio = true;
+            }
+            else if (((move.x == 0 && move.z == 0) || Input.GetKeyDown(KeyCode.LeftShift)) && (playWalkingAudio || playRunningAudio))
+            {
+                StopCoroutine(nameof(WalkingAudio));
+                StopCoroutine(nameof(RunningAudio));
+
+                StopClip(audioWalking);
+                StopClip(audioRunning);
+            }
+        }
+
         if (!scriptFound)
         {
             groundCheck = GetComponentInChildren<GroundedCheck>();
@@ -152,25 +177,6 @@ public class PlayerMovement : MonoBehaviour
         yRot += mouseX;
         xRot -= mouseY;
         xRot = Mathf.Clamp(xRot, -80f, 70f);
-
-        if ((move.x != 0 || move.z != 0) && moveSpeedCurr != sprintSpeed && !playWalkingAudio && !playRunningAudio)
-        {
-            StartCoroutine(WalkingAudio());
-            playWalkingAudio = true;
-        }
-        else if ((move.x != 0 || move.z != 0) && moveSpeedCurr == sprintSpeed && !playRunningAudio && !playWalkingAudio)
-        {
-            StartCoroutine(RunningAudio());
-            playRunningAudio = true;
-        }
-        else if (((move.x == 0 && move.z == 0) || Input.GetKeyDown(KeyCode.LeftShift)) && (playWalkingAudio || playRunningAudio))
-        {
-            StopCoroutine(nameof(WalkingAudio));
-            StopCoroutine(nameof(RunningAudio));
-
-            StopClip(audioWalking);
-            StopClip(audioRunning);
-        }
 
         if (moveBool)
         {
@@ -242,6 +248,11 @@ public class PlayerMovement : MonoBehaviour
 
             rb.useGravity = false;
             rb.velocity = Vector3.zero;
+        }
+
+        if (coll.transform.CompareTag("AmmoPickup"))
+        {
+            rifle.GetComponent<Rifle>().totalAmmo += coll.GetComponent<AmmoDrop>().ammount;
         }
     }
 
