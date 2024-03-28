@@ -244,12 +244,10 @@ public class UIManagers : MonoBehaviour, IDataPersistence
             if (Input.GetKeyDown(KeyCode.Escape) && !paused)
             {
                 Pause();
-                Time.timeScale = 0f;
             }
             else if (Input.GetKeyDown(KeyCode.Escape) && paused)
             {
                 Unpause();
-                Time.timeScale = 1f;
             }
 
             if (masterSliderValue > -100 && !slidersUpdated)
@@ -320,6 +318,8 @@ public class UIManagers : MonoBehaviour, IDataPersistence
 
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
+
+        Time.timeScale = 0f;
     }
 
     public void Unpause()
@@ -331,6 +331,8 @@ public class UIManagers : MonoBehaviour, IDataPersistence
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        Time.timeScale = 1f;
     }
 
     public void LoadData(GameData data)

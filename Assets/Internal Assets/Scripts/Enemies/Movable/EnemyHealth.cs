@@ -58,7 +58,6 @@ public class EnemyHealth : MonoBehaviour
             int i = UnityEngine.Random.Range(1, 101);
             if (i > 20)
             {
-                print(i);
                 Instantiate(ammoDrop, new Vector3(transform.position.x, 0.4f, transform.position.z), Quaternion.identity, spawnedDrops);
             } 
             Destroy(enemyObj);

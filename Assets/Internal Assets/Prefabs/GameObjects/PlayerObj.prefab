@@ -11214,7 +11214,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 0
-  godMode: 0
+  godMode: 1
   mainMenu: 0
   dmgDirection: {x: 0, y: 0, z: 0}
   audioMixer: {fileID: 24100000, guid: 6d0b19c81c5866d45a9217b1eed60eb3, type: 2}
@@ -11745,7 +11745,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1957045967022060389}
   m_Layer: 5
-  m_Name: DamageIndicatorPivot
+  m_Name: SpawnedDamageIndicators
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -18822,7 +18822,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5992187789226985132
 RectTransform:
   m_ObjectHideFlags: 0

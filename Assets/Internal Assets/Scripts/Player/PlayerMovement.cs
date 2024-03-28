@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Cinemachine;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.EventSystems;
@@ -19,8 +20,8 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Floats")]
     readonly float moveSpeedBase = 5f;
-    float moveSpeedCurr;
-    readonly float crouchSpeed = 2.5f; 
+    [SerializeField] float moveSpeedCurr;
+    readonly float crouchSpeed = 4f; 
     public float jumpHeight = 2f;
     readonly float sprintSpeed = 7.5f;
     public float sensX;
@@ -34,10 +35,14 @@ public class PlayerMovement : MonoBehaviour
     bool isOnGround;
     public bool crouched;
     public bool moveBool;
-    [SerializeField] bool playWalkingAudio;
-    [SerializeField] bool playRunningAudio;
+    bool playWalkingAudio;
+    bool playRunningAudio;
     bool scriptFound;
     [SerializeField] bool mainMenu = false; // SerializeField is Important!
+    [SerializeField] bool aiming;
+    [SerializeField] bool speedAltered;
+    bool speedAlteredSprint;
+    [SerializeField] bool speedAlteredCrouched;
 
     [Header("Lists")]
     readonly List<AudioSource> audioSourcePool = new();
@@ -184,32 +189,58 @@ public class PlayerMovement : MonoBehaviour
             transform.rotation = Quaternion.Euler(0f, yRot, 0f);
         }
 
-        if (Input.GetKey(KeyCode.LeftShift) && isOnGround && moveBool && !Input.GetKey(KeyCode.LeftControl))
+        if (Input.GetKey(KeyCode.LeftShift) && isOnGround && moveBool && !Input.GetKey(KeyCode.LeftControl) && !aiming)
         {
             moveSpeedCurr = sprintSpeed;
+            speedAlteredSprint = true;
         }
-        else
+        else if (speedAlteredSprint)
         {
             moveSpeedCurr = moveSpeedBase;
+            speedAlteredSprint = false;
+            speedAltered = false;
         }
 
         if (Input.GetKeyDown(KeyCode.LeftControl) && moveBool && !Input.GetKey(KeyCode.LeftShift))
         {
             transform.localScale = new Vector3(1f, 0.5f, 1f);
             transform.position = new Vector3(transform.position.x, transform.position.y - 0.5f, transform.position.z);
-
-            moveSpeedCurr = crouchSpeed;
             
             crouched = true;
+            speedAltered = false;
         }
         else if (Input.GetKeyUp(KeyCode.LeftControl) && moveBool && !Input.GetKey(KeyCode.LeftShift))
         {
             transform.localScale = new Vector3(1f, 1f, 1f);
             transform.position = new Vector3(transform.position.x, transform.position.y + 0.5f, transform.position.z);
-
-            moveSpeedCurr = moveSpeedBase;
             
             crouched = false;
+            speedAltered = false;
+        }
+
+        aiming = rifle.GetComponent<Rifle>().aiming;
+
+        if (crouched && !speedAlteredCrouched)
+        {
+            moveSpeedCurr = crouchSpeed;
+            speedAlteredCrouched = true;
+        }
+        else if (!crouched && speedAlteredCrouched)
+        {
+            moveSpeedCurr = moveSpeedBase;
+            speedAlteredCrouched = false;
+        }
+        
+        if (aiming && !speedAltered)
+        {
+            moveSpeedCurr *= 0.5f;
+            speedAltered = true;
+        }
+        else if (!aiming && speedAltered)
+        {
+            moveSpeedCurr = moveSpeedBase;
+            speedAltered = false;
+            
         }
     }
 

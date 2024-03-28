@@ -77,8 +77,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ed785eb63bb11e4cbf8323a34fb959e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mouseSens: 0
   paused: 0
-  damageIndicatorPrefab: {fileID: 8784631755969782226, guid: 4452de0836bea1f4bb399ed85370431d, type: 3}
+  damageIndicatorPrefab: {fileID: 5593970994506604774, guid: ad13ffa39a807bc49b03bb099d99b650, type: 3}
   audioMixer: {fileID: 24100000, guid: 6d0b19c81c5866d45a9217b1eed60eb3, type: 2}
 --- !u!1 &6798920926814659415
 GameObject:
