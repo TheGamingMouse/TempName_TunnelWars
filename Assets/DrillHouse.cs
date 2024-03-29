@@ -35,7 +35,7 @@ public class DrillHouse : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (drillIndicators.activeIndicators.Count() == 0)
+        if (drillIndicators.activatorIndicators.Count() == 0)
         {
             door.SetActive(false);
         }

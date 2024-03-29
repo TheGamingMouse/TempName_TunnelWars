@@ -13,7 +13,7 @@ public class DrillHouseIdicators : MonoBehaviour
     [Header("Lists")]
     public List<Radiostation> radiostations = new();
     List<Indicator> indicators = new();
-    public List<Indicator> activeIndicators = new();
+    public List<ActivatorIndicator> activatorIndicators = new();
 
     [Header("Components")]
     [SerializeField] DrillHouse drillHouse; //SerializeField is Important!
@@ -52,7 +52,8 @@ public class DrillHouseIdicators : MonoBehaviour
                 }
                 else
                 {
-                    activeIndicators.Add(i);
+                    i.GetComponentInChildren<ActivatorIndicator>().GetComponent<MeshRenderer>().material.color = Color.red;
+                    activatorIndicators.Add(i.GetComponentInChildren<ActivatorIndicator>());
                 }
             }
 
@@ -67,8 +68,8 @@ public class DrillHouseIdicators : MonoBehaviour
                 {
                     if (i.id == r.id)
                     {
-                        i.gameObject.SetActive(false);
-                        activeIndicators.Remove(i);
+                        i.GetComponentInChildren<ActivatorIndicator>().GetComponent<MeshRenderer>().material.color = Color.green;
+                        activatorIndicators.Remove(i.GetComponentInChildren<ActivatorIndicator>());
                     }
                 }
             }
