@@ -21,6 +21,8 @@ TagManager:
   - MoveCollider
   - AmmoPickup
   - Managers
+  - Radiostation
+  - Indicator
   layers:
   - Default
   - TransparentFX
