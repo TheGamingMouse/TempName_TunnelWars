@@ -51,5 +51,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "TempName_TunnelWars.sln"
+    "dotnet.defaultSolution": "Tunnel Wars.sln"
 }

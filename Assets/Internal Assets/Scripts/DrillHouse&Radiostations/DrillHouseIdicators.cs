@@ -12,7 +12,7 @@ public class DrillHouseIdicators : MonoBehaviour
 
     [Header("Lists")]
     public List<Radiostation> radiostations = new();
-    List<Indicator> indicators = new();
+    readonly List<Indicator> indicators = new();
     public List<ActivatorIndicator> activatorIndicators = new();
 
     [Header("Components")]

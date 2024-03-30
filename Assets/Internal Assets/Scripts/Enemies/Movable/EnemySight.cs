@@ -17,6 +17,7 @@ public class EnemySight : MonoBehaviour
     [Header("Floats")]
     public float range = 25f;
     readonly float fovAngle = 135f;
+    readonly float engangementRange = 50f;
 
     [Header("Bools")]
     public bool tracking;
@@ -52,13 +53,13 @@ public class EnemySight : MonoBehaviour
     void OnEnable()
     {
         EnemyHealth.OnDamageTaken += HandleDamageTaken;
-        EnemySight.OnTargetFound += HandlTargetFound;
+        EnemySight.OnTargetFound += HandleTargetFound;
     }
 
     void OnDisable()
     {
         EnemyHealth.OnDamageTaken -= HandleDamageTaken;
-        EnemySight.OnTargetFound += HandlTargetFound;
+        EnemySight.OnTargetFound += HandleTargetFound;
     }
     
     #endregion
@@ -162,16 +163,16 @@ public class EnemySight : MonoBehaviour
 
     void HandleDamageTaken()
     {
-        if (!target)
+        if (!target && Vector3.Distance(transform.position, player.position) < engangementRange)
         {
             target = player;
             StartCoroutine(PlayAudioTargetFound());
         }
     }
 
-    void HandlTargetFound()
+    void HandleTargetFound()
     {
-        if (!target)
+        if (!target && Vector3.Distance(transform.position, player.position) < engangementRange)
         {
             target = player;
             StartCoroutine(PlayAudioTargetFound());
@@ -271,6 +272,9 @@ public class EnemySight : MonoBehaviour
         {
             Gizmos.DrawLine(transform.position, player.position);
         }
+
+        Gizmos.color = Color.gray;
+        Gizmos.DrawWireSphere(transform.position, engangementRange);
 
         if (target)
         {

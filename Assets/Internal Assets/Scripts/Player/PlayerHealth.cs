@@ -26,7 +26,7 @@ public class PlayerHealth : MonoBehaviour, IDataPersistence
 
     [Header("Bools")]
     bool damageCooldown;
-    [SerializeField] bool godMode; // SerializeField is Important!
+    public bool godMode = false;
     [SerializeField] bool mainMenu = false; // SerializeField is Important!
     bool dead;
     bool colorsAdded;

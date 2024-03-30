@@ -8,11 +8,14 @@ public class TurretMovement : MonoBehaviour
 
     [Header("Enum States")]
     [SerializeField] CombatState cState;
+    [SerializeField] TurnState tState;
 
     [Header("Floats")]
     float rotSpeedCurr;
     readonly float rotSpeedCombat = 3f;
     readonly float rotSpeedSeeking = 1f;
+    float leftAngle;
+    float rightAngle;
 
     [Header("Bools")]
     [SerializeField] bool isLookingRight;
@@ -32,7 +35,7 @@ public class TurretMovement : MonoBehaviour
     void Start()
     {
         self = GetComponentInParent<Turret>().transform;
-        lookPoint1 = self.transform.Find("LookPoint1");
+        lookPoint1 = self.Find("LookPoint1");
         lookPoint2 = self.Find("LookPoint2");
 
         rotSpeedCurr = rotSpeedSeeking;
@@ -79,6 +82,29 @@ public class TurretMovement : MonoBehaviour
                 RotateToPlayer();
                 break;
         }
+        
+        switch (tState)
+        {
+            case TurnState.zero:
+                leftAngle = 135f;
+                rightAngle = 225f;
+                break;
+            
+            case TurnState.ninety:
+                leftAngle = 135f + 90f;
+                rightAngle = 225f + 90f;
+                break;
+            
+            case TurnState.oneEighty:
+                leftAngle = 135f + 180f;
+                rightAngle = 225f + 180f;
+                break;
+            
+            case TurnState.twoSeventy:
+                leftAngle = 135f + 270f;
+                rightAngle = 225f + 270f;
+                break;
+        }
     }
 
     #endregion
@@ -100,7 +126,7 @@ public class TurretMovement : MonoBehaviour
 
         transform.rotation = Quaternion.LookRotation(newDirection);
 
-        if (Quaternion.LookRotation(newDirection).eulerAngles.y >= 225f || Quaternion.LookRotation(newDirection).eulerAngles.y <= 135f)
+        if (Quaternion.LookRotation(newDirection).eulerAngles.y >= rightAngle || Quaternion.LookRotation(newDirection).eulerAngles.y <= leftAngle)
         {
             if (isLookingRight)
             {
@@ -121,6 +147,14 @@ public class TurretMovement : MonoBehaviour
     {
         Seeking,
         Combat
+    }
+
+    enum TurnState
+    {
+        zero,
+        ninety,
+        oneEighty,
+        twoSeventy
     }
 
     #endregion

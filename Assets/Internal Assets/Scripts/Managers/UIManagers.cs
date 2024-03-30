@@ -78,6 +78,7 @@ public class UIManagers : MonoBehaviour, IDataPersistence
     TMP_Text sfxVolumeText;
     TMP_Text mouseSensText;
     TMP_Text uiScaleText;
+    TMP_Text promtText;
 
     [Header("Dropdowns")]
     TMP_Dropdown resolutionDropdown;
@@ -139,6 +140,7 @@ public class UIManagers : MonoBehaviour, IDataPersistence
 
         ammoText = canvas.Find("AmmoText (TMP)").GetComponent<TMP_Text>();
         fireModeText = canvas.Find("FireModeText (TMP)").GetComponent<TMP_Text>();
+        promtText = canvas.Find("PromtText (TMP)").GetComponent<TMP_Text>();
         
         masterVolumeText = optionsMenu.transform.Find("VolumeObject/VolumeText (TMP)/MasterVolumeText (TMP)/MasterVolumeText (TMP)").GetComponent<TMP_Text>();
         musicVolumeText = optionsMenu.transform.Find("VolumeObject/VolumeText (TMP)/MusicVolumeText (TMP)/MusicVolumeText (TMP)").GetComponent<TMP_Text>();
@@ -225,6 +227,7 @@ public class UIManagers : MonoBehaviour, IDataPersistence
             UpdateFireModeText();
             UpdateHealthFill();
             UpdateReload();
+            UpdatePromt();
 
             switch (fmState)
             {
@@ -273,6 +276,7 @@ public class UIManagers : MonoBehaviour, IDataPersistence
         gameOverObj.SetActive(false);
         levelCompleteObj.SetActive(false);
         pauseObj.SetActive(false);
+        promtText.gameObject.SetActive(false);
 
         canvas.gameObject.SetActive(false);
     }
@@ -306,6 +310,19 @@ public class UIManagers : MonoBehaviour, IDataPersistence
         else
         {
             reloadImg.fillAmount = 0f;
+        }
+    }
+
+    void UpdatePromt()
+    {
+        if (player.GetComponent<Interactor>().promtFound && !player.GetComponent<Interactor>().colliders[0].GetComponent<PlaceBomb>().bombPlanted)
+        {
+            promtText.gameObject.SetActive(true);
+            promtText.text = $"{player.GetComponent<Interactor>().colliders[0].GetComponent<IInteractable>().promt}";
+        }
+        else
+        {
+            promtText.gameObject.SetActive(false);
         }
     }
 
