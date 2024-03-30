@@ -11189,14 +11189,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6254182831c7e6d4bbb6a30c4efd0c3b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  moveSpeedCurr: 0
   jumpHeight: 2
   sensX: 5
   sensY: 5
   crouched: 0
   moveBool: 0
-  playWalkingAudio: 0
-  playRunningAudio: 0
   mainMenu: 0
+  aiming: 0
+  speedAltered: 0
+  speedAlteredCrouched: 0
   rifle: {fileID: 2713590575609376726}
   dummyRifle: {fileID: 3527139072364415901}
   audioMixer: {fileID: 24100000, guid: 6d0b19c81c5866d45a9217b1eed60eb3, type: 2}
@@ -12969,16 +12971,16 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3415950638484762258}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2.5, y: 2.5, z: 2.5}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -0.0027874333}
+  m_LocalScale: {x: 2.5000002, y: 2.5000005, z: 2.5000005}
   m_ConstrainProportionsScale: 1
   m_Children: []
-  m_Father: {fileID: 5992187789226985132}
+  m_Father: {fileID: 700089355548837704}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -0.0019886494, y: 13.497511}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5449156151690968825
@@ -15401,6 +15403,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5992187789226985132}
+  - {fileID: 737253437359579938}
   - {fileID: 4412828171546256722}
   - {fileID: 5382952303442539431}
   - {fileID: 494303740654047745}
@@ -18834,8 +18837,7 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: -0.0022996324}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 737253437359579938}
+  m_Children: []
   m_Father: {fileID: 700089355548837704}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}

@@ -156,7 +156,7 @@ public class UIManagers : MonoBehaviour, IDataPersistence
 
         healthImg = canvas.Find("Health/Health").GetComponent<Image>();
         healthText = canvas.Find("Health/HealthText (TMP)").GetComponent<TMP_Text>();
-        reloadImg = canvas.Find("Crosshair/Reload").GetComponent<Image>();
+        reloadImg = canvas.Find("Reload").GetComponent<Image>();
 
         gameStarted = false;
 

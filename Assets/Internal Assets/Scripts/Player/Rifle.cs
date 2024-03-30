@@ -40,6 +40,8 @@ public class Rifle : MonoBehaviour, IDataPersistence
     bool bursting;
     bool actionBool;
     public bool soundMade;
+    bool colorsAdded;
+    bool colorChanged;
 
     [Header("Lists")]
     readonly List<AudioSource> audioSourcePool = new();
@@ -129,7 +131,11 @@ public class Rifle : MonoBehaviour, IDataPersistence
         crouching = FindObjectOfType<PlayerMovement>().crouched;
         actionBool = FindObjectOfType<PlayerMovement>().moveBool;
 
-        UpdateRifleColor();
+        if (colorsAdded && !colorChanged)
+        {
+            UpdateRifleColor();
+            colorChanged = true;
+        }
 
         if (recoilTimer > 0)
         {
@@ -357,6 +363,8 @@ public class Rifle : MonoBehaviour, IDataPersistence
         colors.Add(c7);
         colors.Add(c8);
         colors.Add(c9);
+
+        colorsAdded = true;
     }
 
     void UpdateRifleColor()

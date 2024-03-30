@@ -29,6 +29,8 @@ public class PlayerHealth : MonoBehaviour, IDataPersistence
     [SerializeField] bool godMode; // SerializeField is Important!
     [SerializeField] bool mainMenu = false; // SerializeField is Important!
     bool dead;
+    bool colorsAdded;
+    bool colorChanged;
 
     [Header("Lists")]
     readonly List<AudioSource> audioSourcePool = new();
@@ -83,7 +85,11 @@ public class PlayerHealth : MonoBehaviour, IDataPersistence
     {
         health = Mathf.Clamp(health, 0, maxHealth);
 
-        UpdatePlayerColor();
+        if (colorsAdded && !colorChanged)
+        {
+            UpdatePlayerColor();
+            colorChanged = true;
+        }
         
         if (!godMode)
         {
@@ -135,6 +141,8 @@ public class PlayerHealth : MonoBehaviour, IDataPersistence
         colors.Add(c7);
         colors.Add(c8);
         colors.Add(c9);
+
+        colorsAdded = true;
     }
 
     void UpdatePlayerColor()
