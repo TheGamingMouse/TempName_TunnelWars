@@ -101,8 +101,8 @@ public class TurretMovement : MonoBehaviour
                 break;
             
             case TurnState.twoSeventy:
-                leftAngle = 135f + 270f;
-                rightAngle = 225f + 270f;
+                leftAngle = 135f - 90f;
+                rightAngle = 225f - 90;
                 break;
         }
     }

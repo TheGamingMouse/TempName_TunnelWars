@@ -14,6 +14,8 @@ public class Cover : MonoBehaviour
     bool LOSLeft;
     bool LOSForward;
     bool LOSBackward;
+    bool gameStarted;
+    bool variablesFound;
 
     [Header("GameObjects")]
     GameObject head;
@@ -39,43 +41,68 @@ public class Cover : MonoBehaviour
 
     #endregion
 
+    #region Subscriptions
+
+    void OnEnable()
+    {
+        StartCamMovement.OnGameStart += HandleGameStart;
+    }
+
+    void OnDisable()
+    {
+        StartCamMovement.OnGameStart -= HandleGameStart;
+    }
+
+    #endregion
+
     #region StartUpdate
 
     void Start()
     {
-        playerHead = Camera.main.transform;
-        player = GameObject.FindGameObjectWithTag("Player").transform;
-        obstructionMask = LayerMask.GetMask("Terrain");
-        
-        headVector = new Vector3(transform.position.x, playerHead.position.y, transform.position.z);
-        rightVector = new Vector3(transform.position.x + 0.45f, transform.position.y, transform.position.z);
-        leftVector = new Vector3(transform.position.x - 0.45f, transform.position.y, transform.position.z);
-        forwardVector = new Vector3(transform.position.x, transform.position.y, transform.position.z + 0.45f);
-        backwardVector = new Vector3(transform.position.x, transform.position.y, transform.position.z - 0.45f);
-
-        head = Instantiate(emptyPrefab, headVector, Quaternion.identity, transform);
-        right = Instantiate(emptyPrefab, rightVector, Quaternion.identity, transform);
-        left = Instantiate(emptyPrefab, leftVector, Quaternion.identity, transform);
-        forward = Instantiate(emptyPrefab, forwardVector, Quaternion.identity, transform);
-        backward = Instantiate(emptyPrefab, backwardVector, Quaternion.identity, transform);
+        gameStarted = false;
+        variablesFound = false;
     }
 
     void Update()
     {
-        LOSBody = LineOfSightBody();
-        LOSHead = LineOfSightHead();
-        LOSRight = LineOfSightRight();
-        LOSLeft = LineOfSightLeft();
-        LOSForward = LineOfSightForward();
-        LOSBackward = LineOfSightBackward();
+        if (gameStarted)
+        {
+            if (!variablesFound)
+            {
+                playerHead = Camera.main.transform;
+                player = GameObject.FindGameObjectWithTag("Player").transform;
+                obstructionMask = LayerMask.GetMask("Terrain");
+                
+                headVector = new Vector3(transform.position.x, playerHead.position.y, transform.position.z);
+                rightVector = new Vector3(transform.position.x + 0.45f, transform.position.y, transform.position.z);
+                leftVector = new Vector3(transform.position.x - 0.45f, transform.position.y, transform.position.z);
+                forwardVector = new Vector3(transform.position.x, transform.position.y, transform.position.z + 0.45f);
+                backwardVector = new Vector3(transform.position.x, transform.position.y, transform.position.z - 0.45f);
 
-        if (!LOSBody && !LOSHead && !LOSRight && !LOSLeft && !LOSForward && !LOSBackward)
-        {
-            LOS = false;
-        }
-        else
-        {
-            LOS = true;
+                head = Instantiate(emptyPrefab, headVector, Quaternion.identity, transform);
+                right = Instantiate(emptyPrefab, rightVector, Quaternion.identity, transform);
+                left = Instantiate(emptyPrefab, leftVector, Quaternion.identity, transform);
+                forward = Instantiate(emptyPrefab, forwardVector, Quaternion.identity, transform);
+                backward = Instantiate(emptyPrefab, backwardVector, Quaternion.identity, transform);
+
+                variablesFound = true;
+            }
+
+            LOSBody = LineOfSightBody();
+            LOSHead = LineOfSightHead();
+            LOSRight = LineOfSightRight();
+            LOSLeft = LineOfSightLeft();
+            LOSForward = LineOfSightForward();
+            LOSBackward = LineOfSightBackward();
+
+            if (!LOSBody && !LOSHead && !LOSRight && !LOSLeft && !LOSForward && !LOSBackward)
+            {
+                LOS = false;
+            }
+            else
+            {
+                LOS = true;
+            }
         }
     }
 
@@ -151,24 +178,21 @@ public class Cover : MonoBehaviour
 
     #endregion
 
+    #region Subscriptions Handlers
+    
+    void HandleGameStart()
+    {
+        gameStarted = true;
+    }
+
+    #endregion
+
     #region Gizmos
 
     void OnDrawGizmos()
     {
         Gizmos.color = Color.cyan;
         Gizmos.DrawCube(transform.position, Vector3.one * 0.3f);
-        
-        if (player)
-        {
-            Gizmos.color = Color.green;
-            Gizmos.DrawLine(transform.position, player.position);
-
-            if (LineOfSightBody())
-            {
-                Gizmos.color = Color.red;
-                Gizmos.DrawLine(transform.position, player.position);
-            }
-        }
     }
 
     void OnDrawGizmosSelected()
@@ -230,6 +254,15 @@ public class Cover : MonoBehaviour
                 Gizmos.color = Color.green;
             }
             Gizmos.DrawLine(backward.transform.position, playerHead.position);
+
+            Gizmos.color = Color.green;
+            Gizmos.DrawLine(transform.position, player.position);
+
+            if (LineOfSightBody())
+            {
+                Gizmos.color = Color.red;
+                Gizmos.DrawLine(transform.position, player.position);
+            }
        }
     }
 

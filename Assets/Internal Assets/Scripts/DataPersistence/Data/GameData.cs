@@ -11,6 +11,7 @@ public class GameData
     public int deathCount;
     public int playerColor;
     public int rifleColor;
+    public int pistolColor;
 
     public float masterVolume;
     public float musicVolume;

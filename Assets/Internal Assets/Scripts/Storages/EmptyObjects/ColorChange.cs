@@ -13,6 +13,7 @@ public class ColorChange : MonoBehaviour
     [Header("Images")]
     Image bodyColor;
     Image rifleColor;
+    Image pistolColor;
 
     #endregion
 
@@ -23,6 +24,7 @@ public class ColorChange : MonoBehaviour
     {
         bodyColor = GameObject.FindGameObjectWithTag("MainCamera").transform.Find("Canvas/Menus/CustomizeMenu/PlayerCustom/PlayerCustomImage").GetComponentInChildren<Image>();
         rifleColor = GameObject.FindGameObjectWithTag("MainCamera").transform.Find("Canvas/Menus/CustomizeMenu/RifleCustom/RifleCustomImage").GetComponentInChildren<Image>();
+        pistolColor = GameObject.FindGameObjectWithTag("MainCamera").transform.Find("Canvas/Menus/CustomizeMenu/PistolCustom/PistolCustomImage").GetComponentInChildren<Image>();
     }
 
     // Update is called once per frame
@@ -35,7 +37,14 @@ public class ColorChange : MonoBehaviour
                 break;
             
             case ColorState.rifle:
-                GetComponent<MeshRenderer>().material.SetColor("_Color", rifleColor.color);
+                transform.Find("tar21/Tar21").GetComponent<SkinnedMeshRenderer>().material.color = rifleColor.color;
+                transform.Find("All_in_one_scopes/red_dot_d_prefab/red_dot_d").GetComponent<MeshRenderer>().material.color = rifleColor.color;
+                break;
+
+            case ColorState.pistol:
+                transform.Find("Glock/glock").GetComponent<SkinnedMeshRenderer>().material.color = pistolColor.color;
+                transform.Find("Glock/glock/red_dot").GetComponent<SkinnedMeshRenderer>().material.color = pistolColor.color;
+                transform.Find("Glock/glock/Supressor").GetComponent<SkinnedMeshRenderer>().material.color = pistolColor.color;
                 break;
         }
     }
@@ -47,7 +56,8 @@ public class ColorChange : MonoBehaviour
     enum ColorState
     {
         body,
-        rifle
+        rifle,
+        pistol
     }
 
     #endregion

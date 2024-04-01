@@ -59,7 +59,10 @@ public class Radiostation : MonoBehaviour
         player = GameObject.FindWithTag("Player");
         ras = GameObject.FindGameObjectWithTag("Storage").transform.Find("AudioStorages/Radiostation").GetComponent<RadiostationAudioStorage>();
 
-        audioExplosion = ras.audioExplosion;
+        if (ras.audioExplosion != null)
+        {
+            audioExplosion = ras.audioExplosion;
+        }
     }
 
     // Update is called once per frame
@@ -93,6 +96,8 @@ public class Radiostation : MonoBehaviour
                 player.GetComponent<PlayerHealth>().TakeDamage(10, bomb.transform.position);
             }
 
+            PlayClip(audioExplosion);
+
             destroyed = true;
         }
     }
@@ -123,7 +128,7 @@ public class Radiostation : MonoBehaviour
         audioMixer.GetFloat("masterVolume", out float dBMaster);
         float masterVolume = Mathf.Pow(10.0f, dBMaster / 20.0f);
         
-        float realVolume = (SFXVolume + masterVolume) / 2 * 0.05f;
+        float realVolume = (SFXVolume + masterVolume) / 2f * 10f;
         
         AudioSource newSource = gameObject.AddComponent<AudioSource>();
         newSource.playOnAwake = false;

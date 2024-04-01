@@ -49,6 +49,7 @@ public class UIManagers : MonoBehaviour, IDataPersistence
     bool scriptFound;
     public bool paused;
     bool slidersUpdated;
+    bool rifleActive;
 
     [Header("Strings")]
     string fireMode;
@@ -96,7 +97,9 @@ public class UIManagers : MonoBehaviour, IDataPersistence
 
     [Header("Components")]
     Rifle rifleScript;
+    Pistol pistolScript;
     PlayerHealth  playerHealthScript;
+    PlayerMovement playerMoveScript;
     [SerializeField] AudioMixer audioMixer; // SerializeField is Important!
 
     #endregion
@@ -203,7 +206,9 @@ public class UIManagers : MonoBehaviour, IDataPersistence
             if (!scriptFound)
             {
                 rifleScript = camObj.GetComponentInChildren<Rifle>();
-                if (rifleScript != null)
+                pistolScript = camObj.GetComponentInChildren<Pistol>();
+                playerMoveScript = player.GetComponent<PlayerMovement>();
+                if (rifleScript != null && pistolScript != null && playerMoveScript != null)
                 {
                     scriptFound = true;
                 }
@@ -211,7 +216,8 @@ public class UIManagers : MonoBehaviour, IDataPersistence
 
             health = playerHealthScript.health;
 
-            if (rifleScript != null)
+            rifleActive = playerMoveScript.rifleActive;
+            if (rifleScript != null && rifleActive)
             {
                 magAmmo = rifleScript.bulletsLeft;
                 totalAmmo = rifleScript.totalAmmo;
@@ -221,6 +227,17 @@ public class UIManagers : MonoBehaviour, IDataPersistence
                 playerReloadTime = rifleScript.reloadTime;
                 playerReloadCooldown = rifleScript.reloadCooldown;
                 reloading = rifleScript.reloading;
+            }
+            if (pistolScript != null && !rifleActive)
+            {
+                magAmmo = pistolScript.bulletsLeft;
+                totalAmmo = pistolScript.totalAmmo;
+
+                fmState = FireModeState.SemiAuto;
+                
+                playerReloadTime = pistolScript.reloadTime;
+                playerReloadCooldown = pistolScript.reloadCooldown;
+                reloading = pistolScript.reloading;
             }
             
             UpdateAmmoText();

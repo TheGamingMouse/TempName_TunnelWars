@@ -10,7 +10,7 @@ public class EnemyMovement : MonoBehaviour
     #region Variables
 
     [Header("Enum States")]
-    [SerializeField] CombatState cState;
+    public CombatState cState;
 
     [Header("Floats")]
     readonly float rotSpeed = 5f;
@@ -309,7 +309,15 @@ public class EnemyMovement : MonoBehaviour
                 }
                 else
                 {
-                    SearchForPlayer();
+                    if (searchCentrePoint != null)
+                    {
+                        SearchForPlayer();
+                    }
+                    else
+                    {
+                        searchCentrePoint = GameObject.FindWithTag("SearchPoint").transform;
+                        SearchForPlayer();
+                    }
                 }
                 break;
         }
@@ -449,7 +457,10 @@ public class EnemyMovement : MonoBehaviour
         
         yield return new WaitForSeconds(2f);
 
-        agent.SetDestination(coverPoint);
+        if (agent.isOnNavMesh)
+        {
+            agent.SetDestination(coverPoint);
+        }
         // print("Agent returning to cover");
     }
 
@@ -486,7 +497,7 @@ public class EnemyMovement : MonoBehaviour
     
     #region Enums
 
-    enum CombatState
+    public enum CombatState
     {
         Patroling,
         Combat,

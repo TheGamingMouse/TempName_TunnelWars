@@ -9,7 +9,7 @@ public class Rifle : MonoBehaviour, IDataPersistence
     #region Variables
 
     [Header("Enum States")]
-    ReloadState rState;
+    public ReloadState rState;
     public FireModeState fmState;
 
     [Header("Ints")]
@@ -25,8 +25,9 @@ public class Rifle : MonoBehaviour, IDataPersistence
     public readonly float reloadCooldown = 2.5f;
     public float bulletsLeft;
     readonly float magSize = 30f;
-    public float totalAmmo = 120;
+    public float totalAmmo = 120f;
     float recoilTimer;
+    readonly float holsterSpeed = 0.1f;
 
     [Header("Bools")]
     bool crouching;
@@ -55,7 +56,7 @@ public class Rifle : MonoBehaviour, IDataPersistence
     Transform spawnedImpacts;
 
     [Header("Vector3s")]
-    [SerializeField] Vector3 nPos, aPos;
+    [SerializeField] Vector3 nPos, aPos, hPos;
 
     [Header("AudioClips")]
     AudioClip audioShoot;
@@ -162,19 +163,11 @@ public class Rifle : MonoBehaviour, IDataPersistence
 
         if (Input.GetMouseButton(1) && actionBool)
         {
-            transform.localPosition = Vector3.Slerp(transform.localPosition, aPos, aimSpeed * Time.deltaTime);
-            cVirtCam.m_Lens.FieldOfView -= zoomSpeed * Time.deltaTime;
-            cVirtCam.m_Lens.FieldOfView = Mathf.Clamp(cVirtCam.m_Lens.FieldOfView, zoom, 90);
-            
-            aiming = true;
+            Aim();
         }
         else
         {
-            transform.localPosition = Vector3.Slerp(transform.localPosition, nPos, aimSpeed * Time.deltaTime);
-            cVirtCam.m_Lens.FieldOfView += zoomSpeed * Time.deltaTime;
-            cVirtCam.m_Lens.FieldOfView = Mathf.Clamp(cVirtCam.m_Lens.FieldOfView, zoom, 90);
-            
-            aiming = false;
+            UnAim();
         }
 
         if (Input.GetKeyDown(KeyCode.F) && actionBool)
@@ -224,10 +217,11 @@ public class Rifle : MonoBehaviour, IDataPersistence
         switch (rState)
         {
             case ReloadState.Ready:
+                reloadTime = reloadCooldown;
+                reloading = false;
                 if (bulletsLeft < magSize && !reloading && (Input.GetKeyDown(KeyCode.R) || bulletsLeft == 0) && totalAmmo > 0 && actionBool)
                 {
                     PlayClip(audioReload);
-
                     reloading = true;
                     
                     rState = ReloadState.ReloadStart;
@@ -244,8 +238,6 @@ public class Rifle : MonoBehaviour, IDataPersistence
                 }
                 break;
             case ReloadState.Reloadfinishing:
-                reloadTime = reloadCooldown;
-
                 FinishReload();
 
                 rState = ReloadState.Ready;
@@ -256,6 +248,34 @@ public class Rifle : MonoBehaviour, IDataPersistence
     #endregion
 
     #region Methods
+
+    void Aim()
+    {
+        transform.localPosition = Vector3.Slerp(transform.localPosition, aPos, aimSpeed * Time.deltaTime);
+        cVirtCam.m_Lens.FieldOfView -= zoomSpeed * Time.deltaTime;
+        cVirtCam.m_Lens.FieldOfView = Mathf.Clamp(cVirtCam.m_Lens.FieldOfView, zoom, 90);
+        
+        aiming = true;
+    }
+
+    void UnAim()
+    {
+        transform.localPosition = Vector3.Slerp(transform.localPosition, nPos, aimSpeed * Time.deltaTime);
+        cVirtCam.m_Lens.FieldOfView += zoomSpeed * Time.deltaTime;
+        cVirtCam.m_Lens.FieldOfView = Mathf.Clamp(cVirtCam.m_Lens.FieldOfView, zoom, 90);
+        
+        aiming = false;
+    }
+
+    public void Holser()
+    {
+        transform.localPosition = Vector3.Slerp(transform.localPosition, hPos, holsterSpeed * Time.deltaTime);
+    }
+
+    public void UnHolster()
+    {
+        transform.localPosition = Vector3.Slerp(hPos, nPos, holsterSpeed * Time.deltaTime);
+    }
 
     void Shoot()
     {
@@ -369,7 +389,8 @@ public class Rifle : MonoBehaviour, IDataPersistence
 
     void UpdateRifleColor()
     {
-        GetComponent<MeshRenderer>().material.color = colors[cIndex];
+        transform.Find("tar21/Tar21").GetComponent<SkinnedMeshRenderer>().material.color = colors[cIndex];
+        transform.Find("All_in_one_scopes/red_dot_d_prefab/red_dot_d").GetComponent<MeshRenderer>().material.color = colors[cIndex];
     }
 
     public void LoadData(GameData data)
@@ -442,7 +463,7 @@ public class Rifle : MonoBehaviour, IDataPersistence
 
     #region Enums
 
-    enum ReloadState
+    public enum ReloadState
     {
         Ready,
         ReloadStart,

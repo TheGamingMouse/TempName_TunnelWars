@@ -15,7 +15,7 @@ public class EnemyHealth : MonoBehaviour
 
     [Header("Flaots")]
     readonly float maxHealth = 100f;
-    float health;
+    [SerializeField] float health;
 
     [Header("GameObjects")]
     GameObject enemyObj;
@@ -24,6 +24,9 @@ public class EnemyHealth : MonoBehaviour
 
     [Header("Transforms")]
     Transform spawnedDrops;
+
+    [Header("Components")]
+    public EnemyMovement eMove; // SerializeField is Important!
 
     #endregion
 
@@ -51,8 +54,7 @@ public class EnemyHealth : MonoBehaviour
     public void TakeDamage(float damage)
     {
         health -= damage;
-        OnDamageTaken?.Invoke();
-
+        
         if (health <= 0)
         {
             int i = UnityEngine.Random.Range(1, 101);
@@ -62,6 +64,8 @@ public class EnemyHealth : MonoBehaviour
             } 
             Destroy(enemyObj);
         }
+
+        OnDamageTaken?.Invoke();
     }
 
     #endregion

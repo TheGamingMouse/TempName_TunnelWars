@@ -62,8 +62,11 @@ public class Interactor : MonoBehaviour
 
     void OnDrawGizmos()
     {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(point.position, radius);
+        if (point)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(point.position, radius);
+        }
     }
 
     #endregion

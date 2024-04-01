@@ -14,6 +14,7 @@ public class MenuManager : MonoBehaviour, IDataPersistence
     [Header("Ints")]
     int cIndex1;
     int cIndex2;
+    int cIndex3;
     int levelCount;
 
     [Header("Floats")]
@@ -40,6 +41,7 @@ public class MenuManager : MonoBehaviour, IDataPersistence
     [Header("Lists")]
     List<Color> colors1 = new();
     List<Color> colors2 = new();
+    List<Color> colors3 = new();
     readonly List<AudioSource> audioSourcePool = new();
 
     [Header("Arrays")]
@@ -52,6 +54,8 @@ public class MenuManager : MonoBehaviour, IDataPersistence
     [SerializeField] GameObject playerRightArrow; // SerializeField is Important!
     [SerializeField] GameObject rifleLeftArrow; // SerializeField is Important!
     [SerializeField] GameObject rifleRightArrow; // SerializeField is Important!
+    [SerializeField] GameObject pistolLeftArrow; // SerializeField is Important!
+    [SerializeField] GameObject pistolRightArrow; // SerializeField is Important!
     [SerializeField] GameObject playerModel; // SerializeField is Important!
     [SerializeField] GameObject rifleModel; // SerializeField is Important!
     [SerializeField] GameObject rifleModelPivot; // SerializeField is Important!
@@ -89,6 +93,7 @@ public class MenuManager : MonoBehaviour, IDataPersistence
     [Header("Images")]
     Image bodyColor;
     Image rifleColor;
+    Image pistolColor;
 
     [Header("AudioClips")]
     AudioClip audioUIClick;
@@ -126,6 +131,7 @@ public class MenuManager : MonoBehaviour, IDataPersistence
 
         bodyColor = transform.Find("CustomizeMenu/PlayerCustom/PlayerCustomImage").GetComponentInChildren<Image>();
         rifleColor = transform.Find("CustomizeMenu/RifleCustom/RifleCustomImage").GetComponentInChildren<Image>();
+        pistolColor = transform.Find("CustomizeMenu/PistolCustom/PistolCustomImage").GetComponentInChildren<Image>();
 
         playerObject = GameObject.FindWithTag("Player");
 
@@ -203,6 +209,7 @@ public class MenuManager : MonoBehaviour, IDataPersistence
 
         UpdatePlayerColor();
         UpdateRifleColor();
+        UpdatePistolColor();
 
         if (masterSliderValue > -100 && !slidersUpdated)
         {
@@ -258,6 +265,16 @@ public class MenuManager : MonoBehaviour, IDataPersistence
         colors2.Add(c7);
         colors2.Add(c8);
         colors2.Add(c9);
+
+        colors3.Add(c1);
+        colors3.Add(c2);
+        colors3.Add(c3);
+        colors3.Add(c4);
+        colors3.Add(c5);
+        colors3.Add(c6);
+        colors3.Add(c7);
+        colors3.Add(c8);
+        colors3.Add(c9);
     }
 
     public void PlayerColorGoRight()
@@ -296,6 +313,24 @@ public class MenuManager : MonoBehaviour, IDataPersistence
         }
     }
 
+    public void PistolColorGoRight()
+    {
+        cIndex3++;
+        if (cIndex3 > colors3.Count - 1)
+        {
+            cIndex3 = 0;
+        }
+    }
+
+    public void PistolColorGoLeft()
+    {
+        cIndex3--;
+        if (cIndex3 < 0)
+        {
+            cIndex3 = colors3.Count - 1;
+        }
+    }
+
     void UpdatePlayerColor()
     {
         bodyColor.color = colors1[cIndex1];
@@ -304,6 +339,11 @@ public class MenuManager : MonoBehaviour, IDataPersistence
     void UpdateRifleColor()
     {
         rifleColor.color = colors2[cIndex2];
+    }
+
+    void UpdatePistolColor()
+    {
+        pistolColor.color = colors3[cIndex3];
     }
 
     void FollowCursor()
@@ -474,6 +514,7 @@ public class MenuManager : MonoBehaviour, IDataPersistence
     {
         cIndex1 = data.playerColor;
         cIndex2 = data.rifleColor;
+        cIndex3 = data.pistolColor;
 
         levelCount = data.levelCount;
 
@@ -496,6 +537,7 @@ public class MenuManager : MonoBehaviour, IDataPersistence
     {
         data.playerColor = cIndex1;
         data.rifleColor = cIndex2;
+        data.pistolColor = cIndex3;
 
         data.masterVolume = masterVolume;
         data.musicVolume = musicVolume;

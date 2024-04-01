@@ -30,6 +30,7 @@ public class PlayerMovement : MonoBehaviour
     float mouseY;
     float xRot;
     float yRot;
+    readonly float swapSpeed = 0.2f;
 
     [Header("Bools")]
     bool isOnGround;
@@ -39,10 +40,13 @@ public class PlayerMovement : MonoBehaviour
     bool playRunningAudio;
     bool scriptFound;
     [SerializeField] bool mainMenu = false; // SerializeField is Important!
-    [SerializeField] bool aiming;
-    [SerializeField] bool speedAltered;
+    bool aimingRifle;
+    bool aimingPistol;
+    bool speedAltered;
     bool speedAlteredSprint;
-    [SerializeField] bool speedAlteredCrouched;
+    bool speedAlteredCrouched;
+    public bool rifleActive;
+    bool canSwap;
 
     [Header("Lists")]
     readonly List<AudioSource> audioSourcePool = new();
@@ -53,7 +57,9 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("GameObjects")]
     [SerializeField] GameObject rifle; // SerializeField is Important!
+    [SerializeField] GameObject pistol; // SerializeField is Important!
     [SerializeField] GameObject dummyRifle; // SerializeField is Important!
+    [SerializeField] GameObject dummyPistol; // SerializeField is Important!
 
     [Header("Transforms")]
     Transform orientation;
@@ -105,6 +111,10 @@ public class PlayerMovement : MonoBehaviour
         {
             rifle.SetActive(false);
         }
+        if (pistol != null)
+        {
+            pistol.SetActive(false);
+        }
         
         if (!mainMenu)
         {
@@ -120,6 +130,7 @@ public class PlayerMovement : MonoBehaviour
         moveSpeedCurr = moveSpeedBase;
 
         moveBool = false;
+        canSwap = true;
     }
 
     void FixedUpdate()
@@ -156,91 +167,108 @@ public class PlayerMovement : MonoBehaviour
                 StopClip(audioWalking);
                 StopClip(audioRunning);
             }
-        }
 
-        if (!scriptFound)
-        {
-            groundCheck = GetComponentInChildren<GroundedCheck>();
+            if (!scriptFound)
+            {
+                groundCheck = GetComponentInChildren<GroundedCheck>();
+                if (groundCheck != null)
+                {
+                    scriptFound = true;
+                }
+            }
             if (groundCheck != null)
             {
-                scriptFound = true;
+                isOnGround = GetComponentInChildren<GroundedCheck>().isOnGround;
             }
-        }
-        if (groundCheck != null)
-        {
-            isOnGround = GetComponentInChildren<GroundedCheck>().isOnGround;
-        }
 
-        move.x = Input.GetAxisRaw("Horizontal");
-        move.z = Input.GetAxisRaw("Vertical");
+            move.x = Input.GetAxisRaw("Horizontal");
+            move.z = Input.GetAxisRaw("Vertical");
 
-        moveDir = orientation.forward * move.z + orientation.right * move.x;
+            moveDir = orientation.forward * move.z + orientation.right * move.x;
 
-        mouseX = Input.GetAxisRaw("Mouse X") * sensX;
-        mouseY = Input.GetAxisRaw("Mouse Y") * sensY;
+            mouseX = Input.GetAxisRaw("Mouse X") * sensX;
+            mouseY = Input.GetAxisRaw("Mouse Y") * sensY;
 
-        yRot += mouseX;
-        xRot -= mouseY;
-        xRot = Mathf.Clamp(xRot, -80f, 70f);
+            yRot += mouseX;
+            xRot -= mouseY;
+            xRot = Mathf.Clamp(xRot, -80f, 70f);
 
-        if (moveBool)
-        {
-            cam.transform.rotation = Quaternion.Euler(xRot, yRot, 0f);
-            transform.rotation = Quaternion.Euler(0f, yRot, 0f);
-        }
+            if (moveBool)
+            {
+                cam.transform.rotation = Quaternion.Euler(xRot, yRot, 0f);
+                transform.rotation = Quaternion.Euler(0f, yRot, 0f);
+            }
 
-        if (Input.GetKey(KeyCode.LeftShift) && isOnGround && moveBool && !Input.GetKey(KeyCode.LeftControl) && !aiming)
-        {
-            moveSpeedCurr = sprintSpeed;
-            speedAlteredSprint = true;
-        }
-        else if (speedAlteredSprint)
-        {
-            moveSpeedCurr = moveSpeedBase;
-            speedAlteredSprint = false;
-            speedAltered = false;
-        }
+            if (Input.GetKey(KeyCode.LeftShift) && isOnGround && moveBool && !Input.GetKey(KeyCode.LeftControl) && !aimingRifle && !aimingPistol)
+            {
+                moveSpeedCurr = sprintSpeed;
+                speedAlteredSprint = true;
+            }
+            else if (speedAlteredSprint)
+            {
+                moveSpeedCurr = moveSpeedBase;
+                speedAlteredSprint = false;
+                speedAltered = false;
+            }
 
-        if (Input.GetKeyDown(KeyCode.LeftControl) && moveBool && !Input.GetKey(KeyCode.LeftShift))
-        {
-            transform.localScale = new Vector3(1f, 0.5f, 1f);
-            transform.position = new Vector3(transform.position.x, transform.position.y - 0.5f, transform.position.z);
+            if (Input.GetKeyDown(KeyCode.LeftControl) && moveBool && !Input.GetKey(KeyCode.LeftShift))
+            {
+                transform.localScale = new Vector3(1f, 0.5f, 1f);
+                transform.position = new Vector3(transform.position.x, transform.position.y - 0.5f, transform.position.z);
+                
+                crouched = true;
+                speedAltered = false;
+            }
+            else if (Input.GetKeyUp(KeyCode.LeftControl) && moveBool && !Input.GetKey(KeyCode.LeftShift))
+            {
+                transform.localScale = new Vector3(1f, 1f, 1f);
+                transform.position = new Vector3(transform.position.x, transform.position.y + 0.5f, transform.position.z);
+                
+                crouched = false;
+                speedAltered = false;
+            }
+
+            aimingRifle = rifle.GetComponent<Rifle>().aiming;
+            aimingPistol = pistol.GetComponent<Pistol>().aiming;
+
+            if (crouched && !speedAlteredCrouched)
+            {
+                moveSpeedCurr = crouchSpeed;
+                speedAlteredCrouched = true;
+            }
+            else if (!crouched && speedAlteredCrouched)
+            {
+                moveSpeedCurr = moveSpeedBase;
+                speedAlteredCrouched = false;
+            }
             
-            crouched = true;
-            speedAltered = false;
-        }
-        else if (Input.GetKeyUp(KeyCode.LeftControl) && moveBool && !Input.GetKey(KeyCode.LeftShift))
-        {
-            transform.localScale = new Vector3(1f, 1f, 1f);
-            transform.position = new Vector3(transform.position.x, transform.position.y + 0.5f, transform.position.z);
-            
-            crouched = false;
-            speedAltered = false;
-        }
+            if ((aimingRifle || aimingPistol) && !speedAltered)
+            {
+                moveSpeedCurr *= 0.5f;
+                speedAltered = true;
+            }
+            else if (!aimingRifle && !aimingPistol && speedAltered)
+            {
+                moveSpeedCurr = moveSpeedBase;
+                speedAltered = false;
+                
+            }
 
-        aiming = rifle.GetComponent<Rifle>().aiming;
+            if ((Input.GetAxisRaw("Mouse ScrollWheel") > 0 || Input.GetAxisRaw("Mouse ScrollWheel") < 0) && moveBool && canSwap)
+            {
+                rifle.SetActive(!rifle.activeInHierarchy);
+                pistol.SetActive(!pistol.activeInHierarchy);
 
-        if (crouched && !speedAlteredCrouched)
-        {
-            moveSpeedCurr = crouchSpeed;
-            speedAlteredCrouched = true;
-        }
-        else if (!crouched && speedAlteredCrouched)
-        {
-            moveSpeedCurr = moveSpeedBase;
-            speedAlteredCrouched = false;
-        }
-        
-        if (aiming && !speedAltered)
-        {
-            moveSpeedCurr *= 0.5f;
-            speedAltered = true;
-        }
-        else if (!aiming && speedAltered)
-        {
-            moveSpeedCurr = moveSpeedBase;
-            speedAltered = false;
-            
+                rifle.GetComponent<Rifle>().rState = Rifle.ReloadState.Ready;
+                pistol.GetComponent<Pistol>().rState = Pistol.ReloadState.Ready;
+
+                rifle.GetComponent<Rifle>().UnHolster();
+                pistol.GetComponent<Pistol>().UnHolster();
+
+                rifleActive = !rifleActive;
+
+                StartCoroutine(StartSwapTimer());
+            }
         }
     }
 
@@ -292,8 +320,19 @@ public class PlayerMovement : MonoBehaviour
         yield return new WaitForSeconds(2f);
 
         dummyRifle.SetActive(false);
+        dummyPistol.SetActive(false);
         rifle.SetActive(true);
         moveBool = true;
+        rifleActive = true;
+    }
+
+    IEnumerator StartSwapTimer()
+    {
+        canSwap = false;
+
+        yield return new WaitForSeconds(swapSpeed);
+
+        canSwap = true;
     }
     
     #endregion

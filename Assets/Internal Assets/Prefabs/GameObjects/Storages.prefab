@@ -44,7 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 982a9d35933490e46bf0f2c9e6314712, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  audioExplosion: {fileID: 0}
+  audioExplosion: {fileID: 8300000, guid: c1c8e6daffd79e746a8ecef39e1eac16, type: 3}
 --- !u!1 &515853427892022849
 GameObject:
   m_ObjectHideFlags: 0
@@ -207,6 +207,7 @@ Transform:
   - {fileID: 4854808547489283710}
   - {fileID: 9023738297234136623}
   - {fileID: 3784544137071793687}
+  - {fileID: 7373976811399401625}
   - {fileID: 4122205486125979814}
   m_Father: {fileID: 3159410075069719307}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -349,6 +350,53 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   audioShoot: {fileID: 8300000, guid: 2203773368e4340d98c114f55c2dd7fd, type: 3}
   audioReload: {fileID: 8300000, guid: e5198250a6a57408bb36e14bc4a322c4, type: 3}
+--- !u!1 &6835118614848038968
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7373976811399401625}
+  - component: {fileID: 5688235403207571128}
+  m_Layer: 0
+  m_Name: Pistol
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7373976811399401625
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6835118614848038968}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5245301895572502049}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5688235403207571128
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6835118614848038968}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 621525530eb0d834798a55c203b9e165, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioShoot: {fileID: 8300000, guid: e70a659050dafd64a89ec77eb68c24ac, type: 3}
+  audioReload: {fileID: 8300000, guid: e5198250a6a57408bb36e14bc4a322c4, type: 3}
+  audioHitMarker: {fileID: 8300000, guid: 7014330526b38fa47b256a9bbd08f95d, type: 3}
 --- !u!1 &7291489167175451581
 GameObject:
   m_ObjectHideFlags: 0

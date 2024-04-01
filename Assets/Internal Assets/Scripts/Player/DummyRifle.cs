@@ -58,7 +58,8 @@ public class DummyRifle : MonoBehaviour, IDataPersistence
 
     void UpdateRifleColor()
     {
-        GetComponent<MeshRenderer>().material.color = colors[cIndex];
+        transform.Find("tar21/Tar21").GetComponent<SkinnedMeshRenderer>().material.color = colors[cIndex];
+        transform.Find("All_in_one_scopes/red_dot_d_prefab/red_dot_d").GetComponent<MeshRenderer>().material.color = colors[cIndex];
     }
 
     public void LoadData(GameData data)

@@ -257,7 +257,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: beb6b77c4d00ad045b03773b8ded813a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  health: 0
   ammoDrop: {fileID: 7330818751500835467, guid: 3f8816bf4f9b7a340aa2ccbdafbf5b79, type: 3}
+  eMove: {fileID: 200936681894379270}
 --- !u!114 &5878140565965143692
 MonoBehaviour:
   m_ObjectHideFlags: 0

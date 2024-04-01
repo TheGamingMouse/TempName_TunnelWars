@@ -2723,6 +2723,14 @@ PrefabInstance:
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 694591479}
+    - target: {fileID: 5150290341846506987, guid: a31aed5898f71314dbfdaa90971710c6, type: 3}
+      propertyPath: hRot.x
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 5519714280287707548, guid: a31aed5898f71314dbfdaa90971710c6, type: 3}
+      propertyPath: hRot.x
+      value: 60
+      objectReference: {fileID: 0}
     - target: {fileID: 6026703708471441768, guid: a31aed5898f71314dbfdaa90971710c6, type: 3}
       propertyPath: m_Name
       value: PlayerObj
