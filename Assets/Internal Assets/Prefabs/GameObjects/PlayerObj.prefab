@@ -6243,8 +6243,6 @@ MonoBehaviour:
   nPos: {x: 0.75, y: -0.7, z: 0.9}
   aPos: {x: 0, y: -0.5, z: 0.9}
   hPos: {x: 0, y: 0, z: 0}
-  nRot: {x: 0, y: 0, z: 0, w: 0}
-  hRot: {x: 0, y: 0, z: 0, w: 0}
   audioMixer: {fileID: 24100000, guid: 6d0b19c81c5866d45a9217b1eed60eb3, type: 2}
   sfxVolume: {fileID: 2801275425284752312, guid: 6d0b19c81c5866d45a9217b1eed60eb3, type: 2}
 --- !u!1 &1398254246345631113
@@ -25613,11 +25611,9 @@ MonoBehaviour:
   aiming: 0
   reloading: 0
   impact: {fileID: 1520741143792877218, guid: dc2caf9415988964789b0f70f83c1d34, type: 3}
-  nPos: {x: 0.65, y: -0.3, z: 0.55}
-  aPos: {x: 0, y: -0.12, z: 0.75}
+  nPos: {x: 0.45, y: -0.3, z: 0.55}
+  aPos: {x: -0.0002, y: -0.1175, z: 0.75}
   hPos: {x: 0.65, y: -1.5, z: 0.3}
-  nRot: {x: 0, y: 0, z: 0, w: 0}
-  hRot: {x: 0, y: 0, z: 0, w: 0}
   audioMixer: {fileID: 24100000, guid: 6d0b19c81c5866d45a9217b1eed60eb3, type: 2}
   sfxVolume: {fileID: 2801275425284752312, guid: 6d0b19c81c5866d45a9217b1eed60eb3, type: 2}
 --- !u!1001 &3066459576742510147
@@ -25737,11 +25733,9 @@ MonoBehaviour:
   reloading: 0
   soundMade: 0
   impact: {fileID: 1520741143792877218, guid: dc2caf9415988964789b0f70f83c1d34, type: 3}
-  nPos: {x: 0.65, y: -0.3, z: 0.3}
-  aPos: {x: 0, y: -0.22, z: 0.3}
+  nPos: {x: 0.45, y: -0.3, z: 0.3}
+  aPos: {x: -0.00045, y: -0.2185, z: 0.3}
   hPos: {x: 0.65, y: -1.5, z: 0.1}
-  nRot: {x: 0, y: 0, z: 0, w: 0}
-  hRot: {x: 0, y: 0, z: 0, w: 0}
   audioMixer: {fileID: 24100000, guid: 6d0b19c81c5866d45a9217b1eed60eb3, type: 2}
   sfxVolume: {fileID: 2801275425284752312, guid: 6d0b19c81c5866d45a9217b1eed60eb3, type: 2}
 --- !u!1001 &7601716036701939199

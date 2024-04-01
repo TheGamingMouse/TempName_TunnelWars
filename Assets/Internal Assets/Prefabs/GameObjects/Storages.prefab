@@ -395,7 +395,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioShoot: {fileID: 8300000, guid: e70a659050dafd64a89ec77eb68c24ac, type: 3}
-  audioReload: {fileID: 8300000, guid: e5198250a6a57408bb36e14bc4a322c4, type: 3}
+  audioReload: {fileID: 8300000, guid: 13a8c4a7476465845b9af0c80833d4f3, type: 3}
   audioHitMarker: {fileID: 8300000, guid: 7014330526b38fa47b256a9bbd08f95d, type: 3}
 --- !u!1 &7291489167175451581
 GameObject:

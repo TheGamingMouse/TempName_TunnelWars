@@ -12,9 +12,9 @@ public class Radiostation : MonoBehaviour
     public int id;
 
     [Header("Floats")]
-    float explosionRadiusLethal = 5f;
-    float explosionRadiusSemiLethal = 10f;
-    float explosionRadiusNearNonLethal = 15f;
+    readonly float explosionRadiusLethal = 5f;
+    readonly float explosionRadiusSemiLethal = 10f;
+    readonly float explosionRadiusNearNonLethal = 15f;
 
     [Header("Bools")]
     public bool destroyed;

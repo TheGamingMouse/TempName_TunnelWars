@@ -22,7 +22,7 @@ public class Rifle : MonoBehaviour, IDataPersistence
     public readonly float damage = 10f;
     readonly float cooldown = 0.12f;
     public float reloadTime = 0f;
-    public readonly float reloadCooldown = 2.5f;
+    public readonly float reloadCooldown = 2.1f;
     public float bulletsLeft;
     readonly float magSize = 30f;
     public float totalAmmo = 120f;

@@ -265,9 +265,44 @@ public class PlayerMovement : MonoBehaviour
                 rifle.GetComponent<Rifle>().UnHolster();
                 pistol.GetComponent<Pistol>().UnHolster();
 
+                rifle.GetComponent<Rifle>().aiming = false;
+                pistol.GetComponent<Pistol>().aiming = false;
+
                 rifleActive = !rifleActive;
 
                 StartCoroutine(StartSwapTimer());
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha1) && moveBool && canSwap)
+            {
+                rifle.SetActive(true);
+                pistol.SetActive(false);
+
+                if (!rifleActive)
+                {
+                    rifle.GetComponent<Rifle>().rState = Rifle.ReloadState.Ready;
+                    rifle.GetComponent<Rifle>().UnHolster();
+                    rifle.GetComponent<Rifle>().aiming = false;
+
+                    rifleActive = true;
+
+                    StartCoroutine(StartSwapTimer());
+                }
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha2) && moveBool && canSwap)
+            {
+                rifle.SetActive(false);
+                pistol.SetActive(true);
+
+                if (rifleActive)
+                {
+                    pistol.GetComponent<Pistol>().rState = Pistol.ReloadState.Ready;
+                    pistol.GetComponent<Pistol>().UnHolster();
+                    pistol.GetComponent<Pistol>().aiming = false;
+
+                    rifleActive = false;
+
+                    StartCoroutine(StartSwapTimer());
+                }
             }
         }
     }
