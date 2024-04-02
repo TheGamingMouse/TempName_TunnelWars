@@ -158,7 +158,7 @@ public class EnemyMovement : MonoBehaviour
         }
         if (agent.speed == 0 && playWalkingAudio)
         {
-            StopCoroutine(nameof(WalkingAudio));
+            StopCoroutine(WalkingAudio());
             StopClip(audioWalking);
         }
 
@@ -218,7 +218,7 @@ public class EnemyMovement : MonoBehaviour
                     
                     if (playerTarget)
                     {
-                        StopCoroutine(nameof(CoverFireTimer));
+                        StopCoroutine(CoverFireTimer());
                         playerNotFound = false;
                         exitCombat = true;
                     }
@@ -247,7 +247,7 @@ public class EnemyMovement : MonoBehaviour
                     {
                         combatting = true;
                         leaveCover = true;
-                        StopCoroutine(nameof(CoverFireTimer));
+                        StopCoroutine(CoverFireTimer());
                         StartCoroutine(CoverFireTimer());
                         StartCoroutine(FindCover());
                     }

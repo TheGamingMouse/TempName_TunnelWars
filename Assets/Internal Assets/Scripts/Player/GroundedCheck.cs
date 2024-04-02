@@ -145,7 +145,7 @@ public class GroundedCheck : MonoBehaviour
         AudioSource source = GetAvailablePoolSource();
         source.clip = clip;
         source.Play();
-        StopCoroutine(nameof(SoundMade));
+        StopCoroutine(SoundMade());
         StartCoroutine(SoundMade());
     }
 

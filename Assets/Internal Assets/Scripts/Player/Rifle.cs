@@ -267,7 +267,7 @@ public class Rifle : MonoBehaviour, IDataPersistence
         aiming = false;
     }
 
-    public void Holser()
+    public void Holster()
     {
         transform.localPosition = Vector3.Slerp(transform.localPosition, hPos, holsterSpeed * Time.deltaTime);
     }
@@ -446,7 +446,7 @@ public class Rifle : MonoBehaviour, IDataPersistence
         AudioSource source = GetAvailablePoolSource();
         source.clip = clip;
         source.Play();
-        StopCoroutine(nameof(SoundMade));
+        StopCoroutine(SoundMade());
         StartCoroutine(SoundMade());
     }
 

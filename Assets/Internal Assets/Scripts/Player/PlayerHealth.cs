@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Cinemachine;
 using UnityEngine;
 using UnityEngine.Audio;
+using UnityEngine.UI;
 
 public class PlayerHealth : MonoBehaviour, IDataPersistence
 {
@@ -23,6 +25,7 @@ public class PlayerHealth : MonoBehaviour, IDataPersistence
     public int health;
     int deathCount;
     int cIndex;
+    float recoilTimer;
 
     [Header("Bools")]
     bool damageCooldown;
@@ -34,7 +37,10 @@ public class PlayerHealth : MonoBehaviour, IDataPersistence
 
     [Header("Lists")]
     readonly List<AudioSource> audioSourcePool = new();
-    List<Color> colors = new();
+    readonly List<Color> colors = new();
+
+    [Header("GameObjects")]
+    [SerializeField] GameObject damageOverlay; // SerializeField is Important!
 
     [Header("Vector3s")]
     public Vector3 dmgDirection;
@@ -53,10 +59,16 @@ public class PlayerHealth : MonoBehaviour, IDataPersistence
     Color c8 = Color.white;
     Color c9 = Color.yellow;
 
+    [Header("Sprite")]
+    [SerializeField] Sprite damageImage1; // SerializeField is Important!
+    [SerializeField] Sprite damageImage2; // SerializeField is Important!
+    [SerializeField] Sprite damageImage3; // SerializeField is Important!
+
     [Header("Components")]
     [SerializeField] AudioMixer audioMixer; // SerializeField is Important!
     [SerializeField] AudioMixerGroup sfxVolume; // SerializeField is Important!
     PlayerHealthAudioStorage phas;
+    CinemachineVirtualCamera cVirtCam;
 
     #endregion
 
@@ -73,6 +85,10 @@ public class PlayerHealth : MonoBehaviour, IDataPersistence
         }
 
         health = maxHealth;
+        
+        cVirtCam = Camera.main.GetComponent<CinemachineVirtualCamera>();
+
+        damageOverlay.GetComponent<Image>().overrideSprite = damageImage1;
 
         AddColorsToList();
 
@@ -101,6 +117,31 @@ public class PlayerHealth : MonoBehaviour, IDataPersistence
                 dead = true;
             }
         }
+
+        if (health > 60f)
+        {
+            damageOverlay.GetComponent<Image>().overrideSprite = damageImage1;
+        }
+        else if (health <= 60f && health > 30f)
+        {
+            damageOverlay.GetComponent<Image>().overrideSprite = damageImage2;
+        }
+        else
+        {
+            damageOverlay.GetComponent<Image>().overrideSprite = damageImage3;
+        }
+
+        if (recoilTimer > 0)
+        {
+            recoilTimer -= Time.deltaTime;
+
+            if (recoilTimer <= 0f)
+            {
+                CinemachineBasicMultiChannelPerlin cmbmcp = cVirtCam.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+
+                cmbmcp.m_AmplitudeGain = 0f;
+            }
+        }
     }
 
     #endregion
@@ -115,9 +156,11 @@ public class PlayerHealth : MonoBehaviour, IDataPersistence
             dmgDirection = direction;
             PlayClip(audioTakeDamage);
 
+            Recoil(1f, 0.1f);
+
             OnPlayerDamage?.Invoke();
         }
-        StopCoroutine(nameof(DamageTaken));
+        StopCoroutine(DamageTaken());
         StartCoroutine(DamageTaken());
     }
 
@@ -148,6 +191,14 @@ public class PlayerHealth : MonoBehaviour, IDataPersistence
     void UpdatePlayerColor()
     {
         GetComponent<MeshRenderer>().material.color = colors[cIndex];
+    }
+
+    void Recoil(float magnitude, float duration)
+    {
+        CinemachineBasicMultiChannelPerlin cmbmcp = cVirtCam.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+
+        cmbmcp.m_AmplitudeGain = magnitude;
+        recoilTimer = duration;
     }
 
     public void LoadData(GameData data)

@@ -55,11 +55,6 @@ public class AmmoDrop : MonoBehaviour
         {
             direction = !direction;
         }
-
-        if (coll.transform.CompareTag("Player"))
-        {
-            Destroy(parentObj);
-        }
     }
 
     #endregion

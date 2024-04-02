@@ -42,6 +42,7 @@ public class EnemyShooting : MonoBehaviour
 
     [Header("Components")]
     ParticleSystem muzzleFlash;
+    EnemyShootingAudioStorage esat;
     [SerializeField] AudioMixer audioMixer; // SerializeField is Important!
     [SerializeField] AudioMixerGroup sfxVolume; // SerializeField is Important!
 
@@ -57,9 +58,9 @@ public class EnemyShooting : MonoBehaviour
         
         muzzleFlash = GetComponentInChildren<ParticleSystem>();
         
-        EnemyShootingAudioStorage audioStorage = GameObject.FindGameObjectWithTag("Storage").transform.Find("AudioStorages/EnemyShooting").GetComponent<EnemyShootingAudioStorage>();
-        audioShoot = audioStorage.audioShoot;
-        audioReload = audioStorage.audioReload;
+        esat = GameObject.FindGameObjectWithTag("Storage").transform.Find("AudioStorages/EnemyShooting").GetComponent<EnemyShootingAudioStorage>();
+        audioShoot = esat.audioShoot;
+        audioReload = esat.audioReload;
 
         canShoot = true;
 
@@ -94,7 +95,7 @@ public class EnemyShooting : MonoBehaviour
         }
         if (!inFov)
         {
-            StopCoroutine(nameof(Shooting));
+            StopCoroutine(Shooting());
             
             shooting = false;
             prepShooting = false;

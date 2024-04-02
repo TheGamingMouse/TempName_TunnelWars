@@ -19,10 +19,10 @@ TagManager:
   - SearchPoint
   - StartCam
   - MoveCollider
-  - AmmoPickup
   - Managers
   - Radiostation
   - Indicator
+  - ConsumablePickup
   layers:
   - Default
   - TransparentFX

@@ -7,6 +7,9 @@ public class DevTools : MonoBehaviour
 {
     #region Variables
 
+    [Header("Bools")]
+    public bool godMode;
+
     [Header("Vector3s")]
     Vector3 spawn = new Vector3(0f, 0.1f, -5.96046448e-07f);
     Vector3 radioOne = new Vector3(58.1619377f, 0.1f, 178.152679f);
@@ -22,6 +25,8 @@ public class DevTools : MonoBehaviour
 
     void Update()
     {
+        godMode = playerHealth.godMode;
+
         if (SceneManager.GetActiveScene().buildIndex == 2)
         {
             if (Input.GetKeyDown(KeyCode.P))

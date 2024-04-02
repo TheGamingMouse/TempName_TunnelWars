@@ -42,6 +42,8 @@ public class UIManagers : MonoBehaviour, IDataPersistence
     float toSaveSFXSliderValue;
     float toSaveSensSliderValue;
     float toSaveUIScaleSliderValue;
+    float fadeTime = 1.5f;
+    float fadeMax;
 
     [Header("Bools")]
     bool reloading;
@@ -50,6 +52,7 @@ public class UIManagers : MonoBehaviour, IDataPersistence
     public bool paused;
     bool slidersUpdated;
     bool rifleActive;
+    bool godMode;
 
     [Header("Strings")]
     string fireMode;
@@ -64,6 +67,8 @@ public class UIManagers : MonoBehaviour, IDataPersistence
     GameObject levelCompleteObj;
     GameObject pauseObj;
     GameObject optionsMenu;
+    GameObject godmodeObj;
+    GameObject damageOverlay;
     
     [Header("Transforms")]
     Transform canvas;
@@ -100,6 +105,7 @@ public class UIManagers : MonoBehaviour, IDataPersistence
     Pistol pistolScript;
     PlayerHealth  playerHealthScript;
     PlayerMovement playerMoveScript;
+    [SerializeField] DevTools dev; // SerializeField is Important!
     [SerializeField] AudioMixer audioMixer; // SerializeField is Important!
 
     #endregion
@@ -133,6 +139,10 @@ public class UIManagers : MonoBehaviour, IDataPersistence
         camObj = Camera.main.gameObject;
         player = GameObject.FindGameObjectWithTag("Player").transform;
         optionsMenu = canvas.Find("PauseMenu/OptionsMenu").gameObject;
+
+        godMode = dev.godMode;
+        godmodeObj = canvas.Find("GodModeText (TMP)").gameObject;
+        UpdateGodmode();
         
         gameOverObj = canvas.Find("DeathScreenPanel").gameObject;
         levelCompleteObj = canvas.Find("LevelCompletePanel").gameObject;
@@ -162,6 +172,13 @@ public class UIManagers : MonoBehaviour, IDataPersistence
         healthImg = canvas.Find("Health/Health").GetComponent<Image>();
         healthText = canvas.Find("Health/HealthText (TMP)").GetComponent<TMP_Text>();
         reloadImg = canvas.Find("Reload").GetComponent<Image>();
+        damageOverlay = canvas.Find("DamageOverlay").gameObject;
+
+        fadeMax = fadeTime;
+        fadeTime = 0;
+        Color c = damageOverlay.GetComponent<Image>().color;
+        c.a = fadeTime / fadeMax;
+        damageOverlay.GetComponent<Image>().color = c;
 
         gameStarted = false;
 
@@ -246,6 +263,9 @@ public class UIManagers : MonoBehaviour, IDataPersistence
             UpdateReload();
             UpdatePromt();
 
+            godMode = dev.godMode;
+            UpdateGodmode();
+
             switch (fmState)
             {
                 case FireModeState.FullAuto:
@@ -280,6 +300,18 @@ public class UIManagers : MonoBehaviour, IDataPersistence
                 UpdateUIScaleSlider(uiScaleSliderValue);
 
                 slidersUpdated = true;
+            }
+            
+            if (fadeTime > 0)
+            {
+                fadeTime -= Time.deltaTime;
+            }
+            Color c = damageOverlay.GetComponent<Image>().color;
+            c.a = fadeTime / fadeMax;
+            damageOverlay.GetComponent<Image>().color = c;
+            if (fadeTime <= 0)
+            {
+                fadeTime = 0;
             }
         }
     }
@@ -341,6 +373,11 @@ public class UIManagers : MonoBehaviour, IDataPersistence
         {
             promtText.gameObject.SetActive(false);
         }
+    }
+
+    void UpdateGodmode()
+    {
+        godmodeObj.SetActive(godMode);
     }
 
     public void Pause()
@@ -510,6 +547,8 @@ public class UIManagers : MonoBehaviour, IDataPersistence
     void HandleDamageTaken()
     {
         Instantiate(damageIndicatorPrefab, spawnedDamageIndicators);
+        
+        fadeTime = 1.5f;
     }
 
     void HandleLevelComplete()

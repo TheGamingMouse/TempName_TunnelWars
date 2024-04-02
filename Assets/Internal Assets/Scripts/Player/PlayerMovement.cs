@@ -54,6 +54,7 @@ public class PlayerMovement : MonoBehaviour
     [Header("AudioClips")]
     AudioClip audioWalking;
     AudioClip audioRunning;
+    AudioClip audioPickup;
 
     [Header("GameObjects")]
     [SerializeField] GameObject rifle; // SerializeField is Important!
@@ -72,6 +73,7 @@ public class PlayerMovement : MonoBehaviour
     Rigidbody rb;
     Camera cam;
     PlayerMovementAudioStorage pmas;
+    ConsumableAudioStorage cas;
     [SerializeField] AudioMixer audioMixer; // SerializeField is Important!
     [SerializeField] AudioMixerGroup sfxVolume; // SerializeField is Important!
     GroundedCheck groundCheck;
@@ -125,6 +127,9 @@ public class PlayerMovement : MonoBehaviour
 
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
+
+            cas = GameObject.FindGameObjectWithTag("Storage").transform.Find("AudioStorages/Consumable").GetComponent<ConsumableAudioStorage>();
+            audioPickup = cas.audioAmmoPickup;
         }
 
         moveSpeedCurr = moveSpeedBase;
@@ -161,11 +166,11 @@ public class PlayerMovement : MonoBehaviour
             }
             else if (((move.x == 0 && move.z == 0) || Input.GetKeyDown(KeyCode.LeftShift)) && (playWalkingAudio || playRunningAudio))
             {
-                StopCoroutine(nameof(WalkingAudio));
-                StopCoroutine(nameof(RunningAudio));
+                StopCoroutine(WalkingAudio());
+                StopCoroutine(RunningAudio());
 
-                StopClip(audioWalking);
-                StopClip(audioRunning);
+                StopClip(audioWalking, true);
+                StopClip(audioRunning, true);
             }
 
             if (!scriptFound)
@@ -313,7 +318,7 @@ public class PlayerMovement : MonoBehaviour
 
     IEnumerator WalkingAudio()
     {
-        PlayClip(audioWalking);
+        PlayClip(audioWalking, true);
         
         yield return new WaitForSeconds(audioWalking.length);
 
@@ -322,7 +327,7 @@ public class PlayerMovement : MonoBehaviour
 
     IEnumerator RunningAudio()
     {
-        PlayClip(audioRunning);
+        PlayClip(audioRunning, true);
         
         yield return new WaitForSeconds(audioRunning.length);
 
@@ -344,9 +349,21 @@ public class PlayerMovement : MonoBehaviour
             rb.velocity = Vector3.zero;
         }
 
-        if (coll.transform.CompareTag("AmmoPickup"))
+        if (coll.transform.CompareTag("ConsumablePickup"))
         {
-            rifle.GetComponent<Rifle>().totalAmmo += coll.GetComponent<AmmoDrop>().ammount;
+            if (coll.transform.TryGetComponent<AmmoDrop>(out AmmoDrop ammoComp))
+            {
+                rifle.GetComponent<Rifle>().totalAmmo += ammoComp.ammount;
+            }
+            else if (coll.transform.TryGetComponent<SecretDrop>(out SecretDrop secretComp))
+            {
+                rifle.GetComponent<Rifle>().totalAmmo += secretComp.ammountRifleAmmo;
+                pistol.GetComponent<Pistol>().totalAmmo += secretComp.ammountPistolAmmo;
+                transform.GetComponent<PlayerHealth>().health += secretComp.ammountHealth;
+            }
+
+            PlayClip(audioPickup, false);
+            Destroy(coll.gameObject);
         }
     }
 
@@ -401,26 +418,47 @@ public class PlayerMovement : MonoBehaviour
 
     #region AudioMethods
 
-    AudioSource AddNewSourceToPool()
+    AudioSource AddNewSourceToPool(bool isPmas)
     {
-        audioMixer.GetFloat("sfxVolume", out float dBSFX);
-        float SFXVolume = Mathf.Pow(10.0f, dBSFX / 20.0f);
+        if (isPmas)
+        {
+            audioMixer.GetFloat("sfxVolume", out float dBSFX);
+            float SFXVolume = Mathf.Pow(10.0f, dBSFX / 20.0f);
 
-        audioMixer.GetFloat("masterVolume", out float dBMaster);
-        float masterVolume = Mathf.Pow(10.0f, dBMaster / 20.0f);
-        
-        float realVolume = (SFXVolume + masterVolume) / 2 * 0.05f;
-        
-        AudioSource newSource = gameObject.AddComponent<AudioSource>();
-        newSource.playOnAwake = false;
-        newSource.volume = realVolume;
-        newSource.spatialBlend = 0.5f;
-        newSource.outputAudioMixerGroup = sfxVolume;
-        audioSourcePool.Add(newSource);
-        return newSource;
+            audioMixer.GetFloat("masterVolume", out float dBMaster);
+            float masterVolume = Mathf.Pow(10.0f, dBMaster / 20.0f);
+            
+            float realVolume = (SFXVolume + masterVolume) / 2 * 0.05f;
+            
+            AudioSource newSource = gameObject.AddComponent<AudioSource>();
+            newSource.playOnAwake = false;
+            newSource.volume = realVolume;
+            newSource.spatialBlend = 0.5f;
+            newSource.outputAudioMixerGroup = sfxVolume;
+            audioSourcePool.Add(newSource);
+            return newSource;
+        }
+        else
+        {
+            audioMixer.GetFloat("sfxVolume", out float dBSFX);
+            float SFXVolume = Mathf.Pow(10.0f, dBSFX / 20.0f);
+
+            audioMixer.GetFloat("masterVolume", out float dBMaster);
+            float masterVolume = Mathf.Pow(10.0f, dBMaster / 20.0f);
+            
+            float realVolume = (SFXVolume + masterVolume) / 2 * 0.3f;
+            
+            AudioSource newSource = gameObject.AddComponent<AudioSource>();
+            newSource.playOnAwake = false;
+            newSource.volume = realVolume;
+            newSource.spatialBlend = 0f;
+            newSource.outputAudioMixerGroup = sfxVolume;
+            audioSourcePool.Add(newSource);
+            return newSource;
+        }
     }
 
-    AudioSource GetAvailablePoolSource()
+    AudioSource GetAvailablePoolSource(bool isPmas)
     {
         //Fetch the first source in the pool that is not currently playing anything
         foreach (var source in audioSourcePool)
@@ -432,32 +470,40 @@ public class PlayerMovement : MonoBehaviour
         }
  
         //No unused sources. Create and fetch a new source
-        return AddNewSourceToPool();
+        return AddNewSourceToPool(isPmas);
     }
 
-    AudioSource GetUnavailablePoolSource()
+    AudioSource GetUnavailablePoolSource(bool isPmas)
     {
         //Fetch the first source in the pool that is not currently playing anything
         foreach (var source in audioSourcePool)
         {
             if (source.isPlaying)
             {
-                return source;
+                if (isPmas && source.spatialBlend > 0f)
+                {
+                    return source;
+                }
+                else if (!isPmas && source.spatialBlend == 0f)
+                {
+                    return source;
+                }
+                
             }
         }
         return null;
     }
 
-    void PlayClip(AudioClip clip)
+    void PlayClip(AudioClip clip, bool isPmas)
     {
-        AudioSource source = GetAvailablePoolSource();
+        AudioSource source = GetAvailablePoolSource(isPmas);
         source.clip = clip;
         source.Play();
     }
 
-    void StopClip(AudioClip clip)
+    void StopClip(AudioClip clip, bool isPmas)
     {
-        AudioSource source = GetUnavailablePoolSource();
+        AudioSource source = GetUnavailablePoolSource(isPmas);
         if (source == null)
         {
             return;
