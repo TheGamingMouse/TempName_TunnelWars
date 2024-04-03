@@ -46,7 +46,7 @@ public class AmmoDrop : MonoBehaviour
 
     void SetAmount()
     {
-        ammount = Random.Range(10, 31);
+        ammount = Random.Range(2, 7) * 5;
     }
 
     void OnTriggerEnter(Collider coll)

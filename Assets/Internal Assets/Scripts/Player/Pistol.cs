@@ -248,11 +248,11 @@ public class Pistol : MonoBehaviour, IDataPersistence
             {
                 if (eComp.eMove.cState != EnemyMovement.CombatState.Combat)
                 {
-                    eComp.TakeDamage(damage * 10f);
+                    eComp.TakeDamage(damage * 10f, true);
                 }
                 else
                 {
-                    eComp.TakeDamage(damage * 0.1f);
+                    eComp.TakeDamage(damage * 0.5f, false);
                 }
                 PlayClip(audioHitMarker);
             }

@@ -39,9 +39,9 @@ public class SecretDrop : MonoBehaviour
 
     void SetAmount()
     {
-        ammountRifleAmmo = Random.Range(2, 6) * 30;
-        ammountPistolAmmo = Random.Range(2, 6) * 14;
-        ammountHealth = Random.Range(2, 6) * 10;
+        ammountRifleAmmo = Random.Range(1, 4) * 30;
+        ammountPistolAmmo = Random.Range(1, 4) * 14;
+        ammountHealth = Random.Range(1, 4) * 10;
     }
 
     #endregion

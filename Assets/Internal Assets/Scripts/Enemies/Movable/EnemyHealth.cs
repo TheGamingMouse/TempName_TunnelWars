@@ -51,21 +51,24 @@ public class EnemyHealth : MonoBehaviour
 
     #region Methods
 
-    public void TakeDamage(float damage)
+    public void TakeDamage(float damage, bool isSilenced)
     {
         health -= damage;
         
         if (health <= 0)
         {
             int i = UnityEngine.Random.Range(1, 101);
-            if (i > 20)
+            if (i > 60)
             {
                 Instantiate(ammoDrop, new Vector3(transform.position.x, 0.4f, transform.position.z), Quaternion.identity, spawnedDrops);
             } 
             Destroy(enemyObj);
         }
 
-        OnDamageTaken?.Invoke();
+        if (!isSilenced)
+        {
+            OnDamageTaken?.Invoke();
+        }
     }
 
     #endregion

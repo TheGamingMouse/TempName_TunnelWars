@@ -45,7 +45,6 @@ public class EnemySight : MonoBehaviour
     EnemySightAudioStorage esas;
     [SerializeField] AudioMixer audioMixer; // SerializeField is Important!
     [SerializeField] AudioMixerGroup sfxVolume; // SerializeField is Important!
-    EnemySight enemySight;
 
     #endregion
 
@@ -54,13 +53,13 @@ public class EnemySight : MonoBehaviour
     void OnEnable()
     {
         EnemyHealth.OnDamageTaken += HandleDamageTaken;
-        EnemySight.OnTargetFound += HandleTargetFound;
+        OnTargetFound += HandleTargetFound;
     }
 
     void OnDisable()
     {
         EnemyHealth.OnDamageTaken -= HandleDamageTaken;
-        EnemySight.OnTargetFound += HandleTargetFound;
+        OnTargetFound -= HandleTargetFound;
     }
     
     #endregion
@@ -70,8 +69,6 @@ public class EnemySight : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        enemySight = this.GetComponent<EnemySight>();
-
         player = GameObject.FindGameObjectWithTag("Player").transform;
         esas = GameObject.FindGameObjectWithTag("Storage").transform.Find("AudioStorages/EnemySight").GetComponent<EnemySightAudioStorage>();
 
@@ -166,7 +163,7 @@ public class EnemySight : MonoBehaviour
 
     void HandleDamageTaken()
     {
-        if (!target && (Vector3.Distance(transform.position, player.position) < engangementRange) && enemySight != null)
+        if (!target && (Vector3.Distance(transform.position, player.position) < engangementRange))
         {
             target = player;
             StartCoroutine(PlayAudioTargetFound());
@@ -175,7 +172,7 @@ public class EnemySight : MonoBehaviour
 
     void HandleTargetFound()
     {
-        if (!target && (Vector3.Distance(transform.position, player.position) < engangementRange) && enemySight != null)
+        if (!target && (Vector3.Distance(transform.position, player.position) < engangementRange))
         {
             target = player;
             StartCoroutine(PlayAudioTargetFound());

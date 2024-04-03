@@ -291,7 +291,7 @@ public class Rifle : MonoBehaviour, IDataPersistence
             //Enemy TakeDamage()
             if (hit.collider.gameObject.TryGetComponent<EnemyHealth>(out EnemyHealth eComp))
             {
-                eComp.TakeDamage(damage);
+                eComp.TakeDamage(damage, false);
                 PlayClip(audioHitMarker);
             }
 
