@@ -23,6 +23,7 @@ TagManager:
   - Radiostation
   - Indicator
   - ConsumablePickup
+  - Ground
   layers:
   - Default
   - TransparentFX

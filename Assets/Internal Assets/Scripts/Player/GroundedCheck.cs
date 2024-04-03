@@ -77,7 +77,7 @@ public class GroundedCheck : MonoBehaviour
 
     void OnTriggerStay(Collider coll)
     {
-        if (coll.transform.CompareTag("Obstruction") || coll.transform.CompareTag("Cover"))
+        if (coll.transform.CompareTag("Obstruction") || coll.transform.CompareTag("Cover") || coll.transform.CompareTag("Ground"))
         {
             isOnGround = true;
         }
@@ -85,7 +85,7 @@ public class GroundedCheck : MonoBehaviour
     
     void OnTriggerEnter(Collider coll)
     {
-        if (coll.transform.CompareTag("Obstruction") || coll.transform.CompareTag("Cover"))
+        if (coll.transform.CompareTag("Obstruction") || coll.transform.CompareTag("Cover") || coll.transform.CompareTag("Ground"))
         {
             airTime = 0;
 

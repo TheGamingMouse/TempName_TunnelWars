@@ -68,6 +68,7 @@ public class PlayerMovement : MonoBehaviour
     [Header("Vector3s")]
     Vector3 move;
     Vector3 moveDir;
+    Vector3 lastOnGround;
 
     [Header("Components")]
     Rigidbody rb;
@@ -309,6 +310,11 @@ public class PlayerMovement : MonoBehaviour
                     StartCoroutine(StartSwapTimer());
                 }
             }
+
+            if (!PlayerInBounds())
+            {
+                transform.position = lastOnGround;
+            }
         }
     }
 
@@ -367,6 +373,14 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    void OnCollisionStay(Collision coll)
+    {
+        if (coll.transform.CompareTag("Ground"))
+        {
+            lastOnGround = new Vector3(transform.position.x, 1f, transform.position.z);
+        }
+    }
+
     IEnumerator EnableRifle()
     {
         yield return new WaitForSeconds(2f);
@@ -385,6 +399,15 @@ public class PlayerMovement : MonoBehaviour
         yield return new WaitForSeconds(swapSpeed);
 
         canSwap = true;
+    }
+
+    bool PlayerInBounds()
+    {
+        if (transform.position.y < -30f)
+        {
+            return false;
+        }
+        return true;
     }
     
     #endregion
