@@ -27,6 +27,7 @@ public class Pistol : MonoBehaviour, IDataPersistence
     public float totalAmmo = 56f;
     float recoilTimer;
     readonly float holsterSpeed = 0.1f;
+    readonly float shootForce = 300f;
 
     [Header("Bools")]
     bool crouching;
@@ -41,14 +42,17 @@ public class Pistol : MonoBehaviour, IDataPersistence
 
     [Header("Lists")]
     readonly List<AudioSource> audioSourcePool = new();
-    List<Color> colors = new();
+    readonly List<Color> colors = new();
 
     [Header("GameObjects")]
     [SerializeField] GameObject impact; // SerializeField is Important!
+    [SerializeField] GameObject bullet; // SerializeField is Important!
 
     [Header("Transforms")]
     Transform spawnedPrefabs;
     Transform spawnedImpacts;
+    Transform spawnedBullets;
+    [SerializeField] Transform firePoint; // SerializeField is Important!
 
     [Header("Vector3s")]
     [SerializeField] Vector3 nPos, aPos, hPos;
@@ -103,7 +107,8 @@ public class Pistol : MonoBehaviour, IDataPersistence
         cam = Camera.main;
         cVirtCam = Camera.main.GetComponent<CinemachineVirtualCamera>();
         spawnedPrefabs = GameObject.FindGameObjectWithTag("Prefabs").transform;
-        spawnedImpacts = spawnedPrefabs.Find("SpawnedImpacts").transform;
+        spawnedImpacts = spawnedPrefabs.Find("SpawnedImpacts");
+        spawnedBullets = spawnedPrefabs.Find("SpawnedBullets");
         
         muzzleFlash = GetComponentInChildren<ParticleSystem>();
 
@@ -240,6 +245,10 @@ public class Pistol : MonoBehaviour, IDataPersistence
         Recoil(1f, 0.1f);
 
         canShoot = false;
+
+        GameObject bulletCopy = Instantiate(bullet, firePoint.position, firePoint.rotation * Quaternion.AngleAxis(90, Vector3.right), spawnedBullets.transform);
+        bulletCopy.GetComponent<Rigidbody>().AddForce(firePoint.forward * shootForce, ForceMode.Impulse);
+        Destroy(bulletCopy, 3f);
 
         if (Physics.Raycast(cam.transform.position, cam.transform.forward, out RaycastHit hit))
         {

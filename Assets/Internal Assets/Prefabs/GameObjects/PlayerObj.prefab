@@ -3192,7 +3192,7 @@ Transform:
   m_GameObject: {fileID: 3127848285432868254}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.0325, y: 0.0113, z: 0.3699}
+  m_LocalPosition: {x: 0, y: 0.01, z: 0.375}
   m_LocalScale: {x: 0.108695656, y: 0.10869564, z: 0.326087}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3817,7 +3817,7 @@ ParticleSystem:
     boxThickness: {x: 0, y: 0, z: 0}
     radiusThickness: 0
     donutRadius: 0.2
-    m_Position: {x: -0.3, y: 0, z: 0}
+    m_Position: {x: 0, y: 0, z: 0}
     m_Rotation: {x: 0, y: 0, z: 0}
     m_Scale: {x: 1, y: 1, z: 1}
     placementMode: 0
@@ -12275,7 +12275,7 @@ Transform:
   m_GameObject: {fileID: 6727853210485172620}
   serializedVersion: 2
   m_LocalRotation: {x: 5.8207654e-11, y: 0.0000000018626449, z: 0.0000000018626449, w: 1}
-  m_LocalPosition: {x: 0.04271541, y: 0.014851531, z: 0.48615432}
+  m_LocalPosition: {x: 0, y: 0.0435, z: 0.125}
   m_LocalScale: {x: 0.14285716, y: 0.14285713, z: 0.42857137}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -12900,7 +12900,7 @@ ParticleSystem:
     boxThickness: {x: 0, y: 0, z: 0}
     radiusThickness: 0
     donutRadius: 0.2
-    m_Position: {x: -0.3, y: 0, z: 0}
+    m_Position: {x: 0, y: 0, z: 0}
     m_Rotation: {x: 0, y: 0, z: 0}
     m_Scale: {x: 1, y: 1, z: 1}
     placementMode: 0
@@ -17767,7 +17767,7 @@ Transform:
   m_GameObject: {fileID: 7222979356327342462}
   serializedVersion: 2
   m_LocalRotation: {x: 0.5, y: 0.49999994, z: 0.50000006, w: 0.50000006}
-  m_LocalPosition: {x: 0.0325, y: 0.0113, z: 0.3699}
+  m_LocalPosition: {x: 0, y: 0.1, z: 0.375}
   m_LocalScale: {x: 0.10869568, y: 0.3260869, z: 0.108695656}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -20575,6 +20575,8 @@ MonoBehaviour:
   aiming: 0
   reloading: 0
   impact: {fileID: 1520741143792877218, guid: dc2caf9415988964789b0f70f83c1d34, type: 3}
+  bullet: {fileID: 182842, guid: 7932449da136fc249b13fe0665479826, type: 3}
+  firePoint: {fileID: 7232039109698633622}
   nPos: {x: 0.45, y: -0.3, z: 0.55}
   aPos: {x: -0.0002, y: -0.1175, z: 0.75}
   hPos: {x: 0.65, y: -1.5, z: 0.3}
@@ -20697,6 +20699,8 @@ MonoBehaviour:
   reloading: 0
   soundMade: 0
   impact: {fileID: 1520741143792877218, guid: dc2caf9415988964789b0f70f83c1d34, type: 3}
+  bullet: {fileID: 178192, guid: a4571f10673d6734494ba25f01b70792, type: 3}
+  firePoint: {fileID: 537813405430856433}
   nPos: {x: 0.45, y: -0.3, z: 0.3}
   aPos: {x: -0.00045, y: -0.2185, z: 0.3}
   hPos: {x: 0.65, y: -1.5, z: 0.1}
