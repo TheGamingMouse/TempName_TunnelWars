@@ -25,5 +25,10 @@ public class camPosFollow : MonoBehaviour
         transform.position = camPos.position;
     }
 
+    void LateUpdate()
+    {
+        transform.position = camPos.position;
+    }
+
     #endregion
 }

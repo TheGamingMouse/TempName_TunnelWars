@@ -190,7 +190,7 @@ public class PlayerHealth : MonoBehaviour, IDataPersistence
 
     void UpdatePlayerColor()
     {
-        GetComponent<MeshRenderer>().material.color = colors[cIndex];
+        GetComponentInChildren<SkinnedMeshRenderer>().material.color = colors[cIndex];
     }
 
     void Recoil(float magnitude, float duration)

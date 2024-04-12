@@ -5232,7 +5232,7 @@ Transform:
   m_GameObject: {fileID: 7816645770095200151}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.1, z: 3.43}
+  m_LocalPosition: {x: 0, y: 1.1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5456,8 +5456,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cState: 0
   combatting: 0
-  soundMade: 0
   emptyPoint: {fileID: 7004533130307380207, guid: 31a312a35415523408a92be9e6e94c3d, type: 3}
+  centrePointObj: {fileID: 9052019543745171454, guid: 620b137325e529446af273c363cbd192, type: 3}
   searchCentrePoint: {fileID: 0}
   audioMixer: {fileID: 24100000, guid: 6d0b19c81c5866d45a9217b1eed60eb3, type: 2}
   sfxVolume: {fileID: 2801275425284752312, guid: 6d0b19c81c5866d45a9217b1eed60eb3, type: 2}

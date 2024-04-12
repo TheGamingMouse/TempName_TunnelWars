@@ -20,7 +20,7 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Floats")]
     readonly float moveSpeedBase = 5f;
-    [SerializeField] float moveSpeedCurr;
+    float moveSpeedCurr;
     readonly float crouchSpeed = 4f; 
     public float jumpHeight = 2f;
     readonly float sprintSpeed = 7.5f;
@@ -31,13 +31,15 @@ public class PlayerMovement : MonoBehaviour
     float xRot;
     float yRot;
     readonly float swapSpeed = 0.2f;
+    readonly float shoulderZRot = -22.5f;
+    readonly float shoulderXRot = 5;
 
     [Header("Bools")]
     bool isOnGround;
     public bool crouched;
     public bool moveBool;
-    bool playWalkingAudio;
-    bool playRunningAudio;
+    bool playWalking;
+    bool playRunning;
     bool scriptFound;
     [SerializeField] bool mainMenu = false; // SerializeField is Important!
     bool aimingRifle;
@@ -47,6 +49,8 @@ public class PlayerMovement : MonoBehaviour
     bool speedAlteredCrouched;
     public bool rifleActive;
     bool canSwap;
+    bool sprinting;
+    bool aiming;
 
     [Header("Lists")]
     readonly List<AudioSource> audioSourcePool = new();
@@ -57,13 +61,16 @@ public class PlayerMovement : MonoBehaviour
     AudioClip audioPickup;
 
     [Header("GameObjects")]
-    [SerializeField] GameObject rifle; // SerializeField is Important!
-    [SerializeField] GameObject pistol; // SerializeField is Important!
+    public GameObject rifle; // SerializeField is Important!
+    public GameObject pistol; // SerializeField is Important!
     [SerializeField] GameObject dummyRifle; // SerializeField is Important!
     [SerializeField] GameObject dummyPistol; // SerializeField is Important!
 
     [Header("Transforms")]
     Transform orientation;
+    [SerializeField] Transform spine; // SerializeField is Important!
+    [SerializeField] Transform rightShoulder; // SerializeField is Important!
+    [SerializeField] Transform leftShoulder; // SerializeField is Important!
 
     [Header("Vector3s")]
     Vector3 move;
@@ -78,6 +85,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] AudioMixer audioMixer; // SerializeField is Important!
     [SerializeField] AudioMixerGroup sfxVolume; // SerializeField is Important!
     GroundedCheck groundCheck;
+    Animator animator;
 
     #endregion
 
@@ -89,6 +97,7 @@ public class PlayerMovement : MonoBehaviour
         StartCamMovement.OnGameStart += HandleGameStart;
         UIManagers.OnPause += HandlePause;
         UIManagers.OnUnpause += HandleUnpause;
+        Rifle.OnShooting += HandleShooting;
     }
 
     void OnDisable()
@@ -97,6 +106,7 @@ public class PlayerMovement : MonoBehaviour
         StartCamMovement.OnGameStart -= HandleGameStart;
         UIManagers.OnPause -= HandlePause;
         UIManagers.OnUnpause -= HandleUnpause;
+        Rifle.OnShooting -= HandleShooting;
     }
     
     #endregion
@@ -109,10 +119,11 @@ public class PlayerMovement : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         orientation = transform.Find("Orientation");
         cam = Camera.main;
+        animator = GetComponent<Animator>();
 
-        if (rifle != null)
+        if (dummyRifle != null)
         {
-            rifle.SetActive(false);
+            dummyRifle.SetActive(false);
         }
         if (pistol != null)
         {
@@ -155,17 +166,17 @@ public class PlayerMovement : MonoBehaviour
             sensX = GameObject.FindWithTag("Managers").transform.Find("UIManager").GetComponent<UIManagers>().mouseSens;
             sensY = GameObject.FindWithTag("Managers").transform.Find("UIManager").GetComponent<UIManagers>().mouseSens;
 
-            if ((move.x != 0 || move.z != 0) && moveSpeedCurr != sprintSpeed && !playWalkingAudio && !playRunningAudio)
+            if ((move.x != 0 || move.z != 0) && moveSpeedCurr != sprintSpeed && !playWalking && !playRunning)
             {
                 StartCoroutine(WalkingAudio());
-                playWalkingAudio = true;
+                playWalking = true;
             }
-            else if ((move.x != 0 || move.z != 0) && moveSpeedCurr == sprintSpeed && !playRunningAudio && !playWalkingAudio)
+            else if ((move.x != 0 || move.z != 0) && moveSpeedCurr == sprintSpeed && !playRunning && !playWalking)
             {
                 StartCoroutine(RunningAudio());
-                playRunningAudio = true;
+                playRunning = true;
             }
-            else if (((move.x == 0 && move.z == 0) || Input.GetKeyDown(KeyCode.LeftShift)) && (playWalkingAudio || playRunningAudio))
+            else if (((move.x == 0 && move.z == 0) || Input.GetKeyDown(KeyCode.LeftShift)) && (playWalking || playRunning))
             {
                 StopCoroutine(WalkingAudio());
                 StopCoroutine(RunningAudio());
@@ -197,7 +208,14 @@ public class PlayerMovement : MonoBehaviour
 
             yRot += mouseX;
             xRot -= mouseY;
-            xRot = Mathf.Clamp(xRot, -80f, 70f);
+            if (!crouched)
+            {
+                xRot = Mathf.Clamp(xRot, -50f, 65f);
+            }
+            else if (crouched)
+            {
+                xRot = Mathf.Clamp(xRot, -35f, 65f);
+            }
 
             if (moveBool)
             {
@@ -205,31 +223,27 @@ public class PlayerMovement : MonoBehaviour
                 transform.rotation = Quaternion.Euler(0f, yRot, 0f);
             }
 
-            if (Input.GetKey(KeyCode.LeftShift) && isOnGround && moveBool && !Input.GetKey(KeyCode.LeftControl) && !aimingRifle && !aimingPistol)
+            if (Input.GetKey(KeyCode.LeftShift) && isOnGround && moveBool && !Input.GetKey(KeyCode.LeftControl) && !aimingRifle && !aimingPistol && (move.x != 0 || move.z != 0))
             {
                 moveSpeedCurr = sprintSpeed;
                 speedAlteredSprint = true;
+                sprinting = true;
             }
             else if (speedAlteredSprint)
             {
                 moveSpeedCurr = moveSpeedBase;
                 speedAlteredSprint = false;
                 speedAltered = false;
+                sprinting = false;
             }
 
             if (Input.GetKeyDown(KeyCode.LeftControl) && moveBool && !Input.GetKey(KeyCode.LeftShift))
             {
-                transform.localScale = new Vector3(1f, 0.5f, 1f);
-                transform.position = new Vector3(transform.position.x, transform.position.y - 0.5f, transform.position.z);
-                
                 crouched = true;
                 speedAltered = false;
             }
             else if (Input.GetKeyUp(KeyCode.LeftControl) && moveBool && !Input.GetKey(KeyCode.LeftShift))
             {
-                transform.localScale = new Vector3(1f, 1f, 1f);
-                transform.position = new Vector3(transform.position.x, transform.position.y + 0.5f, transform.position.z);
-                
                 crouched = false;
                 speedAltered = false;
             }
@@ -268,9 +282,6 @@ public class PlayerMovement : MonoBehaviour
                 rifle.GetComponent<Rifle>().rState = Rifle.ReloadState.Ready;
                 pistol.GetComponent<Pistol>().rState = Pistol.ReloadState.Ready;
 
-                rifle.GetComponent<Rifle>().UnHolster();
-                pistol.GetComponent<Pistol>().UnHolster();
-
                 rifle.GetComponent<Rifle>().aiming = false;
                 pistol.GetComponent<Pistol>().aiming = false;
 
@@ -286,7 +297,6 @@ public class PlayerMovement : MonoBehaviour
                 if (!rifleActive)
                 {
                     rifle.GetComponent<Rifle>().rState = Rifle.ReloadState.Ready;
-                    rifle.GetComponent<Rifle>().UnHolster();
                     rifle.GetComponent<Rifle>().aiming = false;
 
                     rifleActive = true;
@@ -302,7 +312,6 @@ public class PlayerMovement : MonoBehaviour
                 if (rifleActive)
                 {
                     pistol.GetComponent<Pistol>().rState = Pistol.ReloadState.Ready;
-                    pistol.GetComponent<Pistol>().UnHolster();
                     pistol.GetComponent<Pistol>().aiming = false;
 
                     rifleActive = false;
@@ -315,7 +324,40 @@ public class PlayerMovement : MonoBehaviour
             {
                 transform.position = lastOnGround;
             }
+
+            // Animator booleans
+            if (moveBool)
+            {
+                animator.SetBool("isWalkingForward", Input.GetKey(KeyCode.W));
+                animator.SetBool("isWalkingBackwards", Input.GetKey(KeyCode.S));
+                animator.SetBool("isWalkingLeft", Input.GetKey(KeyCode.A));
+                animator.SetBool("isWalkingRight", Input.GetKey(KeyCode.D));
+
+                animator.SetBool("isCrouching", crouched);
+                animator.SetBool("isSprinting", sprinting);
+
+                if (aimingRifle || aimingPistol)
+                {
+                    aiming = true;
+                }
+                else
+                {
+                    aiming = false;
+                }
+                animator.SetBool("isAiming", aiming);
+            }
         }
+    }
+
+    void LateUpdate()
+    {
+        if (moveBool && aiming)
+            {
+                cam.transform.rotation = Quaternion.Euler(xRot, yRot, 0f);
+                spine.rotation = Quaternion.Euler(xRot, yRot, 0f);
+                leftShoulder.rotation *= Quaternion.Euler(shoulderXRot, 1f, shoulderZRot);
+                rightShoulder.rotation *= Quaternion.Euler(shoulderXRot, 1f, shoulderZRot);
+            }
     }
 
     #endregion
@@ -328,7 +370,7 @@ public class PlayerMovement : MonoBehaviour
         
         yield return new WaitForSeconds(audioWalking.length);
 
-        playWalkingAudio = false;
+        playWalking = false;
     }
 
     IEnumerator RunningAudio()
@@ -337,7 +379,7 @@ public class PlayerMovement : MonoBehaviour
         
         yield return new WaitForSeconds(audioRunning.length);
 
-        playRunningAudio = false;
+        playRunning = false;
     }
 
     void OnTriggerEnter(Collider coll)
@@ -386,8 +428,9 @@ public class PlayerMovement : MonoBehaviour
         yield return new WaitForSeconds(2f);
 
         dummyRifle.SetActive(false);
-        dummyPistol.SetActive(false);
+        dummyPistol.SetActive(true);
         rifle.SetActive(true);
+        pistol.SetActive(false);
         moveBool = true;
         rifleActive = true;
     }
@@ -408,6 +451,17 @@ public class PlayerMovement : MonoBehaviour
             return false;
         }
         return true;
+    }
+
+    IEnumerator Recoil()
+    {
+        leftShoulder.position += new Vector3(0f, -0.15f, 0f);
+        rightShoulder.position += new Vector3(0f, -0.15f, 0f);
+
+        yield return new WaitForSeconds(0.1f);
+
+        leftShoulder.position += new Vector3(0f, 0.15f, 0f);
+        rightShoulder.position += new Vector3(0f, 0.15f, 0f);
     }
     
     #endregion
@@ -435,6 +489,11 @@ public class PlayerMovement : MonoBehaviour
     void HandleUnpause()
     {
         moveBool = true;
+    }
+
+    void HandleShooting()
+    {
+        StartCoroutine(Recoil());
     }
     
     #endregion

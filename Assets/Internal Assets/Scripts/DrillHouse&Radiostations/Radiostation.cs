@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Audio;
 
@@ -73,32 +74,36 @@ public class Radiostation : MonoBehaviour
             indicator.GetComponent<MeshRenderer>().material.color = colors[id];
         }
 
-        if (placeBomb.exploded && !destroyed)
+        if (!placeBomb.IsDestroyed())
         {
-            explosion.Play();
-            // TODO - Add explosion sound.
-            
-            intake.SetActive(false);
-            bomb.SetActive(false);
-            indicator.SetActive(false);
-
-            float distance = Vector3.Distance(player.transform.position, transform.position);
-            if (distance <= explosionRadiusLethal)
+            if (placeBomb.exploded && !destroyed)
             {
-                player.GetComponent<PlayerHealth>().TakeDamage(100, bomb.transform.position);
-            }
-            else if (distance <= explosionRadiusSemiLethal)
-            {
-                player.GetComponent<PlayerHealth>().TakeDamage(40, bomb.transform.position);
-            }
-            else if (distance <= explosionRadiusNearNonLethal)
-            {
-                player.GetComponent<PlayerHealth>().TakeDamage(10, bomb.transform.position);
-            }
+                explosion.Play();
+                // TODO - Add explosion sound.
+                
+                intake.SetActive(false);
+                bomb.SetActive(false);
+                indicator.SetActive(false);
 
-            PlayClip(audioExplosion);
+                float distance = Vector3.Distance(player.transform.position, transform.position);
+                if (distance <= explosionRadiusLethal)
+                {
+                    player.GetComponent<PlayerHealth>().TakeDamage(100, bomb.transform.position);
+                }
+                else if (distance <= explosionRadiusSemiLethal)
+                {
+                    player.GetComponent<PlayerHealth>().TakeDamage(40, bomb.transform.position);
+                }
+                else if (distance <= explosionRadiusNearNonLethal)
+                {
+                    player.GetComponent<PlayerHealth>().TakeDamage(10, bomb.transform.position);
+                }
 
-            destroyed = true;
+                PlayClip(audioExplosion);
+
+                destroyed = true;
+                Destroy(placeBomb.gameObject);
+            }
         }
     }
     

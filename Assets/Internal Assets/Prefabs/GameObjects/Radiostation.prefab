@@ -5007,6 +5007,8 @@ MonoBehaviour:
   bombPlanted: 0
   exploded: 0
   bomb: {fileID: 877512984611636248}
+  audioMixer: {fileID: 24100000, guid: 6d0b19c81c5866d45a9217b1eed60eb3, type: 2}
+  sfxVolume: {fileID: 2801275425284752312, guid: 6d0b19c81c5866d45a9217b1eed60eb3, type: 2}
 --- !u!1 &3833082293621017622
 GameObject:
   m_ObjectHideFlags: 0

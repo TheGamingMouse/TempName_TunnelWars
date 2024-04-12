@@ -425,7 +425,7 @@ public class MenuManager : MonoBehaviour, IDataPersistence
 
     public void ApplyUIScale()
     {
-        transform.localScale = new Vector3(uiScale, uiScale, uiScale);
+        GetComponentInParent<CanvasScaler>().scaleFactor = uiScale;
     }
 
     public void SetFullscreen(bool isFullscreen)

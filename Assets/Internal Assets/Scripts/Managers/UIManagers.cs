@@ -135,7 +135,7 @@ public class UIManagers : MonoBehaviour, IDataPersistence
     // Start is called before the first frame update
     void Start()
     {
-        canvas = GameObject.FindGameObjectWithTag("UI").transform.Find("CanvasScale");
+        canvas = GameObject.FindGameObjectWithTag("UI").transform;
         camObj = Camera.main.gameObject;
         player = GameObject.FindGameObjectWithTag("Player").transform;
         optionsMenu = canvas.Find("PauseMenu/OptionsMenu").gameObject;
@@ -222,8 +222,8 @@ public class UIManagers : MonoBehaviour, IDataPersistence
         {
             if (!scriptFound)
             {
-                rifleScript = camObj.GetComponentInChildren<Rifle>();
-                pistolScript = camObj.GetComponentInChildren<Pistol>();
+                rifleScript = player.GetComponent<PlayerMovement>().rifle.GetComponent<Rifle>();
+                pistolScript = player.GetComponent<PlayerMovement>().pistol.GetComponent<Pistol>();
                 playerMoveScript = player.GetComponent<PlayerMovement>();
                 if (rifleScript != null && pistolScript != null && playerMoveScript != null)
                 {
@@ -495,7 +495,7 @@ public class UIManagers : MonoBehaviour, IDataPersistence
 
     public void ApplyUIScale()
     {
-        canvas.localScale = new Vector3(uiScale, uiScale, uiScale);
+        canvas.GetComponent<CanvasScaler>().scaleFactor = uiScale;
     }
 
     public void SetFullscreen(bool isFullscreen)

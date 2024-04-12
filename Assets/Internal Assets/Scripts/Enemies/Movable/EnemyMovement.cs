@@ -16,8 +16,6 @@ public class EnemyMovement : MonoBehaviour
     readonly float rotSpeed = 5f;
     float closestDistanceCover;
     float newDistanceCover;
-    float closestDistanceCentrePoints;
-    float newDistanceCentrePoints;
     float closestDistanceEnemyObjs;
     float newDistanceEnemyObjs;
     readonly float range = 5f;
@@ -35,13 +33,12 @@ public class EnemyMovement : MonoBehaviour
     bool exitCombat;
     public bool combatting;
     bool leaveCover;
-    [SerializeField] bool soundMade;
+    bool soundMade;
     bool playWalkingAudio;
     bool scriptFound;
 
     [Header("Arrays")]
     Cover[] covers;
-    GameObject[] centrePoints;
     GameObject[] enemyObjs;
 
     [Header("Lists")]
@@ -49,17 +46,18 @@ public class EnemyMovement : MonoBehaviour
 
     [Header("GameObjects")]
     [SerializeField] GameObject emptyPoint; // SerializeField is Important!
+    [SerializeField] GameObject centrePointObj; // SerializeField is Important!
     
     [Header("Transforms")]
     Transform playerTarget;
     Transform enemyObj;
     Transform coverTarget;
-    Transform centrePoint;
     Transform feet;
+    Transform centrePoint;
     [SerializeField] Transform searchCentrePoint;
     Transform player;
-    Transform potCentrePoint;
     Transform potEnemyObj;
+    Transform spawnedCentres;
     
     [Header("Vector3s")]
     Vector3 coverPoint;
@@ -84,21 +82,8 @@ public class EnemyMovement : MonoBehaviour
     void Start()
     {
         covers = FindObjectsByType<Cover>(FindObjectsSortMode.None);
-        centrePoints = GameObject.FindGameObjectsWithTag("CenterPoint");
         enemyObjs = GameObject.FindGameObjectsWithTag("Enemy");
         
-        foreach(GameObject g in centrePoints)
-        {
-            potCentrePoint = g.transform;
-            newDistanceCentrePoints = Vector3.Distance(potCentrePoint.position, transform.position);
-
-            if (newDistanceCentrePoints < closestDistanceCentrePoints || closestDistanceCentrePoints == 0)
-            {
-                closestDistanceCentrePoints = newDistanceCentrePoints;
-                centrePoint = potCentrePoint;
-            }
-        }
-
         foreach(GameObject g in enemyObjs)
         {
             potEnemyObj = g.transform;
@@ -115,6 +100,9 @@ public class EnemyMovement : MonoBehaviour
         feet = enemyObj.Find("Body/Feet");
         player = GameObject.FindWithTag("Player").transform;
         emas = GameObject.FindGameObjectWithTag("Storage").transform.Find("AudioStorages/EnemyMovement").GetComponent<EnemyMovementAudioStorage>();
+
+        spawnedCentres = GameObject.FindWithTag("Prefabs").transform.Find("SpawnedCentres");
+        centrePoint = Instantiate(centrePointObj, feet.position, Quaternion.identity, spawnedCentres).transform;
 
         agent.SetDestination(centrePoint.position);
 

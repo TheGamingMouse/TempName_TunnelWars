@@ -3,9 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
 using Cinemachine;
+using System;
 
 public class Rifle : MonoBehaviour, IDataPersistence
 {
+    #region Events
+
+    public static event Action OnShooting;
+
+    #endregion
+    
     #region Variables
 
     [Header("Enum States")]
@@ -27,7 +34,6 @@ public class Rifle : MonoBehaviour, IDataPersistence
     readonly float magSize = 30f;
     public float totalAmmo = 120f;
     float recoilTimer;
-    readonly float holsterSpeed = 0.1f;
     readonly float shootForce = 500f;
 
     [Header("Bools")]
@@ -58,9 +64,13 @@ public class Rifle : MonoBehaviour, IDataPersistence
     Transform spawnedImpacts;
     Transform spawnedBullets;
     [SerializeField] Transform firePoint; // SerializeField is Important!
+    [SerializeField] Transform rightHand; // SerializeField is Important!
 
     [Header("Vector3s")]
-    [SerializeField] Vector3 nPos, aPos, hPos; // SerializeField is Important!
+    [SerializeField] Vector3 nPos, aPos; // SerializeField is Important!
+
+    [Header("Quaternions")]
+    [SerializeField] Quaternion nRot, aRot; // SerializeField is Important!
 
     [Header("AudioClips")]
     AudioClip audioShoot;
@@ -257,29 +267,23 @@ public class Rifle : MonoBehaviour, IDataPersistence
     void Aim()
     {
         transform.localPosition = Vector3.Slerp(transform.localPosition, aPos, aimSpeed * Time.deltaTime);
+        transform.localRotation = Quaternion.Slerp(transform.localRotation, aRot, aimSpeed * Time.deltaTime);
         cVirtCam.m_Lens.FieldOfView -= zoomSpeed * Time.deltaTime;
         cVirtCam.m_Lens.FieldOfView = Mathf.Clamp(cVirtCam.m_Lens.FieldOfView, zoom, 90);
         
+        transform.SetParent(cam.transform, false);
         aiming = true;
     }
 
     void UnAim()
     {
         transform.localPosition = Vector3.Slerp(transform.localPosition, nPos, aimSpeed * Time.deltaTime);
+        transform.localRotation = Quaternion.Slerp(transform.localRotation, nRot, aimSpeed * Time.deltaTime);
         cVirtCam.m_Lens.FieldOfView += zoomSpeed * Time.deltaTime;
         cVirtCam.m_Lens.FieldOfView = Mathf.Clamp(cVirtCam.m_Lens.FieldOfView, zoom, 90);
         
+        transform.SetParent(rightHand, false);
         aiming = false;
-    }
-
-    public void Holster()
-    {
-        transform.localPosition = Vector3.Slerp(transform.localPosition, hPos, holsterSpeed * Time.deltaTime);
-    }
-
-    public void UnHolster()
-    {
-        transform.localPosition = Vector3.Slerp(hPos, nPos, holsterSpeed * Time.deltaTime);
     }
 
     void Shoot()
@@ -288,6 +292,7 @@ public class Rifle : MonoBehaviour, IDataPersistence
         PlayClip(audioShoot);
 
         Recoil(2.5f, 0.1f);
+        OnShooting?.Invoke();
 
         canShoot = false;
 
@@ -295,24 +300,49 @@ public class Rifle : MonoBehaviour, IDataPersistence
         bulletCopy.GetComponent<Rigidbody>().AddForce(firePoint.forward * shootForce, ForceMode.Impulse);
         Destroy(bulletCopy, 3f);
 
-        if (Physics.Raycast(cam.transform.position, cam.transform.forward, out RaycastHit hit))
+        if (aiming)
         {
-            //Enemy TakeDamage()
-            if (hit.collider.gameObject.TryGetComponent<EnemyHealth>(out EnemyHealth eComp))
+            if (Physics.Raycast(cam.transform.position, cam.transform.forward, out RaycastHit hit))
             {
-                eComp.TakeDamage(damage, false);
-                PlayClip(audioHitMarker);
-            }
+                //Enemy TakeDamage()
+                if (hit.collider.gameObject.TryGetComponent<EnemyHealth>(out EnemyHealth eComp))
+                {
+                    eComp.TakeDamage(damage, false);
+                    PlayClip(audioHitMarker);
+                }
 
-            //Turret TakeDamage()
-            if (hit.collider.gameObject.TryGetComponent<TurretHealth>(out TurretHealth tComp))
+                //Turret TakeDamage()
+                if (hit.collider.gameObject.TryGetComponent<TurretHealth>(out TurretHealth tComp))
+                {
+                    tComp.TakeDamage(damage);
+                    PlayClip(audioHitMarker);
+                }
+
+                GameObject impactObj = Instantiate(impact, hit.point, Quaternion.LookRotation(hit.normal), spawnedImpacts);
+                Destroy(impactObj, 2f);
+            }
+        }
+        else
+        {
+            if (Physics.Raycast(transform.position, transform.forward, out RaycastHit hit))
             {
-                tComp.TakeDamage(damage);
-                PlayClip(audioHitMarker);
-            }
+                //Enemy TakeDamage()
+                if (hit.collider.gameObject.TryGetComponent<EnemyHealth>(out EnemyHealth eComp))
+                {
+                    eComp.TakeDamage(damage, false);
+                    PlayClip(audioHitMarker);
+                }
 
-            GameObject impactObj = Instantiate(impact, hit.point, Quaternion.LookRotation(hit.normal), spawnedImpacts);
-            Destroy(impactObj, 2f);
+                //Turret TakeDamage()
+                if (hit.collider.gameObject.TryGetComponent<TurretHealth>(out TurretHealth tComp))
+                {
+                    tComp.TakeDamage(damage);
+                    PlayClip(audioHitMarker);
+                }
+
+                GameObject impactObj = Instantiate(impact, hit.point, Quaternion.LookRotation(hit.normal), spawnedImpacts);
+                Destroy(impactObj, 2f);
+            }
         }
         
         bulletsLeft--;
@@ -398,8 +428,8 @@ public class Rifle : MonoBehaviour, IDataPersistence
 
     void UpdateRifleColor()
     {
-        transform.Find("tar21/Tar21").GetComponent<SkinnedMeshRenderer>().material.color = colors[cIndex];
-        transform.Find("All_in_one_scopes/red_dot_d_prefab/red_dot_d").GetComponent<MeshRenderer>().material.color = colors[cIndex];
+        transform.Find("ak47/ak47").GetComponent<SkinnedMeshRenderer>().material.color = colors[cIndex];
+        transform.Find("All_in_one_scopes/red_dot_a_prefab/red_dot_a").GetComponent<MeshRenderer>().material.color = colors[cIndex];
     }
 
     public void LoadData(GameData data)
